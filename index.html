@@ -2,176 +2,527 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Coffee Shop Dashboard V2</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Sistem HPP Coffee Shop – Full Interaktif</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-body{
-  margin:0;
-  font-family:-apple-system, BlinkMacSystemFont, sans-serif;
-  background:#0f172a;
-  color:#e5e7eb;
-}
-header{
-  padding:16px;
-  background:#22c55e;
-  color:#052e16;
-  font-weight:700;
-}
-section{
-  padding:14px;
-}
-.card{
-  background:#111827;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:14px;
-}
-h2{margin-top:0;font-size:16px}
-input,select,button{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  border-radius:10px;
-  border:none;
-  background:#1f2933;
-  color:#e5e7eb;
-}
-button{
-  background:#22c55e;
-  color:#052e16;
-  font-weight:700;
-}
-table{
-  width:100%;
-  font-size:13px;
-  border-collapse:collapse;
-}
-td,th{
-  padding:6px;
-  border-bottom:1px solid #374151;
-}
-.bad{color:#ef4444}
-.good{color:#22c55e}
+body{background:#f4f6f8;font-family:Segoe UI,sans-serif}
+.card{border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.card-header{font-weight:600;background:#fff}
+.table td,.table th{font-size:13px;padding:6px;vertical-align:middle}
+.money{text-align:right;font-weight:600}
+.badge{font-size:11px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center}
+.modal-content{border-radius:14px}
+#menuBody tr td input, #menuBody tr td select {height:32px;}
+#editMenuBody tr td input, #editMenuBody tr td select {height:32px;}
+#bahanBodyContainer{overflow-x:auto; white-space:nowrap;}
 </style>
 </head>
+<body class="p-3">
 
-<body>
+<h4 class="mb-3">☕ Sistem HPP Coffee Shop – Full Interaktif</h4>
 
-<header>☕ Coffee Dashboard V2</header>
+<div class="row g-3">
 
-<section>
-
-<!-- ESPRESSO -->
+<!-- MASTER BAHAN -->
+<div class="col-lg-4">
 <div class="card">
-<h2>Espresso Setting</h2>
-<input id="espressoGram" type="number" placeholder="Gram / shot" value="18">
-<input id="espressoML" type="number" placeholder="ML / shot" value="60">
-<button onclick="saveEspresso()">Simpan</button>
+<div class="card-header d-flex justify-content-between">
+<span>Master Bahan Baku</span>
+<button class="btn btn-sm btn-success" onclick="openBahan()">+ Bahan</button>
 </div>
-
-<!-- BAHAN -->
-<div class="card">
-<h2>Bahan Baku</h2>
-<input id="ingName" placeholder="Nama bahan">
-<input id="ingPrice" type="number" placeholder="Harga total">
-<input id="ingQty" type="number" placeholder="Isi kemasan">
-<button onclick="addIngredient()">Tambah</button>
-<table><tbody id="ingTable"></tbody></table>
-</div>
-
-<!-- RESEP -->
-<div class="card">
-<h2>Resep</h2>
-<input id="recipeName" placeholder="Nama resep">
-<select id="recipeIngredient"></select>
-<input id="recipeQty" type="number" placeholder="Qty pakai">
-<button onclick="addRecipeItem()">Tambah bahan ke resep</button>
-<table><tbody id="recipeTable"></tbody></table>
-</div>
-
-<!-- MENU -->
-<div class="card">
-<h2>Menu</h2>
-<input id="menuName" placeholder="Nama menu">
-<input id="menuPrice" type="number" placeholder="Harga jual">
-<button onclick="addMenu()">Tambah menu</button>
-<table>
+<div class="card-body p-2" id="bahanBodyContainer">
+<table class="table table-bordered table-sm mb-0">
 <thead>
-<tr><th>Menu</th><th>HPP</th><th>Margin</th></tr>
+<tr>
+<th>Nama</th><th>Harga</th><th>Isi</th><th>Satuan</th><th>Rp/Unit</th>
+<th>Devisi</th><th>Sub Category</th><th></th>
+</tr>
 </thead>
-<tbody id="menuTable"></tbody>
+<tbody id="bahanBody"></tbody>
 </table>
 </div>
+</div>
+</div>
 
-</section>
+<!-- KOMPOSISI MENU & OPERASIONAL -->
+<div class="col-lg-8">
+<div class="row g-3">
+
+<!-- KOMPOSISI MENU -->
+<div class="col-md-8">
+<div class="card">
+<div class="card-header">Komposisi Menu</div>
+<div class="card-body p-2">
+<div class="d-flex gap-2 mb-2">
+  <input id="menuNama" class="form-control form-control-sm" placeholder="Nama Menu">
+  <select id="menuCategory" class="form-select form-select-sm" onchange="updateSubCategoryOptions()">
+    <option value="">Pilih Category</option>
+    <option value="Minuman">Minuman</option>
+    <option value="Makanan">Makanan</option>
+  </select>
+  <select id="menuSubCategory" class="form-select form-select-sm">
+    <option value="">Pilih Sub Category</option>
+  </select>
+</div>
+
+<label>Harga Jual</label>
+<input id="menuJual" class="form-control form-control-sm mb-2" placeholder="Harga Jual Menu">
+
+<div class="d-flex gap-2 mb-2">
+  <select id="savedMenuSelect" class="form-select form-select-sm">
+    <option value="" selected disabled>+ Pilih Menu Tersimpan</option>
+  </select>
+  <button class="btn btn-sm btn-primary" onclick="addSavedMenu()">Tambah</button>
+</div>
+
+<table class="table table-sm mb-2">
+<thead><tr><th>Bahan</th><th>Qty</th><th>Satuan</th><th>Harga/unit</th><th></th></tr></thead>
+<tbody id="menuBody"></tbody>
+</table>
+<button class="btn btn-sm btn-primary w-100 mb-1" onclick="addMenu()">+ Tambah Bahan</button>
+<button class="btn btn-sm btn-success w-100" onclick="saveMenu()">💾 Simpan</button>
+</div>
+</div>
+</div>
+
+<!-- OPERASIONAL -->
+<div class="col-md-4">
+<div class="card">
+<div class="card-header">Operasional & Analisis</div>
+<div class="card-body">
+<label>Total Pekerja</label><input id="totalPekerja" class="form-control mb-1" value="7" oninput="renderSaved()">
+<label>Gaji per Pekerja</label><input id="gajiPerPekerja" class="form-control mb-1" value="1500000" oninput="renderSaved()">
+<label>Sewa / Bulan</label><input id="sewa" class="form-control mb-1" value="0" oninput="renderSaved()">
+<label>Listrik / Hari</label><input id="listrik" class="form-control mb-2" value="200000" oninput="renderSaved()">
+<label>Target Cup / Bulan</label><input id="target" class="form-control mb-2" value="6000" oninput="renderSaved()">
+
+<hr>
+<div class="small">
+<b>Total Operasional:</b> <span id="opTotal"></span><br>
+<b>Operasional / Cup:</b> <span id="opCup"></span><br>
+<b>Status Biaya:</b> <span id="opStatus" class="badge"></span><br>
+<b>Estimasi Margin / Cup:</b> <span id="opMargin"></span><br>
+<b>Estimasi Laba / Bulan:</b> <span id="opLaba"></span>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- MENU TERSIMPAN -->
+<div class="card mt-3">
+<div class="card-header">Menu Tersimpan</div>
+<div class="card-body" style="max-height:300px;overflow:auto;">
+<ul class="list-group" id="savedList"></ul>
+</div>
+</div>
+
+<!-- IMPORT / EXPORT CSV -->
+<div class="card mt-3">
+  <div class="card-header">Import / Export CSV (Gabungan)</div>
+  <div class="card-body d-flex gap-2 flex-wrap">
+    <button class="btn btn-sm btn-primary" onclick="exportCSV()">💾 Export Semua CSV</button>
+    <input type="file" id="importCSVFile" class="form-control form-control-sm" onchange="importCSV(event)">
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- MODAL BAHAN -->
+<div class="modal" id="bahanModal">
+<div class="modal-content p-3" style="max-width:420px">
+<h5>Detail Bahan</h5>
+<input id="bNama" class="form-control mb-1" placeholder="Nama">
+<input id="bHarga" class="form-control mb-1" placeholder="Harga">
+<input id="bIsi" class="form-control mb-1" placeholder="Isi">
+<label>Satuan</label>
+<select id="bSatuan" class="form-control mb-1">
+  <option value="gr">gr</option>
+  <option value="kg">kg</option>
+  <option value="ml">ml</option>
+  <option value="L">L</option>
+  <option value="cup">cup</option>
+</select>
+<label>Devisi</label>
+<select id="bDevisi" class="form-control mb-2">
+  <option value="Bar">Bar</option>
+  <option value="Kitchen">Kitchen</option>
+</select>
+<label>Sub Category</label>
+<select id="bSub" class="form-control mb-2">
+  <option value="Powder">Powder</option>
+  <option value="Syrup">Syrup</option>
+  <option value="Liquid">Liquid</option>
+  <option value="Topping">Topping</option>
+  <option value="Other">Other</option>
+</select>
+<button class="btn btn-success w-100" onclick="saveBahan()">Simpan</button>
+<button class="btn btn-link" onclick="closeBahan()">Batal</button>
+</div>
+</div>
+
+<!-- MODAL EDIT MENU -->
+<div class="modal" id="menuModal">
+<div class="modal-content p-3" style="max-width:600px">
+<h5>Edit Menu</h5>
+<label>Nama Menu</label>
+<input id="editMenuNama" class="form-control mb-2">
+<label>Category</label>
+<select id="editMenuCategory" class="form-select mb-2" onchange="updateEditSubCategoryOptions()">
+  <option value="">Pilih Category</option>
+  <option value="Minuman">Minuman</option>
+  <option value="Makanan">Makanan</option>
+</select>
+<label>Sub Category</label>
+<select id="editMenuSubCategory" class="form-select mb-2">
+  <option value="">Pilih Sub Category</option>
+</select>
+<label>Harga Jual</label>
+<input id="editMenuJual" class="form-control mb-2">
+<table class="table table-sm">
+<thead><tr><th>Bahan</th><th>Qty</th><th>Satuan</th><th></th></tr></thead>
+<tbody id="editMenuBody"></tbody>
+</table>
+<button class="btn btn-sm btn-primary w-100 mb-1" onclick="addEditRow()">+ Bahan</button>
+<button class="btn btn-success w-100" onclick="saveEditMenu()">Simpan Perubahan</button>
+<button class="btn btn-link" onclick="closeMenuModal()">Batal</button>
+</div>
+</div>
 
 <script>
-let ingredients = JSON.parse(localStorage.getItem("ing"))||[];
-let recipes = [];
-let menus = [];
+// ===== DATA BAHAN =====
+let bahan=[
+  {id:1,nama:'Biji Kopi (Roasted Beans)', harga:215000, isi:1000, satuan:'gr', devisi:'Bar', sub:'Powder'},
+  {id:2,nama:'Susu UHT', harga:245000, isi:12000, satuan:'ml', devisi:'Kitchen', sub:'Liquid'},
+  {id:3,nama:'Omela SKM', harga:14500, isi:490, satuan:'gr', devisi:'Kitchen', sub:'Liquid'},
+  {id:4,nama:'Susu Evaporasi', harga:21500, isi:380, satuan:'ml', devisi:'Kitchen', sub:'Liquid'},
+  {id:5,nama:'Oatside Milk', harga:40000, isi:1000, satuan:'ml', devisi:'Kitchen', sub:'Liquid'},
+  {id:6,nama:'Max Creamer', harga:42500, isi:500, satuan:'gr', devisi:'Kitchen', sub:'Powder'},
+  {id:7,nama:'Chocolate Powder', harga:185000, isi:800, satuan:'gr', devisi:'Kitchen', sub:'Powder'},
+  {id:8,nama:'Matcha Powder', harga:190000, isi:1000, satuan:'gr', devisi:'Kitchen', sub:'Powder'},
+  {id:9,nama:'Taro Powder', harga:250000, isi:250, satuan:'gr', devisi:'Kitchen', sub:'Powder'},
+  {id:10,nama:'Syrup (All Varian)', harga:145000, isi:700, satuan:'ml', devisi:'Bar', sub:'Syrup'},
+  {id:11,nama:'Gula Aren', harga:69000, isi:1000, satuan:'gr', devisi:'Kitchen', sub:'Topping'},
+  {id:12,nama:'Biscoff', harga:85000, isi:400, satuan:'gr', devisi:'Kitchen', sub:'Topping'},
+  {id:13,nama:'Es Batu', harga:70000, isi:8000, satuan:'gr', devisi:'Kitchen', sub:'Topping'},
+  {id:14,nama:'Double Espresso', harga:5910, isi:60, satuan:'ml', devisi:'Bar', sub:'Liquid'},
+  {id:15,nama:'Cup 16oz', harga:900, isi:1, satuan:'cup', devisi:'Bar', sub:'Other'},
+  {id:16,nama:'Air Galon Cleo', harga:30000, isi:19000, satuan:'ml', devisi:'Kitchen', sub:'Liquid'}
+];
 
-function saveEspresso(){
-  localStorage.setItem("espresso",JSON.stringify({
-    gram:espressoGram.value,
-    ml:espressoML.value
-  }));
-  alert("Espresso disimpan");
-}
+let menu=[],saved=[],editIndex=null,editMenuIndex=null;
+const rp=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
+const unit=b=>b.harga/b.isi;
 
-function addIngredient(){
-  ingredients.push({
-    name:ingName.value,
-    price:ingPrice.value/ingQty.value
-  });
-  localStorage.setItem("ing",JSON.stringify(ingredients));
-  renderIngredients();
-}
-
-function renderIngredients(){
-  ingTable.innerHTML="";
-  recipeIngredient.innerHTML="";
-  ingredients.forEach(i=>{
-    ingTable.innerHTML+=`<tr><td>${i.name}</td><td>Rp${i.price.toFixed(0)}</td></tr>`;
-    recipeIngredient.innerHTML+=`<option>${i.name}</option>`;
-  });
-}
-
-function addRecipeItem(){
-  const ing=ingredients.find(i=>i.name===recipeIngredient.value);
-  recipes.push({name:recipeName.value, cost:ing.price*recipeQty.value});
-  renderRecipes();
-}
-
-function renderRecipes(){
-  recipeTable.innerHTML="";
-  recipes.forEach(r=>{
-    recipeTable.innerHTML+=`<tr><td>${r.name}</td><td>Rp${r.cost.toFixed(0)}</td></tr>`;
-  });
-}
-
-function addMenu(){
-  const hpp=recipes.reduce((a,b)=>a+b.cost,0);
-  const price=menuPrice.value;
-  menus.push({name:menuName.value,hpp,price});
-  renderMenus();
-}
-
-function renderMenus(){
-  menuTable.innerHTML="";
-  menus.forEach(m=>{
-    const margin=((m.price-m.hpp)/m.price*100).toFixed(1);
-    menuTable.innerHTML+=`
+// ===== BAHAN =====
+function sortBahan(){ bahan.sort((a,b)=>a.nama.localeCompare(b.nama)); }
+function renderBahan(){ 
+  sortBahan();
+  bahanBody.innerHTML = bahan.map((b,i)=>`
     <tr>
-      <td>${m.name}</td>
-      <td>Rp${m.hpp.toFixed(0)}</td>
-      <td class="${margin<60?'bad':'good'}">${margin}%</td>
-    </tr>`;
-  });
+      <td>${b.nama}</td>
+      <td class="money">${rp(b.harga)}</td>
+      <td>${b.isi}</td>
+      <td>${b.satuan}</td>
+      <td class="money">${unit(b).toFixed(2)}</td>
+      <td>${b.devisi}</td>
+      <td>${b.sub}</td>
+      <td>
+        <button class="btn btn-sm btn-warning" onclick="editBahan(${i})">✎</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteBahan(${i})">✕</button>
+      </td>
+    </tr>`).join('');
 }
 
-renderIngredients();
-</script>
+// ===== HAPUS BAHAN =====
+function deleteBahan(i){if(!confirm('Hapus bahan ini?')) return; bahan.splice(i,1); renderBahan(); renderSaved(); renderMenu();}
 
+// ===== BAHAN MODAL =====
+function openBahan(){editIndex=null; bNama.value=bHarga.value=bIsi.value=''; bSatuan.value='gr'; bDevisi.value='Bar'; bSub.value='Powder'; bahanModal.style.display='flex';}
+function editBahan(i){editIndex=i; bNama.value=bahan[i].nama; bHarga.value=bahan[i].harga; bIsi.value=bahan[i].isi; bSatuan.value=bahan[i].satuan; bDevisi.value=bahan[i].devisi; bSub.value=bahan[i].sub; bahanModal.style.display='flex';}
+function closeBahan(){bahanModal.style.display='none';}
+function saveBahan(){
+  let isiVal=+bIsi.value;
+  let hargaVal=+bHarga.value;
+  // konversi kg→gr, L→ml
+  if(bSatuan.value==='kg'){isiVal*=1000; bSatuan.value='gr';}
+  if(bSatuan.value==='L'){isiVal*=1000; bSatuan.value='ml';}
+  let o={nama:bNama.value,harga:hargaVal,isi:isiVal,satuan:bSatuan.value,devisi:bDevisi.value,sub:bSub.value,id:editIndex!=null?bahan[editIndex].id:bahan.length+1};
+  editIndex!=null?bahan[editIndex]=o:bahan.push(o); closeBahan(); renderBahan(); renderSaved();
+}
+
+// ===== MENU =====
+function renderMenu(){
+  menuBody.innerHTML = '';
+  menu.forEach((m,i)=>{
+    let bahanObj = bahan.find(b=>b.id===m.idBahan);
+    let tr = document.createElement('tr');
+
+    let tdB = document.createElement('td');
+    let sel = document.createElement('select');
+    sel.className='form-select form-select-sm';
+    bahan.forEach(b=>{
+      let op = document.createElement('option');
+      op.value=b.id;
+      op.text=b.nama;
+      if(b.id==m.idBahan) op.selected=true;
+      sel.appendChild(op);
+    });
+    sel.onchange = function(){ m.idBahan=+this.value; tdS.querySelector('input').value = bahan.find(b=>b.id==this.value).satuan; tdHarga.innerText = rp(unit(bahan.find(b=>b.id==this.value))*m.qty); };
+    tdB.appendChild(sel);
+    tr.appendChild(tdB);
+
+    let tdQty = document.createElement('td');
+    let inputQty = document.createElement('input');
+    inputQty.type='number';
+    inputQty.step='any';
+    inputQty.min=0;
+    inputQty.value=m.qty;
+    inputQty.className='form-control form-control-sm';
+    inputQty.oninput=function(){ m.qty=parseFloat(this.value)||0; tdHarga.innerText = rp(unit(bahan.find(b=>b.id==m.idBahan))*m.qty); };
+    tdQty.appendChild(inputQty);
+    tr.appendChild(tdQty);
+
+    let tdS = document.createElement('td');
+    let inpS = document.createElement('input');
+    inpS.className='form-control form-control-sm';
+    inpS.value=bahanObj.satuan;
+    inpS.disabled=true;
+    tdS.appendChild(inpS);
+    tr.appendChild(tdS);
+
+    let tdHarga = document.createElement('td');
+    tdHarga.className='money';
+    tdHarga.innerText = rp(unit(bahanObj)*m.qty);
+    tr.appendChild(tdHarga);
+
+    let tdDel = document.createElement('td');
+    let btnDel = document.createElement('button');
+    btnDel.className='btn btn-sm btn-danger';
+    btnDel.innerText='✕';
+    btnDel.onclick=function(){ menu.splice(i,1); renderMenu(); };
+    tdDel.appendChild(btnDel);
+    tr.appendChild(tdDel);
+
+    menuBody.appendChild(tr);
+  });
+}
+function addMenu(){menu.push({idBahan:bahan[0].id, qty:1}); renderMenu();}
+
+// ===== CATEGORY =====
+function updateSubCategoryOptions() {
+  const cat = menuCategory.value;
+  let options = '<option value="">Pilih Sub Category</option>';
+  if(cat === 'Minuman'){options+='<option value="Coffee">Coffee</option><option value="Non Coffee">Non Coffee</option><option value="Special Signature">Special Signature</option>';}
+  else if(cat==='Makanan'){options+='<option value="Snack">Snack</option><option value="Food">Food</option>';}
+  menuSubCategory.innerHTML=options;
+}
+function updateEditSubCategoryOptions(){const cat=editMenuCategory.value; let options='<option value="">Pilih Sub Category</option>'; if(cat==='Minuman'){options+='<option value="Coffee">Coffee</option><option value="Non Coffee">Non Coffee</option><option value="Special Signature">Special Signature</option>';} else if(cat==='Makanan'){options+='<option value="Snack">Snack</option><option value="Food">Food</option>';} editMenuSubCategory.innerHTML=options;}
+
+// ===== SAVE MENU =====
+function saveMenu(){
+  if(!menuNama.value) return alert('Nama menu kosong');
+  if(!menuJual.value) return alert('Harga jual kosong');
+  if(!menuCategory.value) return alert('Category belum dipilih');
+  if(!menuSubCategory.value) return alert('Sub Category belum dipilih');
+
+  saved.push({
+    nama: menuNama.value,
+    category: menuCategory.value,
+    subCategory: menuSubCategory.value,
+    items: menu.map(m=>({...m})),
+    jual: +menuJual.value
+  });
+  menu=[]; menuNama.value=''; menuJual.value=''; menuCategory.value=''; menuSubCategory.innerHTML='<option value="">Pilih Sub Category</option>';
+  renderMenu(); renderSaved();
+}
+
+// ===== MENU TERSIMPAN =====
+function renderSavedMenuOptions(){
+  savedMenuSelect.innerHTML='<option value="" selected disabled>+ Pilih Menu Tersimpan</option>';
+  saved.forEach((m,i)=>{savedMenuSelect.innerHTML+=`<option value="${i}">${m.nama}</option>`});
+}
+function addSavedMenu(){
+  const idxStr = savedMenuSelect.value;
+  if(!idxStr) return;
+  const idx = parseInt(idxStr);
+  if(isNaN(idx) || !saved[idx]) return;
+  const m = saved[idx];
+  menu = m.items.map(x => ({...x}));
+  menuCategory.value = m.category;
+  updateSubCategoryOptions();
+  menuSubCategory.value = m.subCategory;
+  menuJual.value = m.jual;
+  renderMenu();
+  savedMenuSelect.value=''; // reset
+}
+
+// ===== RENDER SAVED =====
+function renderSaved(){
+  saved.sort((a,b)=>a.nama.localeCompare(b.nama));
+  renderSavedMenuOptions();
+  savedList.innerHTML='';
+  let hariPerBulan=30;
+  let totalGaji = +gajiPerPekerja.value * +totalPekerja.value;
+  let op = totalGaji + (+sewa.value) + (+listrik.value * hariPerBulan);
+  let opCup = op / Math.max(1,target.value);
+  opTotal.innerText = rp(op);
+  opCup.innerText = rp(opCup);
+
+  let totalMargin=0,totalLaba=0;
+  const targetMargin=65;
+  saved.forEach((m,i)=>{
+    let hppBahan=m.items.reduce((t,x)=>t+bahan.find(b=>b.id===x.idBahan).harga/bahan.find(b=>b.id===x.idBahan).isi*x.qty,0);
+    let hpp=hppBahan+opCup;
+    let margin=(m.jual-hpp)/m.jual*100;
+    totalMargin+=margin;
+    totalLaba+=(m.jual-hpp)*target.value;
+    let statusClass='',statusText='';
+    if(margin<targetMargin){statusClass='danger'; statusText='Bahaya';}
+    else if(margin<targetMargin+15){statusClass='warning'; statusText='Waspada';}
+    else{statusClass='success'; statusText='Sehat';}
+
+    let suggestion='';
+    let suggestedPrice = Math.round(hpp / (1 - targetMargin/100));
+    if(m.jual < suggestedPrice){suggestion=`<div class="small text-primary">Saran Harga Jual Minimal untuk margin 65%: ${rp(suggestedPrice)}</div>`;}
+    else {suggestion=`<div class="small text-success">Margin sehat</div>`;}
+
+    savedList.innerHTML+=`<li class="list-group-item">
+      <b>${m.nama}</b>
+      <span class="badge bg-info float-end">${m.category} - ${m.subCategory}</span>
+      <span class="badge bg-${statusClass} float-end me-1">${margin.toFixed(1)}%</span>
+      <div class="small">HPP Bahan: ${rp(hppBahan)}</div>
+      <div class="small">HPP + Operasional: ${rp(hpp)}</div>
+      <div class="small">Harga Jual: ${rp(m.jual)}</div>
+      ${suggestion}
+      <div class="mt-2 d-flex gap-1">
+        <button class="btn btn-sm btn-warning" onclick="openEditMenu(${i})">✎ Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteMenu(${i})">🗑</button>
+      </div>
+    </li>`;
+  });
+  let avgMargin = saved.length? (totalMargin/saved.length).toFixed(1):0;
+  opMargin.innerText=avgMargin+' %';
+  opLaba.innerText=rp(totalLaba);
+  if(avgMargin<targetMargin){opStatus.className='badge bg-danger'; opStatus.innerText='Bahaya';}
+  else if(avgMargin<targetMargin+15){opStatus.className='badge bg-warning'; opStatus.innerText='Waspada';}
+  else{opStatus.className='badge bg-success'; opStatus.innerText='Sehat';}
+}
+
+// ===== EDIT MENU =====
+function deleteMenu(i){if(!confirm('Hapus menu?')) return; saved.splice(i,1); renderSaved();}
+function openEditMenu(i){
+  editMenuIndex=i;
+  const m = saved[i];
+  editMenuNama.value=m.nama;
+  editMenuCategory.value=m.category;
+  updateEditSubCategoryOptions();
+  editMenuSubCategory.value=m.subCategory;
+  editMenuJual.value=m.jual;
+  editMenuBody.innerHTML='';
+  m.items.forEach(addEditRow);
+  menuModal.style.display='flex';
+}
+function addEditRow(item={idBahan:bahan[0].id,qty:1}){
+  let bahanObj = bahan.find(b=>b.id===item.idBahan);
+  editMenuBody.innerHTML+=`<tr>
+    <td>
+      <select class="form-select form-select-sm" onchange="
+        this.closest('tr').children[2].querySelector('input').value=bahan.find(b=>b.id==this.value).satuan;
+      ">
+        ${bahan.map(b=>`<option value="${b.id}" ${b.id==item.idBahan?'selected':''}>${b.nama}</option>`).join('')}
+      </select>
+    </td>
+    <td><input class="form-control form-control-sm" type="number" step="any" min="0" value="${item.qty}"></td>
+    <td><input class="form-control form-control-sm" value="${bahanObj.satuan}" disabled></td>
+    <td><button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">✕</button></td>
+  </tr>`;
+}
+function saveEditMenu(){
+  let rows=[...editMenuBody.querySelectorAll('tr')];
+  saved[editMenuIndex] = {
+    nama: editMenuNama.value,
+    category: editMenuCategory.value,
+    subCategory: editMenuSubCategory.value,
+    jual: +editMenuJual.value,
+    items: rows.map(r=>({
+      idBahan: +r.children[0].querySelector('select').value,
+      qty: +r.children[1].querySelector('input').value
+    }))
+  };
+  closeMenuModal(); renderSaved();
+}
+function closeMenuModal(){menuModal.style.display='none';}
+
+// ===== INISIAL MENU TERSIMPAN =====
+saved.push({
+  nama:'Espresso', category:'Minuman', subCategory:'Coffee', jual:20000,
+  items:[{idBahan:1, qty:18},{idBahan:16, qty:35}]
+});
+saved.push({
+  nama:'Lungo', category:'Minuman', subCategory:'Coffee', jual:20000,
+  items:[{idBahan:1, qty:18},{idBahan:16, qty:60}]
+});
+
+// ===== RENDER AWAL =====
+renderBahan(); renderMenu(); renderSaved();
+
+// ===== IMPORT / EXPORT CSV GABUNG =====
+function exportCSV(){
+  let csv='type,id,nama,harga,isi,satuan,devisi,sub,category,subCategory,jual,items\n';
+  bahan.forEach(b=>{
+    csv+=`bahan,${b.id},"${b.nama}",${b.harga},${b.isi},${b.satuan},${b.devisi},${b.sub},,,,,\n`;
+  });
+  saved.forEach(m=>{
+    let itemsStr = m.items.map(x=>`${x.idBahan}|${x.qty}`).join(';');
+    csv+=`menu,,${m.nama},,,,"","","",${m.category},${m.subCategory},${m.jual},"${itemsStr}"\n`;
+  });
+  downloadFile(csv,'coffeeshop_data.csv');
+}
+function downloadFile(content,filename){
+  const blob = new Blob([content],{type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importCSV(event){
+  const file = event.target.files[0];
+  if(!file) return alert('File tidak ditemukan!');
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const text = e.target.result;
+    const lines=text.split('\n').filter(l=>l.trim());
+    bahan=[]; saved=[];
+    lines.slice(1).forEach(line=>{
+      const [type,id,nama,harga,isi,satuan,devisi,sub,category,subCategory,jual,itemsStr] = parseCSVLine(line);
+      if(type==='bahan'){
+        if(!nama) return;
+        let isiVal=+isi, hargaVal=+harga;
+        bahan.push({id:+id,nama,harga:hargaVal,isi:isiVal,satuan,satuan,devisi,sub});
+      } else if(type==='menu'){
+        if(!nama) return;
+        let items = itemsStr.split(';').filter(x=>x).map(i=>{
+          const [idB,qty] = i.split('|'); return {idBahan:+idB, qty:+qty};
+        });
+        saved.push({nama,category,subCategory,jual:+jual,items});
+      }
+    });
+    renderBahan(); renderMenu(); renderSaved();
+    alert('CSV berhasil diimport!');
+  };
+  reader.readAsText(file);
+}
+function parseCSVLine(line){
+  const regex = /(".*?"|[^",\n]+)(?=\s*,|\s*$)/g;
+  return line.match(regex).map(s=>s.replace(/^"|"$/g,''));
+}
+</script>
 </body>
 </html>
