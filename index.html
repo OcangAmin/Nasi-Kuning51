@@ -8,63 +8,60 @@
 <style>
 *{box-sizing:border-box}
 body{
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background:#f2f4f7;
     margin:0;
-    padding:12px;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+    background:#eef1f4;
+    padding:10px;
 }
-.container{
-    max-width:480px;
+.app{
+    max-width:420px;
     margin:auto;
     background:#fff;
-    border-radius:14px;
-    padding:16px;
-    box-shadow:0 6px 16px rgba(0,0,0,.08);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
 }
 .header{
     text-align:center;
-    margin-bottom:14px;
+    margin-bottom:12px;
 }
 .header h1{
     margin:0;
     font-size:22px;
 }
-.header small{
-    color:#666;
-}
+.header small{color:#666}
 
 .card{
     background:#fafafa;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:12px;
+    border-radius:12px;
+    padding:10px;
+    margin-bottom:10px;
 }
 
 .row{
     display:flex;
-    gap:8px;
-    margin-bottom:8px;
+    gap:6px;
+    margin-bottom:6px;
 }
 
 select,input,button{
     padding:10px;
-    font-size:14px;
-    border-radius:8px;
+    border-radius:10px;
     border:1px solid #ddd;
+    font-size:14px;
 }
-
 select,input{flex:1}
 
 button{
-    cursor:pointer;
     border:none;
     font-weight:600;
+    cursor:pointer;
 }
 
-.add{background:#0d6efd;color:#fff}
+.add{background:#0d6efd;color:#fff;width:100%}
 .cash{background:#198754;color:#fff;flex:1}
 .qris{background:#6f42c1;color:#fff;flex:1}
-.save{background:#fd7e14;color:#fff;width:100%;margin-top:8px}
+.save{background:#fd7e14;color:#fff;width:100%}
 
 table{
     width:100%;
@@ -76,41 +73,47 @@ th,td{
     border-bottom:1px solid #eee;
     text-align:center;
 }
-th{color:#666}
+th{color:#777}
 
 .delete{
     background:#dc3545;
     color:#fff;
-    padding:4px 8px;
     border-radius:6px;
+    padding:4px 6px;
     font-size:12px;
 }
 
-.total-box{
+.totalBox{
     display:flex;
     justify-content:space-between;
     font-size:18px;
     font-weight:700;
     margin-top:6px;
 }
-
+.kembali{
+    display:flex;
+    justify-content:space-between;
+    font-weight:600;
+    margin-top:4px;
+    color:#198754;
+}
 .metode{
     text-align:center;
     font-weight:600;
-    margin-top:6px;
+    margin-top:4px;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
+<div class="app">
 
 <div class="header">
     <h1>🍚 Nasi Kuning 51</h1>
-    <small>Aplikasi Kasir Manual</small>
+    <small>Kasir Manual</small>
 </div>
 
-<!-- INPUT MENU -->
+<!-- INPUT -->
 <div class="card">
 <div class="row">
 <select id="menu">
@@ -118,6 +121,7 @@ th{color:#666}
 <option value="Ikan|5000">Ikan - 5.000</option>
 <option value="Bakwan|2000">Bakwan - 2.000</option>
 <option value="Nasi|5000">Nasi - 5.000</option>
+<option value="Telur|5000">Telur - 5.000</option>
 <option value="Ayam|5000">Ayam - 5.000</option>
 <option value="Nasi Kuning Ayam|15000">NK Ayam - 15.000</option>
 <option value="Nasi Kuning Ikan|13000">NK Ikan - 13.000</option>
@@ -138,14 +142,14 @@ th{color:#666}
 <tr>
 <th>Menu</th>
 <th>Qty</th>
-<th>Subtotal</th>
+<th>Sub</th>
 <th></th>
 </tr>
 </thead>
 <tbody id="cart"></tbody>
 </table>
 
-<div class="total-box">
+<div class="totalBox">
 <span>Total</span>
 <span>Rp <span id="total">0</span></span>
 </div>
@@ -157,14 +161,22 @@ th{color:#666}
 <button class="cash" onclick="setMetode('CASH')">💵 CASH</button>
 <button class="qris" onclick="setMetode('QRIS')">📱 QRIS</button>
 </div>
-<input type="number" id="bayar" placeholder="Uang Bayar">
+
+<input type="number" id="bayar" placeholder="Uang Bayar" oninput="hitungKembali()">
+
+<div class="kembali">
+<span>Kembalian</span>
+<span>Rp <span id="kembali">0</span></span>
+</div>
+
 <div class="metode">Metode: <span id="metode">-</span></div>
-<button class="save" onclick="simpanTransaksi()">💾 Save Histori</button>
+
+<button class="save" onclick="simpan()">💾 Save Transaksi</button>
 </div>
 
 <!-- HISTORI -->
 <div class="card">
-<b>📜 Histori Pembayaran</b>
+<b>📜 Histori</b>
 <table>
 <thead>
 <tr>
@@ -181,81 +193,73 @@ th{color:#666}
 </div>
 
 <script>
-let total = 0;
-let metode = "";
+let total=0, metode="";
 
 function tambah(){
-    const menuVal = menu.value;
-    if(!menuVal) return;
+    if(!menu.value) return;
+    const [nama,harga]=menu.value.split("|");
+    const q=+qty.value;
+    const sub=harga*q;
 
-    const [nama,harga] = menuVal.split("|");
-    const q = +qty.value;
-    const sub = harga*q;
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    cart.innerHTML+=`
+    <tr>
         <td>${nama}</td>
         <td>${q}</td>
         <td>${sub}</td>
-        <td><button class="delete" onclick="hapus(this,${sub})">❌</button></td>
-    `;
-    cart.appendChild(tr);
-
-    total += sub;
-    updateTotal();
+        <td><button class="delete" onclick="hapus(this,${sub})">✕</button></td>
+    </tr>`;
+    total+=sub;
+    update();
 }
 
 function hapus(btn,sub){
     btn.parentElement.parentElement.remove();
-    total -= sub;
-    updateTotal();
+    total-=sub;
+    update();
 }
 
-function updateTotal(){
-    document.getElementById("total").innerText = total;
+function update(){
+    totalSpan.innerText=total;
+    hitungKembali();
 }
 
 function setMetode(m){
-    metode = m;
-    metodeSpan.innerText = m;
+    metode=m;
+    metodeSpan.innerText=m;
     if(m==="QRIS"){
-        bayar.value = total;
-        bayar.disabled = true;
+        bayar.value=total;
+        bayar.disabled=true;
     }else{
-        bayar.disabled = false;
+        bayar.disabled=false;
         bayar.value="";
     }
+    hitungKembali();
 }
 
-function simpanTransaksi(){
-    if(total===0) return alert("Belum ada transaksi");
-    if(!metode) return alert("Pilih metode");
+function hitungKembali(){
+    const b=+bayar.value||0;
+    kembali.innerText = b-total>0 ? b-total : 0;
+}
 
-    const b = +bayar.value;
-    if(metode==="CASH" && b<total) return alert("Uang kurang");
+function simpan(){
+    if(total===0||!metode) return alert("Transaksi belum lengkap");
+    if(metode==="CASH" && bayar.value<total) return alert("Uang kurang");
 
-    const now = new Date();
-    const tgl = now.toLocaleDateString("id-ID");
-    const jam = now.toLocaleTimeString("id-ID");
+    const now=new Date();
+    const t=now.toLocaleDateString("id-ID");
+    const j=now.toLocaleTimeString("id-ID");
 
-    histori.innerHTML += `
-        <tr>
-            <td>${tgl}</td>
-            <td>${jam}</td>
-            <td>${metode}</td>
-            <td>${total}</td>
-        </tr>
-    `;
+    histori.innerHTML+=`
+    <tr><td>${t}</td><td>${j}</td><td>${metode}</td><td>${total}</td></tr>`;
 
-    const file = `kasir-nasi-kuning-51-${now.toISOString().slice(0,10)}.csv`;
-    let csv = localStorage.getItem(file) || "Tanggal,Waktu,Metode,Total\n";
-    csv += `${tgl},${jam},${metode},${total}\n`;
+    const file=`kasir-nasi-kuning-51-${now.toISOString().slice(0,10)}.csv`;
+    let csv=localStorage.getItem(file)||"Tanggal,Waktu,Metode,Total\n";
+    csv+=`${t},${j},${metode},${total}\n`;
     localStorage.setItem(file,csv);
 
-    const blob = new Blob([csv],{type:"text/csv"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = file;
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+    a.download=file;
     a.click();
 
     reset();
@@ -264,8 +268,9 @@ function simpanTransaksi(){
 function reset(){
     cart.innerHTML="";
     total=0;
-    updateTotal();
+    totalSpan.innerText=0;
     bayar.value="";
+    kembali.innerText=0;
     metodeSpan.innerText="-";
     metode="";
 }
