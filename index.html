@@ -6,91 +6,29 @@
 <title>Kasir Nasi Kuning 51</title>
 
 <style>
-body{
-  font-family:Arial, sans-serif;
-  background:#f4f6f8;
-  margin:0;
-  padding:10px;
-}
-h2{text-align:center;margin:5px 0;}
-.section{
-  background:#fff;
-  padding:10px;
-  border-radius:8px;
-  margin-bottom:10px;
-}
-.menu-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:6px;
-}
-.menu-grid button{
-  padding:12px;
-  border:none;
-  border-radius:6px;
-  background:#e3f2fd;
-  font-size:14px;
-}
-.menu-grid button:active{background:#bbdefb;}
-
-.table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:13px;
-}
-.table th,.table td{
-  border-bottom:1px solid #ddd;
-  padding:6px;
-}
-.right{text-align:right;}
-
-.btn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:6px;
-  margin-top:6px;
-  font-size:14px;
-}
-.btn-green{background:#4caf50;color:#fff;}
-.btn-blue{background:#2196f3;color:#fff;}
-.btn-red{background:#f44336;color:#fff;}
-
-.pay-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:6px;
-}
-.nominal-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-}
-
-.pay-btn{
-  background:#e0e0e0;
-  transition:0.15s;
-}
-.pay-btn.active{
-  background:#4caf50;
-  color:#fff;
-  font-weight:bold;
-}
-.pay-btn:active{
-  transform:scale(0.97);
-}
-
-input{
-  width:100%;
-  padding:10px;
-  font-size:14px;
-}
-.warning{
-  color:red;
-  font-size:13px;
-  margin-top:5px;
-}
-.small{font-size:12px;color:#555;}
+body{font-family:Arial;background:#f4f6f8;margin:0;padding:10px}
+h2{text-align:center;margin:6px 0}
+.section{background:#fff;padding:10px;border-radius:8px;margin-bottom:10px}
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.menu-grid button{padding:12px;border:none;border-radius:6px;background:#e3f2fd;font-size:14px}
+.menu-grid button:active{background:#bbdefb}
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table td,.table th{border-bottom:1px solid #ddd;padding:6px}
+.right{text-align:right}
+.btn{width:100%;padding:12px;border:none;border-radius:6px;margin-top:6px;font-size:14px}
+.btn-green{background:#4caf50;color:#fff}
+.btn-blue{background:#2196f3;color:#fff}
+.btn-red{background:#f44336;color:#fff}
+.pay-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.nominal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pay-btn{background:#e0e0e0;transition:.15s}
+.pay-btn.active{background:#4caf50;color:#fff;font-weight:bold}
+.pay-btn:active{transform:scale(.97)}
+input{width:100%;padding:10px;font-size:14px}
+.warning{color:red;font-size:13px;margin-top:5px}
+.small{font-size:12px;color:#555}
+.detail{font-size:12px;color:#333;margin-top:4px}
+hr{border:none;border-top:1px dashed #ccc;margin:6px 0}
 </style>
 </head>
 
@@ -109,7 +47,7 @@ input{
 <thead>
 <tr><th>Item</th><th>Qty</th><th class="right">Subtotal</th><th></th></tr>
 </thead>
-<tbody id="cart"></tbody>
+<tbody id="cartEl"></tbody>
 </table>
 <b>Total: Rp <span id="total">0</span></b>
 </div>
@@ -142,13 +80,8 @@ input{
 </div>
 
 <div class="section">
-<h3>Histori Pembayaran</h3>
-<table class="table">
-<thead>
-<tr><th>Waktu</th><th>Total</th><th>Bayar</th><th>Kembali</th><th>Metode</th></tr>
-</thead>
-<tbody id="history"></tbody>
-</table>
+<h3>Histori Transaksi</h3>
+<div id="historyEl"></div>
 
 <button class="btn btn-blue" onclick="saveFile()">Save History</button>
 <button class="btn btn-red" onclick="closeCashier()">Tutup Kasir</button>
@@ -180,24 +113,24 @@ function addItem(n,p){
 }
 
 function renderCart(){
-  cart.innerHTML="";
+  cartEl.innerHTML="";
   let t=0;
   for(let k in cart){
     let s=cart[k].price*cart[k].qty;
     t+=s;
-    cart.innerHTML+=`
+    cartEl.innerHTML+=`
 <tr>
 <td>${k}</td>
 <td>${cart[k].qty}</td>
 <td class="right">${rupiah(s)}</td>
-<td><button onclick="del('${k}')">❌</button></td>
+<td><button onclick="delItem('${k}')">❌</button></td>
 </tr>`;
   }
   total.innerText=rupiah(t);
   calcChange();
 }
 
-function del(k){delete cart[k];renderCart();}
+function delItem(k){delete cart[k];renderCart();}
 
 function setPayment(p){
   payment=p;
@@ -237,8 +170,19 @@ function finish(){
   if(paid.value<getTotal())return warn.innerText="Uang bayar tidak mencukupi";
   if(getTotal()==0)return;
 
+  let items=[];
+  for(let k in cart){
+    items.push({
+      name:k,
+      qty:cart[k].qty,
+      price:cart[k].price,
+      subtotal:cart[k].price*cart[k].qty
+    });
+  }
+
   history.push({
     time:new Date().toLocaleString("id-ID"),
+    items:items,
     total:getTotal(),
     paid:+paid.value,
     change:paid.value-getTotal(),
@@ -246,6 +190,7 @@ function finish(){
   });
 
   localStorage.setItem("history",JSON.stringify(history));
+
   cart={};paid.value="";payment="";
   btnCash.classList.remove("active");
   btnQris.classList.remove("active");
@@ -254,16 +199,20 @@ function finish(){
 }
 
 function renderHistory(){
-  history.innerHTML="";
-  history.forEach(h=>{
-    history.innerHTML+=`
-<tr>
-<td>${h.time}</td>
-<td>${rupiah(h.total)}</td>
-<td>${rupiah(h.paid)}</td>
-<td>${rupiah(h.change)}</td>
-<td>${h.pay}</td>
-</tr>`;
+  historyEl.innerHTML="";
+  history.forEach((h,i)=>{
+    let detail="";
+    h.items.forEach(it=>{
+      detail+=`• ${it.name} x${it.qty} = ${rupiah(it.subtotal)}<br>`;
+    });
+    historyEl.innerHTML+=`
+<div class="detail">
+<b>${i+1}. ${h.time}</b><br>
+${detail}
+<hr>
+Total: <b>${rupiah(h.total)}</b><br>
+Bayar: ${rupiah(h.paid)} | Kembali: ${rupiah(h.change)} | ${h.pay}
+</div><br>`;
   });
 }
 renderHistory();
@@ -271,11 +220,16 @@ renderHistory();
 function saveFile(){
   let txt="LAPORAN NASI KUNING 51\n\n";
   let omzet=0;
-  history.forEach(h=>{
-    txt+=`${h.time} | Total:${h.total} | Bayar:${h.paid} | Kembali:${h.change} | ${h.pay}\n`;
+  history.forEach((h,i)=>{
+    txt+=`${i+1}. ${h.time}\n`;
+    h.items.forEach(it=>{
+      txt+=`   - ${it.name} x${it.qty} = ${it.subtotal}\n`;
+    });
+    txt+=`   Total: ${h.total}\n`;
+    txt+=`   Bayar: ${h.paid} | Kembali: ${h.change} | ${h.pay}\n\n`;
     omzet+=h.total;
   });
-  txt+=`\nTOTAL TRANSAKSI: ${history.length}\nTOTAL OMZET: ${omzet}`;
+  txt+=`TOTAL TRANSAKSI: ${history.length}\nTOTAL OMZET: ${omzet}`;
   download(txt);
 }
 
