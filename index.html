@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Kasir Nasi Kuning 51</title>
 
 <style>
@@ -12,7 +13,7 @@ body{margin:0;height:100vh;overflow:hidden;background:#f2f2f2}
 /* HEADER */
 header{
   background:#ff9800;
-  color:#fff;
+  color:white;
   text-align:center;
   padding:10px;
   font-weight:bold;
@@ -25,6 +26,13 @@ header{
   padding:10px;
 }
 
+/* BUTTON FEEL */
+button{
+  transition:.15s;
+  -webkit-tap-highlight-color:transparent;
+}
+button:active{transform:scale(.96)}
+
 /* MENU */
 .menu{
   display:grid;
@@ -33,11 +41,12 @@ header{
 }
 .menu button{
   padding:12px;
-  background:#fff;
+  background:linear-gradient(145deg,#ffffff,#e6e6e6);
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   font-weight:bold;
-  box-shadow:0 1px 4px rgba(0,0,0,.2);
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+  font-size:14px;
 }
 
 /* CART */
@@ -45,7 +54,7 @@ header{
   background:#fff;
   margin-top:10px;
   padding:8px;
-  border-radius:8px;
+  border-radius:10px;
 }
 .cart-item{
   display:flex;
@@ -55,10 +64,10 @@ header{
   margin-bottom:4px;
 }
 .cart-item button{
-  background:red;
-  color:#fff;
+  background:#f44336;
+  color:white;
   border:none;
-  border-radius:4px;
+  border-radius:5px;
   padding:2px 6px;
 }
 
@@ -67,23 +76,25 @@ header{
   background:#fff;
   margin-top:10px;
   padding:8px;
-  border-radius:8px;
+  border-radius:10px;
 }
 .payment button{
   padding:10px;
   margin:4px;
   border:none;
-  border-radius:6px;
+  border-radius:8px;
+  font-weight:bold;
+  min-width:90px;
 }
-.active{background:#4caf50;color:#fff}
+.active{
+  background:linear-gradient(145deg,#4caf50,#2e7d32)!important;
+  color:white;
+}
 
 /* NOMINAL */
 .nominal button{
-  padding:8px;
-  margin:4px;
-  border:none;
-  border-radius:6px;
-  background:#ddd;
+  background:linear-gradient(145deg,#eeeeee,#d6d6d6);
+  font-weight:bold;
 }
 
 /* HISTORY */
@@ -91,7 +102,7 @@ header{
   background:#fff;
   margin-top:10px;
   padding:8px;
-  border-radius:8px;
+  border-radius:10px;
   font-size:12px;
 }
 
@@ -109,11 +120,12 @@ header{
   width:100%;
   padding:14px;
   font-size:16px;
-  background:#4caf50;
-  color:#fff;
+  background:linear-gradient(145deg,#4caf50,#2e7d32);
+  color:white;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   font-weight:bold;
+  letter-spacing:.5px;
 }
 </style>
 </head>
@@ -124,17 +136,30 @@ header{
 
 <div class="main">
 
+<!-- MENU -->
 <div class="menu" id="menu"></div>
 
+<!-- CART -->
 <div class="cart" id="cart"></div>
 
+<!-- PAYMENT -->
 <div class="payment">
 <b>Metode Pembayaran</b><br>
 <button id="cashBtn" onclick="setPay('CASH')">CASH</button>
 <button id="qrisBtn" onclick="setPay('QRIS')">QRIS</button>
 
 <br><br>
-<input id="paid" type="number" placeholder="Uang Bayar" style="width:100%;padding:8px" oninput="calc()">
+<div style="display:flex;gap:6px">
+  <input id="paid" type="number" placeholder="Uang Bayar"
+    inputmode="numeric"
+    style="flex:1;padding:10px;font-size:16px"
+    oninput="calc()">
+  <button onclick="clearPay()"
+    style="background:linear-gradient(145deg,#f44336,#d32f2f);
+           color:white;font-weight:bold;border:none;border-radius:8px">
+    CLEAR
+  </button>
+</div>
 
 <div class="nominal">
 <button onclick="addPay(5000)">5K</button>
@@ -149,6 +174,7 @@ header{
 <b>Kembalian:</b> <span id="change">0</span>
 </div>
 
+<!-- HISTORY -->
 <div class="history">
 <b>Histori Transaksi</b>
 <div id="history"></div>
@@ -179,7 +205,7 @@ const menus=[
 
 let cart=JSON.parse(localStorage.getItem('cart'))||{};
 let history=JSON.parse(localStorage.getItem('history'))||[];
-let payMethod='';
+let payMethod=localStorage.getItem('payMethod')||'';
 
 const menuDiv=document.getElementById('menu');
 menus.forEach(m=>{
@@ -218,9 +244,12 @@ function render(){
 }
 function setPay(p){
   payMethod=p;
+  localStorage.setItem('payMethod', p);
+
   cashBtn.classList.remove('active');
   qrisBtn.classList.remove('active');
-  if(p==='CASH'){cashBtn.classList.add('active');}
+
+  if(p==='CASH'){cashBtn.classList.add('active')}
   if(p==='QRIS'){
     qrisBtn.classList.add('active');
     paid.value=total();
@@ -231,10 +260,8 @@ function addPay(v){
   paid.value=(+paid.value||0)+v;
   calc();
 }
-function pas(){
-  paid.value=total();
-  calc();
-}
+function pas(){paid.value=total();calc()}
+function clearPay(){paid.value='';calc()}
 function calc(){
   const ch=(+paid.value||0)-total();
   document.getElementById('change').innerText=ch>0?ch:0;
@@ -254,13 +281,26 @@ function finish(){
   });
 
   cart={}; paid.value=''; payMethod='';
+  localStorage.removeItem('payMethod');
+
   save(); render(); renderHistory();
 }
 function renderHistory(){
   const h=document.getElementById('history');
   h.innerHTML='';
   history.forEach((x,i)=>{
-    h.innerHTML+=`<div>#${i+1} ${x.time} | ${x.metode} | ${x.total}</div>`;
+    let detail='';
+    for(let k in x.items){
+      detail += `${k} x${x.items[k]} | `;
+    }
+    h.innerHTML+=`
+    <div style="margin-bottom:6px;">
+      <b>#${i+1}</b> ${x.time} <br>
+      <span>${detail}</span><br>
+      <span>Total: ${x.total} | Bayar: ${x.bayar} | Kembali: ${x.kembalian} | Metode: ${x.metode}</span>
+    </div>
+    <hr>
+    `;
   });
 }
 function save(){
@@ -282,12 +322,14 @@ function saveHistory(){
 }
 function tutupKasir(){
   if(history.length===0) return alert('Belum ada transaksi');
+
   let omzet=0,cash=0,qris=0;
   history.forEach(h=>{
     omzet+=h.total;
     if(h.metode==='CASH') cash+=h.total;
     if(h.metode==='QRIS') qris+=h.total;
   });
+
   let text='LAPORAN TUTUP KASIR\nKasir: NASI KUNING 51\n';
   text+='Waktu: '+new Date().toLocaleString()+'\n\n';
   history.forEach((h,i)=>{
@@ -296,6 +338,7 @@ function tutupKasir(){
     text+=`Total:${h.total} Bayar:${h.bayar} Kembalian:${h.kembalian} (${h.metode})\n\n`;
   });
   text+=`TOTAL TRANSAKSI:${history.length}\nOMZET:${omzet}\nCASH:${cash}\nQRIS:${qris}`;
+
   const blob=new Blob([text],{type:'text/plain'});
   const a=document.createElement('a');
   const now=new Date();
@@ -306,9 +349,12 @@ function tutupKasir(){
   history=[]; cart={};
   localStorage.removeItem('history');
   localStorage.removeItem('cart');
+  localStorage.removeItem('payMethod');
+
   render(); renderHistory();
   alert('Kasir ditutup & data di-reset');
 }
+
 render(); renderHistory();
 </script>
 
