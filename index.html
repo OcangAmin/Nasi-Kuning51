@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kasir Nasi Kuning 51</title>
+<title>Bucek Nasi Kuning 51</title>
 
 <style>
 body{
@@ -16,23 +16,40 @@ h2,h3{margin:6px 0}
 .box{
   background:#fff;
   padding:12px;
-  border-radius:8px;
-  margin-bottom:10px;
+  border-radius:10px;
+  margin-bottom:12px;
 }
 button{
-  padding:8px;
+  padding:10px;
   border:none;
-  border-radius:6px;
-  margin:3px;
+  border-radius:8px;
   cursor:pointer;
+  font-size:14px;
 }
-.menu-btn{background:#ffc107}
-.hapus{background:#dc3545;color:#fff}
-.simpan{background:#28a745;color:#fff;width:100%;margin-top:10px}
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+.menu-btn{
+  background:#ffc107;
+  font-weight:bold;
+}
+.hapus{
+  background:#dc3545;
+  color:#fff;
+}
+.simpan{
+  background:#28a745;
+  color:#fff;
+  width:100%;
+  margin-top:10px;
+}
 input,select{
   width:100%;
-  padding:7px;
-  margin:4px 0;
+  padding:8px;
+  margin:6px 0;
+  font-size:16px;
 }
 table{
   width:100%;
@@ -44,10 +61,22 @@ td,th{
   text-align:center;
 }
 .hidden{display:none}
+
+.nominal-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:8px;
+}
+.nominal-btn{
+  background:#0d6efd;
+  color:#fff;
+  font-weight:bold;
+}
 .summary{
   background:#e9ecef;
   padding:8px;
-  border-radius:6px;
+  border-radius:8px;
 }
 </style>
 </head>
@@ -64,11 +93,11 @@ td,th{
 <!-- KASIR -->
 <div id="kasirBox" class="hidden">
 
-<h2>🍛 Kasir Nasi Kuning 51</h2>
+<h2>🍛 Bucek Nasi Kuning 51</h2>
 
 <div class="box">
 <h3>Menu</h3>
-<div id="menu"></div>
+<div id="menu" class="menu-grid"></div>
 </div>
 
 <div class="box">
@@ -76,6 +105,7 @@ td,th{
 <table id="tabel">
 <tr><th>Menu</th><th>Qty</th><th>Subtotal</th><th></th></tr>
 </table>
+
 <h3>Total: Rp <span id="total">0</span></h3>
 
 <select id="metode" onchange="ubahMetode()">
@@ -85,11 +115,21 @@ td,th{
 </select>
 
 <input type="number" id="bayar" placeholder="Uang dibayar" oninput="hitungKembali()">
+
+<div class="nominal-grid">
+  <button class="nominal-btn" onclick="setBayar(5000)">5.000</button>
+  <button class="nominal-btn" onclick="setBayar(10000)">10.000</button>
+  <button class="nominal-btn" onclick="setBayar(20000)">20.000</button>
+  <button class="nominal-btn" onclick="setBayar(50000)">50.000</button>
+  <button class="nominal-btn" onclick="setBayar(100000)">100.000</button>
+  <button class="nominal-btn" onclick="uangPas()">UANG PAS</button>
+</div>
+
 <h3>Kembalian: Rp <span id="kembali">0</span></h3>
 </div>
 
 <div class="box">
-<h3>📜 Histori Penjualan (Sementara)</h3>
+<h3>📜 Histori Penjualan</h3>
 <div id="histori"></div>
 <button class="simpan" onclick="simpanHistori()">💾 Simpan Histori ke File</button>
 </div>
@@ -115,25 +155,24 @@ let cart=[];
 let histori=[];
 
 function simpanKasAwal(){
-  let kas=document.getElementById("kasAwal").value;
-  if(!kas) return alert("Isi kas awal!");
+  let kas=kasAwal.value;
+  if(!kas)return alert("Isi kas awal!");
   localStorage.setItem("kasAwal",kas);
-  document.getElementById("kasAwalBox").classList.add("hidden");
-  document.getElementById("kasirBox").classList.remove("hidden");
+  kasAwalBox.classList.add("hidden");
+  kasirBox.classList.remove("hidden");
 }
 
 menuData.forEach(m=>{
   let b=document.createElement("button");
   b.className="menu-btn";
-  b.innerText=m[0]+" Rp"+m[1];
+  b.innerHTML=`${m[0]}<br>Rp${m[1]}`;
   b.onclick=()=>tambah(m[0],m[1]);
   menu.appendChild(b);
 });
 
 function tambah(n,h){
   let i=cart.find(c=>c.nama==n);
-  if(i)i.qty++;
-  else cart.push({nama:n,harga:h,qty:1});
+  i?i.qty++:cart.push({nama:n,harga:h,qty:1});
   render();
 }
 
@@ -148,7 +187,8 @@ function render(){
   cart.forEach(c=>{
     let s=c.harga*c.qty;
     t+=s;
-    tabel.innerHTML+=`<tr>
+    tabel.innerHTML+=`
+    <tr>
       <td>${c.nama}</td>
       <td>${c.qty}</td>
       <td>${s}</td>
@@ -162,7 +202,18 @@ function render(){
 function ubahMetode(){
   if(metode.value=="QRIS"){
     bayar.value=total.innerText;
+    hitungKembali();
   }
+}
+
+function setBayar(n){
+  bayar.value=n;
+  hitungKembali();
+}
+
+function uangPas(){
+  bayar.value=total.innerText;
+  hitungKembali();
 }
 
 function hitungKembali(){
@@ -184,8 +235,7 @@ function simpanHistori(){
 }
 
 function tampilHistori(){
-  historiBox=histori.map(h=>`<div>${h.waktu} | Rp${h.total}</div>`).join("");
-  histori.innerHTML=historiBox;
+  histori.innerHTML=histori.map(h=>`<div>${h.waktu} | Rp${h.total}</div>`).join("");
   hitungRekap();
 }
 
