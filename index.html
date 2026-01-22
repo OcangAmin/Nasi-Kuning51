@@ -11,6 +11,7 @@
     --danger:#ea4335;
     --gray:#777;
     --bg:#f2f2f2;
+    --btn-height:54px;
   }
   *{ box-sizing:border-box; }
   body{
@@ -71,35 +72,33 @@
     font-weight:700;
   }
 
-  /* MENU GRID */
-  .btn-grid{
-    display:grid;
-    grid-template-columns: repeat(2, 1fr);
+  /* MENU LIST FULL WIDTH */
+  .menu-list{
+    display:flex;
+    flex-direction:column;
     gap:8px;
   }
-  .btn{
-    padding:12px;
+  .menu-btn{
+    padding:14px;
     border:none;
-    border-radius:8px;
+    border-radius:10px;
     font-weight:700;
-    font-size:14px;
+    font-size:16px;
     cursor:pointer;
     background:var(--primary);
     color:#fff;
     text-align:left;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    height: var(--btn-height);
   }
-  .btn.secondary{ background:var(--secondary); }
-  .btn.danger{ background:var(--danger); }
-  .btn.gray{ background:var(--gray); }
-  .btn.small-btn{
-    padding:10px;
-    font-size:13px;
-    border-radius:8px;
-  }
+  .menu-btn.secondary{ background:var(--secondary); }
+  .menu-btn.danger{ background:var(--danger); }
 
   /* CART */
   .cart{
-    max-height: 220px;
+    max-height: 240px;
     overflow:auto;
   }
   .cart-item{
@@ -120,10 +119,11 @@
     gap:4px;
   }
   .qty button{
-    padding:4px 8px;
+    padding:6px 10px;
     border:none;
     border-radius:6px;
     cursor:pointer;
+    font-weight:700;
   }
 
   /* FOOTER FIXED */
@@ -146,7 +146,7 @@
     padding:12px;
     border-radius:10px;
     border:1px solid #ccc;
-    font-size:16px; /* penting agar iOS tidak zoom */
+    font-size:16px;
   }
   .footer .summary{
     display:flex;
@@ -155,12 +155,24 @@
     font-weight:700;
   }
   .footer .btn-grid{
+    display:grid;
     grid-template-columns: repeat(3, 1fr);
+    gap:8px;
     margin-top:8px;
   }
   .footer .btn{
     padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+    background:var(--primary);
+    color:#fff;
+    height: var(--btn-height);
   }
+  .footer .btn.secondary{ background:var(--secondary); }
+  .footer .btn.danger{ background:var(--danger); }
+  .footer .btn.gray{ background:#ddd; color:#000; }
 
   .history{
     max-height: 350px;
@@ -191,7 +203,7 @@
 
   <div class="header">
     <div class="title">POS Kasir Nasi Kuning 51</div>
-    <div class="subtitle">Tab Transaksi & History (fit HP)</div>
+    <div class="subtitle">Halilintar Bucek</div>
   </div>
 
   <!-- TABS -->
@@ -203,27 +215,28 @@
   <!-- TAB TRANSAKSI -->
   <div id="contentTransaksi">
 
-    <!-- MENU -->
+    <!-- MENU UTAMA -->
     <div class="section">
       <h3>Menu Utama</h3>
-      <div class="btn-grid">
-        <button class="btn" onclick="addItem('Nasi kuning ayam',15000)">Nasi kuning ayam - 15.000</button>
-        <button class="btn" onclick="addItem('Nasi kuning ikan',13000)">Nasi kuning ikan - 13.000</button>
-        <button class="btn" onclick="addItem('Nasi kuning telur',10000)">Nasi kuning telur - 10.000</button>
-        <button class="btn" onclick="addItem('Nasi kuning ayam telur',23000)">Nasi kuning ayam telur - 23.000</button>
-        <button class="btn" onclick="addItem('Nasi kuning ikan telur',20000)">Nasi kuning ikan telur - 20.000</button>
+      <div class="menu-list">
+        <button class="menu-btn" onclick="addItem('Nasi kuning ayam',15000)">Nasi kuning ayam <span>15.000</span></button>
+        <button class="menu-btn" onclick="addItem('Nasi kuning ikan',13000)">Nasi kuning ikan <span>13.000</span></button>
+        <button class="menu-btn" onclick="addItem('Nasi kuning telur',10000)">Nasi kuning telur <span>10.000</span></button>
+        <button class="menu-btn" onclick="addItem('Nasi kuning ayam telur',23000)">Nasi kuning ayam telur <span>23.000</span></button>
+        <button class="menu-btn" onclick="addItem('Nasi kuning ikan telur',20000)">Nasi kuning ikan telur <span>20.000</span></button>
       </div>
     </div>
 
+    <!-- MENU ADDITIONAL -->
     <div class="section">
       <h3>Menu Additional</h3>
-      <div class="btn-grid">
-        <button class="btn secondary" onclick="addItem('Ikan',5000)">Ikan - 5.000</button>
-        <button class="btn secondary" onclick="addItem('Bakwan',2000)">Bakwan - 2.000</button>
-        <button class="btn secondary" onclick="addItem('Nasi',5000)">Nasi - 5.000</button>
-        <button class="btn secondary" onclick="addItem('Telur',5000)">Telur - 5.000</button>
-        <button class="btn secondary" onclick="addItem('Ayam',5000)">Ayam - 5.000</button>
-        <button class="btn secondary" onclick="addItem('Air mineral',5000)">Air mineral - 5.000</button>
+      <div class="menu-list">
+        <button class="menu-btn secondary" onclick="addItem('Ikan',5000)">Ikan <span>5.000</span></button>
+        <button class="menu-btn secondary" onclick="addItem('Bakwan',2000)">Bakwan <span>2.000</span></button>
+        <button class="menu-btn secondary" onclick="addItem('Nasi',5000)">Nasi <span>5.000</span></button>
+        <button class="menu-btn secondary" onclick="addItem('Telur',5000)">Telur <span>5.000</span></button>
+        <button class="menu-btn secondary" onclick="addItem('Ayam',5000)">Ayam <span>5.000</span></button>
+        <button class="menu-btn secondary" onclick="addItem('Air mineral',5000)">Air mineral <span>5.000</span></button>
       </div>
     </div>
 
@@ -270,12 +283,12 @@
   </div>
 
   <div class="btn-grid">
-    <button class="btn small-btn" onclick="addPaid(5000)">5K</button>
-    <button class="btn small-btn" onclick="addPaid(10000)">10K</button>
-    <button class="btn small-btn" onclick="addPaid(20000)">20K</button>
-    <button class="btn small-btn" onclick="addPaid(50000)">50K</button>
-    <button class="btn small-btn" onclick="addPaid(100000)">100K</button>
-    <button class="btn small-btn" onclick="setPaidExact()">Uang Pas</button>
+    <button class="btn gray" onclick="addPaid(5000)">5K</button>
+    <button class="btn gray" onclick="addPaid(10000)">10K</button>
+    <button class="btn gray" onclick="addPaid(20000)">20K</button>
+    <button class="btn gray" onclick="addPaid(50000)">50K</button>
+    <button class="btn gray" onclick="addPaid(100000)">100K</button>
+    <button class="btn gray" onclick="setPaidExact()">Uang Pas</button>
   </div>
 
   <div class="summary">
@@ -372,7 +385,7 @@
           </div>
           <div>
             <span>${item.qty * item.price}</span>
-            <button class="btn small-btn danger" onclick="removeItem('${item.name}')">X</button>
+            <button class="btn gray" onclick="removeItem('${item.name}')">X</button>
           </div>
         </div>
       `;
@@ -452,7 +465,6 @@
       return;
     }
 
-    // jika valid, transaksi disimpan ke history
     let now = new Date();
     let timestamp = now.toLocaleString();
 
