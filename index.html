@@ -6,14 +6,14 @@
 <title>POS Kasir Nasi Kuning 51</title>
 <style>
   :root{
-    --bg:#0f172a;
-    --card:#111b2b;
-    --text:#e5e7eb;
-    --muted:#a3aabf;
-    --accent:#38bdf8;
-    --danger:#fb7185;
-    --success:#34d399;
-    --border:rgba(229,231,235,0.12);
+    --bg:#F4F6F7;
+    --card:#FFFFFF;
+    --text:#1F2A3A;
+    --muted:#6B7785;
+    --accent:#1F7A8C;
+    --danger:#D9534F;
+    --success:#2ECC71;
+    --border:rgba(31,42,58,0.12);
   }
   *{box-sizing:border-box;}
   body{
@@ -48,7 +48,7 @@
   }
   .tab.active{
     background:var(--accent);
-    border-color:rgba(56,189,248,0.7);
+    border-color:rgba(31,122,140,0.7);
     color:#0b1220;
   }
   .section{
@@ -67,8 +67,8 @@
     margin-top:10px;
   }
   .menu-btn{
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.12);
+    background:rgba(31,42,58,0.06);
+    border:1px solid rgba(31,42,58,0.12);
     border-radius:14px;
     padding:12px;
     cursor:pointer;
@@ -84,14 +84,14 @@
     color:var(--muted);
     font-weight:600;
   }
-  .menu-btn:hover{background:rgba(255,255,255,0.10);}
+  .menu-btn:hover{background:rgba(31,42,58,0.10);}
   .cart-item{
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
     margin-bottom:10px;
     padding-bottom:10px;
-    border-bottom:1px solid rgba(255,255,255,0.12);
+    border-bottom:1px solid rgba(31,42,58,0.12);
   }
   .cart-left{
     width:70%;
@@ -110,12 +110,12 @@
     padding:6px 10px;
     border-radius:12px;
     border:1px solid var(--border);
-    background:rgba(255,255,255,0.06);
+    background:rgba(31,42,58,0.06);
     cursor:pointer;
     font-weight:800;
     font-size:13px;
   }
-  .qty-btn:hover{background:rgba(255,255,255,0.10);}
+  .qty-btn:hover{background:rgba(31,42,58,0.10);}
   .cart-right{
     width:30%;
     text-align:right;
@@ -127,7 +127,7 @@
     justify-content:space-between;
     font-weight:900;
     padding-top:10px;
-    border-top:1px solid rgba(255,255,255,0.12);
+    border-top:1px solid rgba(31,42,58,0.12);
     margin-top:10px;
     font-size:14px;
   }
@@ -141,14 +141,14 @@
     padding:12px;
     border-radius:14px;
     border:1px solid var(--border);
-    background:rgba(255,255,255,0.06);
+    background:rgba(31,42,58,0.06);
     cursor:pointer;
     font-weight:900;
     font-size:14px;
   }
   .pay-btn.active{
     background:var(--accent);
-    border-color:rgba(56,189,248,0.7);
+    border-color:rgba(31,122,140,0.7);
     color:#0b1220;
   }
   .input-group{
@@ -162,7 +162,7 @@
     padding:12px;
     border-radius:14px;
     border:1px solid var(--border);
-    background:rgba(255,255,255,0.06);
+    background:rgba(31,42,58,0.06);
     color:var(--text);
     font-weight:900;
     font-size:16px;
@@ -171,20 +171,20 @@
     padding:12px;
     border-radius:14px;
     border:1px solid var(--border);
-    background:rgba(255,255,255,0.06);
+    background:rgba(31,42,58,0.06);
     cursor:pointer;
     font-weight:900;
     font-size:13px;
   }
-  .small-btn:hover{background:rgba(255,255,255,0.10);}
+  .small-btn:hover{background:rgba(31,42,58,0.10);}
   .footer-fixed{
     position:fixed;
     bottom:0;
     left:0;
     right:0;
     padding:10px;
-    background:rgba(15,23,42,0.95);
-    border-top:1px solid rgba(255,255,255,0.12);
+    background:rgba(244,246,247,0.95);
+    border-top:1px solid rgba(31,42,58,0.12);
     z-index:999;
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -215,7 +215,7 @@
     margin-top:10px;
   }
   .hist-item{
-    border:1px solid rgba(255,255,255,0.12);
+    border:1px solid rgba(31,42,58,0.12);
     border-radius:14px;
     padding:10px;
     margin-bottom:10px;
@@ -243,7 +243,7 @@
     display:flex;
     justify-content:center;
     align-items:center;
-    z-index:9999;
+    z-index:999;
   }
   .popup{
     width:90%;
@@ -256,30 +256,6 @@
   .popup h3{
     margin-top:0;
     margin-bottom:8px;
-  }
-  .popup p{
-    margin-top:0;
-    margin-bottom:12px;
-    color:var(--muted);
-  }
-  .popup .btn{
-    width:100%;
-    margin-top:8px;
-    padding:12px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:rgba(255,255,255,0.06);
-    color:var(--text);
-    font-weight:900;
-    cursor:pointer;
-  }
-  .popup .btn-danger{
-    background:var(--danger);
-    color:#0b1220;
-  }
-  .popup .btn-success{
-    background:var(--success);
-    color:#0b1220;
   }
 </style>
 </head>
@@ -304,8 +280,8 @@
 
       <!-- Tabs menu utama/additional -->
       <div style="display:flex;gap:8px;margin-top:10px;">
-        <button class="pay-btn active" id="tabMenuUtama" onclick="setMenuTab('utama')">Utama</button>
-        <button class="pay-btn" id="tabMenuAdd" onclick="setMenuTab('additional')">Tambahan</button>
+        <button class="pay-btn active" id="tabMenuUtama" onclick="setMenuTab('utama')">UTAMA</button>
+        <button class="pay-btn" id="tabMenuAdd" onclick="setMenuTab('additional')">TAMBAHAN</button>
       </div>
 
       <div class="grid" id="menuGrid"></div>
@@ -329,7 +305,7 @@
       <div style="font-weight:900;">Pembayaran</div>
 
       <div class="payment-row">
-        <button class="pay-btn" id="btnCash" onclick="setPayment('cash')">Cash</button>
+        <button class="pay-btn" id="btnCash" onclick="setPayment('cash')">CASH</button>
         <button class="pay-btn" id="btnQris" onclick="setPayment('qris')">QRIS</button>
       </div>
 
@@ -343,7 +319,7 @@
       </div>
 
       <div style="display:flex;gap:8px;margin-top:10px;">
-        <button class="small-btn" onclick="setExact()">Uang Pas</button>
+        <button class="small-btn" onclick="setExact()">UANG PAS</button>
         <button class="small-btn" onclick="clearUangBayar()">Clear</button>
       </div>
 
@@ -371,19 +347,6 @@
   </div>
 </div>
 
-<!-- QRIS POPUP -->
-<div id="qrisPopup" class="hide">
-  <div class="popup-overlay">
-    <div class="popup">
-      <h3>Konfirmasi QRIS</h3>
-      <p>Apakah pembayaran QRIS sudah berhasil?</p>
-      <button class="btn btn-success" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
-      <button class="btn btn-danger" onclick="qrisConfirmFail()">QRIS GAGAL</button>
-      <button class="btn" onclick="closeQrisPopup()">BATAL</button>
-    </div>
-  </div>
-</div>
-
 <div class="footer-fixed">
   <div class="footer-inner">
     <button class="btn-wide btn-danger" onclick="resetCart()">Reset Transaksi</button>
@@ -391,26 +354,38 @@
   </div>
 </div>
 
+<!-- QRIS Popup -->
+<div id="qrisPopup" class="hide">
+  <div class="popup-overlay">
+    <div class="popup">
+      <h3>Konfirmasi QRIS</h3>
+      <p>Apakah pembayaran QRIS sudah berhasil?</p>
+      <button class="btn-wide" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
+      <button class="btn-wide btn-danger" onclick="qrisConfirmFail()">QRIS GAGAL</button>
+      <button class="btn-wide" onclick="closeQrisPopup()">BATAL</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const menus = [
-    {name:"Nasi kuning ayam", price:15000, type:"utama"},
-    {name:"Nasi kuning ikan", price:13000, type:"utama"},
-    {name:"Nasi kuning telur", price:10000, type:"utama"},
-    {name:"Nasi kuning ayam telur", price:23000, type:"utama"},
-    {name:"Nasi kuning ikan telur", price:20000, type:"utama"},
-    {name:"Ikan", price:5000, type:"additional"},
-    {name:"Bakwan", price:2000, type:"additional"},
-    {name:"Nasi", price:5000, type:"additional"},
-    {name:"Telur", price:5000, type:"additional"},
-    {name:"Ayam", price:5000, type:"additional"},
-    {name:"Air mineral", price:5000, type:"additional"},
+    {name:"NASI KUNING AYAM", price:15000, type:"utama"},
+    {name:"NASI KUNING IKAN", price:13000, type:"utama"},
+    {name:"NASI KUNING TELUR", price:10000, type:"utama"},
+    {name:"NASI KUNING AYAM TELUR", price:23000, type:"utama"},
+    {name:"NASI KUNING IKAN TELUR", price:20000, type:"utama"},
+    {name:"IKAN", price:5000, type:"additional"},
+    {name:"BAKWAN", price:2000, type:"additional"},
+    {name:"NASI", price:5000, type:"additional"},
+    {name:"TELUR", price:5000, type:"additional"},
+    {name:"AYAM", price:5000, type:"additional"},
+    {name:"AIR MINERAL", price:5000, type:"additional"},
   ];
 
   let cart = [];
   let history = [];
   let paymentMethod = "";
   let currentMenuTab = "utama";
-  let qrisConfirmed = false;
 
   function saveToStorage(){
     localStorage.setItem("bucek_cart", JSON.stringify(cart));
@@ -532,7 +507,6 @@
 
   function setPayment(method){
     paymentMethod = method;
-    qrisConfirmed = false;
     document.getElementById("btnCash").classList.remove("active");
     document.getElementById("btnQris").classList.remove("active");
     if(method === "cash") document.getElementById("btnCash").classList.add("active");
@@ -574,7 +548,6 @@
       renderCart();
       clearUangBayar();
       paymentMethod = "";
-      qrisConfirmed = false;
       document.getElementById("btnCash").classList.remove("active");
       document.getElementById("btnQris").classList.remove("active");
       saveToStorage();
@@ -598,8 +571,7 @@
       return;
     }
 
-    // Jika metode QRIS, wajib konfirmasi popup
-    if(paymentMethod === "qris" && !qrisConfirmed){
+    if(paymentMethod === "qris"){
       openQrisPopup();
       return;
     }
@@ -622,7 +594,6 @@
     renderCart();
     clearUangBayar();
     paymentMethod = "";
-    qrisConfirmed = false;
     document.getElementById("btnCash").classList.remove("active");
     document.getElementById("btnQris").classList.remove("active");
     alert("Transaksi berhasil disimpan.");
@@ -724,7 +695,7 @@
     alert("Tutup kasir selesai. History telah disimpan dan direset.");
   }
 
-  // QRIS Popup functions
+  // QRIS Popup
   function openQrisPopup(){
     document.getElementById("qrisPopup").classList.remove("hide");
   }
@@ -732,13 +703,39 @@
     document.getElementById("qrisPopup").classList.add("hide");
   }
   function qrisConfirmSuccess(){
-    qrisConfirmed = true;
     closeQrisPopup();
-    completeTransaction();
+    processQrisTransaction();
   }
   function qrisConfirmFail(){
     closeQrisPopup();
     alert("QRIS gagal. Silakan coba lagi.");
+  }
+
+  function processQrisTransaction(){
+    const total = Number(document.getElementById("totalHarga").innerText.replace(/,/g,'') || 0);
+    const bayar = Number(document.getElementById("uangBayar").value || 0);
+
+    const change = bayar - total;
+    const now = new Date();
+    const record = {
+      time: now.toLocaleString(),
+      items: cart,
+      total,
+      bayar,
+      change,
+      paymentMethod
+    };
+    history.push(record);
+    saveToStorage();
+
+    cart = [];
+    calculateTotal();
+    renderCart();
+    clearUangBayar();
+    paymentMethod = "";
+    document.getElementById("btnCash").classList.remove("active");
+    document.getElementById("btnQris").classList.remove("active");
+    alert("Transaksi QRIS berhasil disimpan.");
   }
 
   // init
