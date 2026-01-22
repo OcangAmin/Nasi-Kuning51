@@ -8,7 +8,485 @@
   :root{
     --bg:#0b1220;
     --card:#121d2f;
-    --text:#e6ecf5;
+    --text:#e6ecf5;<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Nasi Kuning 51</title>
+<style>
+  :root{
+    --bg:#F4F6F7;
+    --card:#FFFFFF;
+    --text:#1F2A3A;
+    --muted:#6B7785;
+    --border:#D6DDE5;
+    --primary:#1F7A8C;
+    --danger:#D9534F;
+    --success:#2ECC71;
+    --warning:#F39C12;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .container{
+    padding:12px;
+    max-width: 420px;
+    margin:auto;
+  }
+  .header{
+    text-align:center;
+    padding:10px 0;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:12px;
+  }
+  .row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    flex:1;
+    min-width:120px;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:var(--primary);
+    color:white;
+    font-weight:bold;
+    font-size:14px;
+    cursor:pointer;
+    text-align:center;
+    white-space:pre-line;
+  }
+  .btn:hover{ opacity:0.9; }
+  .btn-danger{ background:var(--danger); }
+  .btn-success{ background:var(--success); }
+  .btn-secondary{ background:#6B7785; }
+  .btn-warning{ background:var(--warning); }
+  .small{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .input{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#FFFFFF;
+    color:var(--text);
+    margin-top:8px;
+    margin-bottom:8px;
+  }
+  .cart-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px;
+    border-bottom:1px solid var(--border);
+  }
+  .cart-item:last-child{ border-bottom:none; }
+  .cart-left{
+    display:flex;
+    flex-direction:column;
+  }
+  .cart-right{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .badge{
+    padding:4px 8px;
+    border-radius:8px;
+    background:#EEF3F7;
+    border:1px solid var(--border);
+    font-size:12px;
+  }
+  .footer{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .hide{ display:none; }
+
+  /* QRIS Popup */
+  .popup-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.25);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+  }
+  .popup{
+    width:90%;
+    max-width:360px;
+    background:var(--card);
+    border-radius:14px;
+    padding:16px;
+    border:1px solid var(--border);
+  }
+  .popup h3{
+    margin-top:0;
+    margin-bottom:8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h2>NASI KUNING 51 - POS</h2>
+    <div class="small">Tampilan HP & fit di layar</div>
+  </div>
+
+  <!-- MENU UTAMA -->
+  <div class="card">
+    <div class="small">MENU UTAMA</div>
+    <div class="row" id="mainMenu"></div>
+  </div>
+
+  <!-- TAMBAHAN -->
+  <div class="card">
+    <div class="small">TAMBAHAN</div>
+    <div class="row" id="additionalMenu"></div>
+  </div>
+
+  <!-- CART -->
+  <div class="card">
+    <div class="small">PESANAN</div>
+    <div id="cartList"></div>
+    <div class="footer">
+      <div class="badge">Total: <span id="totalAmount">0</span></div>
+      <div class="badge">Item: <span id="totalItem">0</span></div>
+    </div>
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="card">
+    <div class="small">METODE PEMBAYARAN</div>
+    <div class="row">
+      <button class="btn" onclick="setPayment('cash')">CASH</button>
+      <button class="btn" onclick="setPayment('qris')">QRIS</button>
+    </div>
+
+    <input id="payInput" class="input" type="number" placeholder="UANG BAYAR" oninput="updateChange()">
+
+    <div class="row">
+      <button class="btn btn-secondary" onclick="setQuickPay(5000)">5.000</button>
+      <button class="btn btn-secondary" onclick="setQuickPay(10000)">10.000</button>
+      <button class="btn btn-secondary" onclick="setQuickPay(20000)">20.000</button>
+      <button class="btn btn-secondary" onclick="setQuickPay(50000)">50.000</button>
+      <button class="btn btn-secondary" onclick="setQuickPay(100000)">100.000</button>
+      <button class="btn btn-warning" onclick="setQuickPay(total)">UANG PAS</button>
+    </div>
+
+    <div class="footer">
+      <div class="badge">Kembalian: <span id="change">0</span></div>
+      <div class="badge">Metode: <span id="paymentMethodText">-</span></div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <button class="btn btn-success" onclick="completeTransaction()">SELESAIKAN TRANSAKSI</button>
+      <button class="btn btn-danger" onclick="resetTransaction()">RESET TRANSAKSI</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card">
+    <div class="small">RIWAYAT TRANSAKSI</div>
+    <div id="historyList"></div>
+    <div class="row" style="margin-top:10px;">
+      <button class="btn btn-success" onclick="saveHistory()">SIMPAN RIWAYAT</button>
+      <button class="btn btn-danger" onclick="resetHistory()">RESET RIWAYAT</button>
+      <button class="btn btn-secondary" onclick="closeCashier()">TUTUP KASIR</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- QRIS POPUP -->
+<div id="qrisPopup" class="hide">
+  <div class="popup-overlay">
+    <div class="popup">
+      <h3>Konfirmasi QRIS</h3>
+      <p>Apakah pembayaran QRIS sudah berhasil?</p>
+      <button class="btn" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
+      <button class="btn btn-danger" onclick="qrisConfirmFail()">QRIS GAGAL</button>
+      <button class="btn btn-secondary" onclick="closeQrisPopup()">BATAL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // DATA MENU (MENU UTAMA = NASI KUNING)
+  const mainMenuData = [
+    {name:"NASI KUNING AYAM", price:15000},
+    {name:"NASI KUNING IKAN", price:13000},
+    {name:"NASI KUNING TELUR", price:10000},
+    {name:"NASI KUNING AYAM TELUR", price:23000},
+    {name:"NASI KUNING IKAN TELUR", price:20000},
+  ];
+  const additionalMenuData = [
+    {name:"NASI", price:5000},
+    {name:"AYAM", price:5000},
+    {name:"TELUR", price:5000},
+    {name:"BAKWAN", price:2000},
+    {name:"IKAN", price:5000},
+    {name:"AIR MINERAL", price:5000},
+  ];
+
+  let cart = [];
+  let history = [];
+  let paymentMethod = "";
+  let total = 0;
+
+  // LOAD HISTORY FROM STORAGE
+  function loadData(){
+    const savedHistory = localStorage.getItem("nasi51_history");
+    if(savedHistory) history = JSON.parse(savedHistory);
+    renderHistory();
+  }
+
+  // RENDER MENU
+  function renderMenu(){
+    const mainMenu = document.getElementById("mainMenu");
+    const addMenu = document.getElementById("additionalMenu");
+    mainMenu.innerHTML="";
+    addMenu.innerHTML="";
+
+    mainMenuData.forEach(item=>{
+      const btn = document.createElement("button");
+      btn.className="btn";
+      btn.innerText = item.name + "\n" + formatRupiah(item.price);
+      btn.onclick = ()=>addToCart(item);
+      mainMenu.appendChild(btn);
+    });
+
+    additionalMenuData.forEach(item=>{
+      const btn = document.createElement("button");
+      btn.className="btn";
+      btn.innerText = item.name + "\n" + formatRupiah(item.price);
+      btn.onclick = ()=>addToCart(item);
+      addMenu.appendChild(btn);
+    });
+  }
+
+  // ADD TO CART
+  function addToCart(item){
+    const exist = cart.find(x=>x.name===item.name);
+    if(exist){
+      exist.qty++;
+    } else {
+      cart.push({name:item.name, price:item.price, qty:1});
+    }
+    renderCart();
+  }
+
+  function removeFromCart(name){
+    cart = cart.filter(x=>x.name!==name);
+    renderCart();
+  }
+
+  function renderCart(){
+    const cartList = document.getElementById("cartList");
+    cartList.innerHTML="";
+    total=0;
+    let items=0;
+
+    cart.forEach(item=>{
+      total += item.price * item.qty;
+      items += item.qty;
+
+      const div = document.createElement("div");
+      div.className="cart-item";
+      div.innerHTML = `
+        <div class="cart-left">
+          <div><b>${item.name}</b></div>
+          <div class="small">${formatRupiah(item.price)} x ${item.qty}</div>
+        </div>
+        <div class="cart-right">
+          <div class="badge">${formatRupiah(item.price*item.qty)}</div>
+          <button class="btn btn-danger" style="min-width:60px;" onclick="removeFromCart('${item.name}')">Hapus</button>
+        </div>
+      `;
+      cartList.appendChild(div);
+    });
+
+    document.getElementById("totalAmount").innerText = formatRupiah(total);
+    document.getElementById("totalItem").innerText = items;
+    updateChange();
+  }
+
+  function setPayment(method){
+    paymentMethod = method;
+    document.getElementById("paymentMethodText").innerText = method.toUpperCase();
+    if(method==="qris"){
+      document.getElementById("payInput").value = total;
+      updateChange();
+    }
+  }
+
+  function setQuickPay(value){
+    const payInput = document.getElementById("payInput");
+    if(value === total){
+      payInput.value = total;
+    } else {
+      payInput.value = (Number(payInput.value) || 0) + value;
+    }
+    updateChange();
+  }
+
+  function updateChange(){
+    const pay = Number(document.getElementById("payInput").value) || 0;
+    const change = pay - total;
+    document.getElementById("change").innerText = formatRupiah(change < 0 ? 0 : change);
+  }
+
+  // TRANSACTION
+  function completeTransaction(isQrisConfirmed=false){
+    if(cart.length===0){
+      alert("Belum ada pesanan!");
+      return;
+    }
+    if(!paymentMethod){
+      alert("Pilih metode pembayaran!");
+      return;
+    }
+
+    const pay = Number(document.getElementById("payInput").value) || 0;
+    const change = pay - total;
+
+    if(paymentMethod==="cash" && change < 0){
+      alert("Uang bayar kurang!");
+      return;
+    }
+
+    if(paymentMethod==="qris"){
+      if(!isQrisConfirmed){
+        openQrisPopup();
+        return;
+      }
+      if(pay < total){
+        alert("QRIS harus sesuai total!");
+        return;
+      }
+    }
+
+    const trx = {
+      time: new Date().toLocaleString(),
+      items: [...cart],
+      total: total,
+      pay: pay,
+      change: change < 0 ? 0 : change,
+      method: paymentMethod
+    };
+
+    history.unshift(trx);
+    localStorage.setItem("nasi51_history", JSON.stringify(history));
+
+    resetTransaction(false);
+    renderHistory();
+  }
+
+  function resetTransaction(showAlert=true){
+    cart=[];
+    paymentMethod="";
+    document.getElementById("paymentMethodText").innerText="-";
+    document.getElementById("payInput").value="";
+    document.getElementById("change").innerText="0";
+    renderCart();
+    if(showAlert) alert("Transaksi direset.");
+  }
+
+  // HISTORY
+  function renderHistory(){
+    const list = document.getElementById("historyList");
+    list.innerHTML="";
+    history.forEach((trx, idx)=>{
+      const div = document.createElement("div");
+      div.className="card";
+      div.style.marginBottom="8px";
+      div.innerHTML = `
+        <div><b>${trx.time}</b></div>
+        <div class="small">Metode: ${trx.method.toUpperCase()}</div>
+        <div class="small">Total: ${formatRupiah(trx.total)} | Bayar: ${formatRupiah(trx.pay)} | Kembali: ${formatRupiah(trx.change)}</div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function saveHistory(){
+    const data = JSON.stringify(history, null, 2);
+    const blob = new Blob([data], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `bucek_riwayat_${new Date().getTime()}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    alert("Riwayat tersimpan.");
+  }
+
+  function resetHistory(){
+    if(confirm("Reset riwayat transaksi?")){
+      history=[];
+      localStorage.removeItem("nasi51_history");
+      renderHistory();
+      alert("Riwayat berhasil direset.");
+    }
+  }
+
+  function closeCashier(){
+    if(confirm("Tutup kasir? (Riwayat akan tersimpan otomatis)")){
+      saveHistory();
+      history=[];
+      localStorage.removeItem("nasi51_history");
+      renderHistory();
+      alert("Kasir ditutup.");
+    }
+  }
+
+  // QRIS Popup
+  function openQrisPopup(){
+    document.getElementById("qrisPopup").classList.remove("hide");
+  }
+  function closeQrisPopup(){
+    document.getElementById("qrisPopup").classList.add("hide");
+  }
+  function qrisConfirmSuccess(){
+    closeQrisPopup();
+    completeTransaction(true);
+  }
+  function qrisConfirmFail(){
+    closeQrisPopup();
+    alert("QRIS gagal. Transaksi dibatalkan.");
+  }
+
+  // UTIL
+  function formatRupiah(num){
+    return new Intl.NumberFormat("id-ID").format(num);
+  }
+
+  // INIT
+  renderMenu();
+  loadData();
+  renderCart();
+</script>
+
+</body>
+</html>
     --muted:#aab2c3;
     --border:#223049;
     --primary:#1f7a8c;
