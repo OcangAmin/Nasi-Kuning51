@@ -155,8 +155,8 @@
     <div class="popup">
       <h3 style="color:var(--brand-maroon); margin-top:0">Konfirmasi QRIS</h3>
       <p>Apakah pembayaran QRIS sudah berhasil?</p>
-      <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="qrisConfirmSuccess()">SUDAH BAYAR</button>
-      <button class="btn-main-action" style="width:100%; margin:5px 0; background:var(--brand-gold)" onclick="qrisConfirmFail()">BELUM BAYAR</button>
+      <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
+      <button class="btn-main-action" style="width:100%; margin:5px 0; background:var(--brand-gold)" onclick="qrisConfirmFail()">QRIS GAGAL</button>
       <button class="btn-reset-action" style="width:100%; margin:5px 0" onclick="closeQrisPopup()">BATAL</button>
     </div>
   </div>
@@ -273,7 +273,7 @@
   function setExact(){ document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
   function clearUangBayar(){ document.getElementById("uangBayar").value = ""; calculateChange(); }
 
-  // LOGIKA VALIDASI ASLI (DIPISAH)
+  // LOGIKA VALIDASI ASLI (DIPISAH SATU PER SATU)
   function completeTransaction(){
     const total = getNum("totalHarga");
     const bayar = getNum("uangBayar");
