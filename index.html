@@ -1,204 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>POS Kasir Nasi Kuning 51</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasir Digital</title>
+
 <style>
-/* === CSS TIDAK DIUBAH === */
-:root{
-  --bg:#F4F6F7;
-  --card:#FFFFFF;
-  --text:#1F2A3A;
-  --muted:#6B7785;
-  --accent:#1F7A8C;
-  --danger:#D9534F;
-  --success:#2ECC71;
-  --border:rgba(31,42,58,0.12);
+body{
+  font-family: Arial, sans-serif;
+  background:#f5f5f5;
+  margin:0;
+  padding:10px;
 }
-*{box-sizing:border-box;}
-body{margin:0;font-family: Arial, sans-serif;background:var(--bg);color:var(--text);}
-.container{max-width:420px;margin:0 auto;padding:10px 10px 90px;}
-.header{display:flex;justify-content:space-between;align-items:center;padding:10px 0;}
-.tabs{display:flex;gap:8px;}
-.tab{padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--border);cursor:pointer;font-weight:700;font-size:14px;}
-.tab.active{background:var(--accent);border-color:rgba(31,122,140,0.7);color:#0b1220;}
-.section{margin-top:10px;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px;}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;}
-.menu-btn{background:rgba(31,42,58,0.06);border:1px solid rgba(31,42,58,0.12);border-radius:14px;padding:12px;cursor:pointer;text-align:left;font-weight:800;font-size:14px;}
-.menu-btn span{display:block;margin-top:6px;font-size:12px;color:var(--muted);font-weight:600;}
-.menu-btn:hover{background:rgba(31,42,58,0.10);}
-.cart-item{display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(31,42,58,0.12);}
-.cart-left{width:70%;}
-.cart-name{font-weight:900;font-size:14px;}
-.cart-qty{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.qty-btn{padding:6px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(31,42,58,0.06);cursor:pointer;font-weight:800;font-size:13px;}
-.cart-right{width:30%;text-align:right;font-weight:900;font-size:14px;}
-.total{display:flex;justify-content:space-between;font-weight:900;padding-top:10px;border-top:1px solid rgba(31,42,58,0.12);margin-top:10px;font-size:14px;}
-.payment-row{display:flex;gap:8px;margin-top:10px;}
-.pay-btn{flex:1;padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(31,42,58,0.06);cursor:pointer;font-weight:900;font-size:14px;}
-.pay-btn.active{background:var(--accent);border-color:rgba(31,122,140,0.7);color:#0b1220;}
-.input-group{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-input[type="number"]{width:100%;padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(31,42,58,0.06);font-weight:900;font-size:16px;}
-.small-btn{flex:1;padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(31,42,58,0.06);cursor:pointer;font-weight:900;font-size:13px;}
-.footer-fixed{position:fixed;bottom:0;left:0;right:0;padding:10px;background:rgba(244,246,247,0.95);border-top:1px solid rgba(31,42,58,0.12);z-index:999;}
-.footer-inner{max-width:420px;margin:0 auto;display:flex;gap:8px;}
-.btn-wide{flex:1;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--accent);font-weight:900;cursor:pointer;font-size:14px;}
-.btn-danger{background:var(--danger);}
-.hide{display:none;}
+.container{
+  max-width:500px;
+  margin:auto;
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+h2{
+  text-align:center;
+}
+button{
+  padding:8px;
+  margin:4px 0;
+  width:100%;
+  border:none;
+  border-radius:6px;
+  background:#2e7d32;
+  color:white;
+  font-weight:bold;
+}
+button.secondary{
+  background:#555;
+}
+.cart-item{
+  display:flex;
+  justify-content:space-between;
+  margin:5px 0;
+}
+input{
+  width:100%;
+  padding:8px;
+  margin:5px 0;
+}
+.total{
+  font-size:18px;
+  font-weight:bold;
+  margin-top:10px;
+}
 </style>
+
 </head>
 <body>
-<!-- === HTML TIDAK DIUBAH === -->
 
-<!-- (HTML bagian atas tetap sama, tidak dipotong agar tidak terlalu panjang di penjelasan ini) -->
+<div class="container">
+<h2>KASIR DIGITAL</h2>
+
+<div id="menu"></div>
+
+<h3>Keranjang</h3>
+<div id="cart"></div>
+
+<div class="total">
+Total: Rp <span id="totalHarga">0</span>
+</div>
+
+<h3>Pembayaran</h3>
+<input type="number" id="uangDibayar" placeholder="Masukkan nominal uang">
+<button onclick="setUangPas()">Uang Pas</button>
+
+<div class="total">
+Kembalian: Rp <span id="kembalian">0</span>
+</div>
+
+<button onclick="selesaiTransaksi()">Selesai Transaksi</button>
+
+<h3>History</h3>
+<div id="history"></div>
+
+</div>
 
 <script>
 const menus = [
-  {name:"NASI KUNING AYAM", price:15000, type:"utama"},
-  {name:"NASI KUNING IKAN", price:13000, type:"utama"},
-  {name:"NASI KUNING TELUR", price:10000, type:"utama"},
-  {name:"NASI KUNING AYAM TELUR", price:22000, type:"utama"},
-  {name:"NASI KUNING IKAN TELUR", price:20000, type:"utama"},
-  {name:"IKAN", price:5000, type:"additional"},
-  {name:"BAKWAN", price:2000, type:"additional"},
-  {name:"NASI", price:5000, type:"additional"},
-  {name:"TELUR", price:5000, type:"additional"},
-  {name:"AYAM", price:5000, type:"additional"},
-  {name:"AIR MINERAL", price:5000, type:"additional"},
+  {name:"NASI KUNING AYAM", price:15000},
+  {name:"NASI KUNING IKAN", price:13000},
+  {name:"NASI KUNING TELUR", price:10000},
+  {name:"NASI KUNING AYAM TELUR", price:22000},
+  {name:"NASI KUNING IKAN TELUR", price:20000},
+  {name:"IKAN", price:5000},
+  {name:"BAKWAN", price:2000},
+  {name:"NASI", price:5000},
+  {name:"TELUR", price:5000},
+  {name:"AYAM", price:5000},
+  {name:"AIR MINERAL", price:5000},
 ];
 
 let cart = [];
-let history = [];
-let paymentMethod = "";
-let currentMenuTab = "utama";
+let historyData = [];
+let totalHargaNumber = 0; // 🔥 FIX utama beda HP
 
-/* =========================
-   PERBAIKAN INTI DIMULAI
-========================= */
+function renderMenu(){
+  const menuDiv = document.getElementById("menu");
+  menuDiv.innerHTML = "";
+  menus.forEach((m,index)=>{
+    const btn = document.createElement("button");
+    btn.innerText = m.name+" - Rp "+m.price.toLocaleString();
+    btn.onclick = ()=> tambahKeCart(index);
+    menuDiv.appendChild(btn);
+  });
+}
 
-let totalHargaNumber = 0; // angka asli untuk semua perhitungan
+function tambahKeCart(index){
+  const item = menus[index];
+  const existing = cart.find(c=>c.name===item.name);
+  if(existing){
+    existing.qty++;
+  }else{
+    cart.push({...item, qty:1});
+  }
+  renderCart();
+}
+
+function renderCart(){
+  const cartDiv = document.getElementById("cart");
+  cartDiv.innerHTML = "";
+  cart.forEach((item,i)=>{
+    const div = document.createElement("div");
+    div.className="cart-item";
+    div.innerHTML = `
+      <span>${item.name} x${item.qty}</span>
+      <span>Rp ${(item.price*item.qty).toLocaleString()}</span>
+    `;
+    cartDiv.appendChild(div);
+  });
+  calculateTotal();
+}
 
 function calculateTotal(){
   let total = 0;
-  let itemCount = 0;
-
-  cart.forEach(i => {
+  cart.forEach(i=>{
     total += i.price * i.qty;
-    itemCount += i.qty;
   });
 
-  totalHargaNumber = total; // simpan angka asli
-
-  document.getElementById("totalHarga").textContent = total.toLocaleString();
-  document.getElementById("totalItem").textContent = itemCount;
-
+  totalHargaNumber = total; // 🔥 gunakan angka asli
+  document.getElementById("totalHarga").innerText = total.toLocaleString();
   calculateChange();
 }
 
 function calculateChange(){
-  const bayar = Number(
-    document.getElementById("uangBayar").value.replace(/[^\d]/g,'')
-  ) || 0;
-
-  const change = bayar - totalHargaNumber;
-
-  document.getElementById("kembalian").textContent =
-    change >= 0 ? change.toLocaleString() : "0";
+  const uang = Number(document.getElementById("uangDibayar").value) || 0;
+  const kembali = uang - totalHargaNumber; // 🔥 tidak ambil dari teks
+  document.getElementById("kembalian").innerText =
+    kembali > 0 ? kembali.toLocaleString() : 0;
 }
 
-/* =========================
-   PERBAIKAN SELESAI
-========================= */
-
-/* === SISA SEMUA FUNGSI TIDAK DIHAPUS === */
-/* hanya bagian yang ambil total dari innerText diganti pakai totalHargaNumber */
-
-function setExact(){
-  document.getElementById("uangBayar").value = totalHargaNumber;
+function setUangPas(){
+  document.getElementById("uangDibayar").value = totalHargaNumber;
   calculateChange();
 }
 
-function setPayment(method){
-  paymentMethod = method;
-  document.getElementById("btnCash").classList.remove("active");
-  document.getElementById("btnQris").classList.remove("active");
+function selesaiTransaksi(){
+  if(cart.length===0) return;
 
-  if(method === "cash") document.getElementById("btnCash").classList.add("active");
+  historyData.push({
+    items:[...cart],
+    total: totalHargaNumber
+  });
 
-  if(method === "qris"){
-    document.getElementById("btnQris").classList.add("active");
-    document.getElementById("uangBayar").value = totalHargaNumber;
-  }
-
-  calculateChange();
-}
-
-function completeTransaction(){
-  const total = totalHargaNumber;
-  const bayar = Number(document.getElementById("uangBayar").value) || 0;
-
-  if(cart.length === 0){ alert("Tidak ada pesanan."); return; }
-  if(!paymentMethod){ alert("Pilih metode pembayaran."); return; }
-  if(bayar < total){ alert("Uang tidak cukup."); return; }
-
-  if(paymentMethod === "qris"){ openQrisPopup(); return; }
-
-  const change = bayar - total;
-  const now = new Date();
-
-  const record = {
-    time: now.toLocaleString(),
-    items: JSON.parse(JSON.stringify(cart)),
-    total,
-    bayar,
-    change,
-    paymentMethod
-  };
-
-  history.push(record);
-
-  cart = [];
-  calculateTotal();
+  cart=[];
+  document.getElementById("uangDibayar").value="";
+  document.getElementById("kembalian").innerText="0";
   renderCart();
-  clearUangBayar();
-  paymentMethod = "";
-
-  document.getElementById("btnCash").classList.remove("active");
-  document.getElementById("btnQris").classList.remove("active");
-
-  alert("Transaksi berhasil disimpan.");
+  renderHistory();
 }
 
-function processQrisTransaction(){
-  const total = totalHargaNumber;
-  const bayar = Number(document.getElementById("uangBayar").value) || 0;
-  const change = bayar - total;
-  const now = new Date();
-
-  const record = {
-    time: now.toLocaleString(),
-    items: JSON.parse(JSON.stringify(cart)),
-    total,
-    bayar,
-    change,
-    paymentMethod
-  };
-
-  history.push(record);
-
-  cart = [];
-  calculateTotal();
-  renderCart();
-  clearUangBayar();
-  paymentMethod = "";
-
-  document.getElementById("btnCash").classList.remove("active");
-  document.getElementById("btnQris").classList.remove("active");
-
-  alert("Transaksi QRIS berhasil disimpan.");
+function renderHistory(){
+  const div = document.getElementById("history");
+  div.innerHTML="";
+  historyData.forEach((h,i)=>{
+    const d = document.createElement("div");
+    d.innerHTML = `
+      <strong>Transaksi ${i+1}</strong><br>
+      Total: Rp ${h.total.toLocaleString()}
+      <hr>
+    `;
+    div.appendChild(d);
+  });
 }
+
+document.getElementById("uangDibayar")
+  .addEventListener("input", calculateChange);
+
+renderMenu();
+renderCart();
 </script>
+
 </body>
 </html>
