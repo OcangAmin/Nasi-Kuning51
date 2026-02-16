@@ -37,11 +37,11 @@
   }
   .menu-card span { display: block; font-size: 11px; margin-top: 5px; opacity: 0.8; }
 
-  /* Ringkasan */
+  /* Keranjang */
   .section-title { padding: 15px 15px 5px; font-size: 14px; font-weight: 800; color: var(--brand-maroon); }
   .card-box { background: var(--brand-maroon); border-radius: 15px; margin: 10px 15px; padding: 15px; color: var(--white); }
-  .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-  .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 5px; padding: 5px 10px; font-weight: bold; cursor: pointer; }
+  .cart-item { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 5px; padding: 5px 10px; font-weight: bold; cursor: pointer; margin: 0 5px; }
 
   /* Pembayaran */
   .pay-card { background: var(--white); border-radius: 15px; margin: 10px 15px; padding: 15px; border: 1px solid #ddd; }
@@ -51,7 +51,7 @@
   .quick-pay-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
   .small-btn { flex: 1; padding: 10px; background: var(--brand-maroon); color: white; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
 
-  /* --- FIX ACTION BAR (STICKY BOTTOM) --- */
+  /* Tombol Melayang (Sticky Bottom Action Bar) */
   .action-bar {
     position: fixed; bottom: 70px; left: 0; right: 0; background: var(--brand-light);
     padding: 10px 15px; display: flex; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 900;
@@ -59,7 +59,7 @@
   .btn-main-action { flex: 3; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 14px; background: var(--brand-maroon); color: white; }
   .btn-reset-action { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid var(--brand-gold); font-weight: 800; cursor: pointer; background: white; color: var(--brand-gold); font-size: 12px; }
 
-  /* Navigasi */
+  /* Navigasi Bawah */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 70px;
     display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000;
@@ -67,7 +67,8 @@
   .nav-item { text-align: center; color: var(--brand-maroon); font-size: 10px; cursor: pointer; flex: 1; opacity: 0.5; }
   .nav-item.active { opacity: 1; font-weight: 800; }
   
-  .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:5px solid var(--brand-maroon); }
+  /* History Card */
+  .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:5px solid var(--brand-maroon); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
   .share-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 10px; cursor: pointer; }
   .hide { display: none; }
 
@@ -102,6 +103,10 @@
         <span>Total Bayar</span>
         <span id="totalHarga">0</span>
       </div>
+      <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; margin-top: 5px;">
+        <span>Item</span>
+        <span id="totalItem">0</span>
+      </div>
     </div>
 
     <div class="pay-card">
@@ -117,9 +122,13 @@
         <button class="small-btn" onclick="setQuick(50000)">50K</button>
         <button class="small-btn" onclick="setQuick(100000)">100K</button>
       </div>
-      <div style="display: flex; justify-content: space-between; font-weight: 800; margin-top: 10px; color: var(--brand-maroon);">
-        <span>Kembali: <span id="kembalian">0</span></span>
-        <span style="font-size: 12px; color: var(--brand-gold)" onclick="setExact()">Uang Pas?</span>
+      <div style="display: flex; gap: 8px;">
+        <button class="small-btn" style="background:var(--brand-gold)" onclick="setExact()">UANG PAS</button>
+        <button class="small-btn" style="background:var(--brand-gold)" onclick="clearUangBayar()">Clear</button>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-weight: 800; margin-top: 15px; color: var(--brand-maroon);">
+        <span>Kembalian</span>
+        <span id="kembalian">0</span>
       </div>
     </div>
 
@@ -133,31 +142,31 @@
     <div class="section-title">Riwayat Transaksi</div>
     <div id="historyList" style="padding: 0 15px;"></div>
     <div style="padding: 0 15px;">
-        <button class="btn-main-action" style="width: 100%; margin-bottom: 10px;" onclick="saveHistory()">SIMPAN HISTORY (.TXT)</button>
-        <button class="btn-reset-action" style="width: 100%; margin-bottom: 10px;" onclick="closeCashier()">TUTUP KASIR</button>
+      <button class="btn-main-action" style="width:100%; margin-bottom:10px" onclick="saveHistory()">SIMPAN HISTORY (.TXT)</button>
+      <button class="btn-reset-action" style="width:100%; margin-bottom:10px" onclick="closeCashier()">TUTUP KASIR</button>
+      <button class="btn-reset-action" style="width:100%; background:#eee; border:none; color:#333" onclick="resetHistory()">RESET HISTORY</button>
     </div>
   </div>
 </div>
 
 <nav class="bottom-nav">
   <div class="nav-item active" id="navHome" onclick="showTab('transaksi')">🏠<div>Transaksi</div></div>
-  <div class="nav-item" id="navHist" onclick="showTab('history')">📋<div>Riwayat</div></div>
+  <div class="nav-item" id="navHist" onclick="showTab('history')">📋<div>Riwayat Transaksi</div></div>
 </nav>
 
 <div id="qrisPopup" class="hide">
   <div class="popup-overlay">
     <div class="popup">
-      <h3 style="color: var(--brand-maroon); margin-top: 0;">Konfirmasi QRIS</h3>
+      <h3 style="color:var(--brand-maroon); margin-top:0">Konfirmasi QRIS</h3>
       <p>Apakah pembayaran QRIS sudah berhasil?</p>
-      <button class="btn-main-action" style="width: 100%; margin: 5px 0;" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
-      <button class="btn-main-action" style="width: 100%; margin: 5px 0; background: var(--brand-gold);" onclick="qrisConfirmFail()">QRIS GAGAL</button>
-      <button class="btn-reset-action" style="width: 100%; margin: 5px 0;" onclick="closeQrisPopup()">BATAL</button>
+      <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
+      <button class="btn-main-action" style="width:100%; margin:5px 0; background:var(--brand-gold)" onclick="qrisConfirmFail()">QRIS GAGAL</button>
+      <button class="btn-reset-action" style="width:100%; margin:5px 0" onclick="closeQrisPopup()">BATAL</button>
     </div>
   </div>
 </div>
 
 <script>
-  // Logika Data & Keranjang (Sama Seperti Sebelumnya)
   const menus = [
     {name:"NASI KUNING AYAM", price:15000, type:"utama"},
     {name:"NASI KUNING IKAN", price:13000, type:"utama"},
@@ -231,8 +240,9 @@
         </div>
         <div style="display:flex; align-items:center">
           <button class="qty-btn" onclick="changeQty(${idx},-1)">-</button>
-          <span style="margin:0 10px; font-weight:800">${i.qty}</span>
+          <span style="font-weight:800">${i.qty}</span>
           <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
+          <button class="qty-btn" style="background:#d9534f" onclick="removeItem(${idx})">x</button>
         </div>
       </div>
     `).join("");
@@ -244,10 +254,16 @@
     renderCart(); calculateTotal(); saveToStorage();
   }
 
+  function removeItem(idx){
+    cart.splice(idx,1);
+    renderCart(); calculateTotal(); saveToStorage();
+  }
+
   function calculateTotal(){
-    let total = 0;
-    cart.forEach(i => { total += (i.price*i.qty); });
+    let total = 0, items = 0;
+    cart.forEach(i => { total += (i.price*i.qty); items += i.qty; });
     document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID');
+    document.getElementById("totalItem").innerText = items;
     calculateChange();
   }
 
@@ -272,16 +288,17 @@
   function finalize(){
     const total = getNum("totalHarga");
     const bayar = getNum("uangBayar");
+    const transId = "NK51-" + Date.now().toString().slice(-6);
     history.push({
-      id: "NK51-" + Date.now().toString().slice(-6),
+      id: transId,
       time: new Date().toLocaleString('id-ID'),
       items: JSON.parse(JSON.stringify(cart)),
       total, bayar, change: bayar - total, paymentMethod
     });
     alert("Transaksi Berhasil!");
     cart = []; paymentMethod = ""; 
-    document.querySelectorAll(".tab-item").forEach(b => b.classList.remove("active"));
-    document.getElementById("tabUtama").classList.add("active");
+    document.getElementById("btnCash").classList.remove("active");
+    document.getElementById("btnQris").classList.remove("active");
     clearUangBayar(); renderCart(); calculateTotal(); saveToStorage();
   }
 
@@ -303,43 +320,49 @@
           <span>ID: ${h.id}</span><span>${h.paymentMethod.toUpperCase()}</span>
         </div>
         <div style="font-size:10px; color:#666; margin:5px 0;">${h.time}</div>
-        <div style="font-size:12px; border-top: 1px dashed #ddd; padding: 5px 0;">
+        <div style="font-size:12px; border-top:1px dashed #ddd; padding:5px 0;">
           ${h.items.map(i => `<div>${i.name} x${i.qty}</div>`).join("")}
         </div>
-        <div style="text-align:right; font-weight:800;">Total: Rp ${h.total.toLocaleString('id-ID')}</div>
+        <div style="text-align:right; font-weight:800; border-top:1px dashed #ddd; padding-top:5px;">Rp ${h.total.toLocaleString('id-ID')}</div>
         <button class="share-btn" onclick="shareReceipt(${history.length - 1 - idx})">📤 SHARE STRUK WA</button>
       </div>
     `).join("");
   }
 
   function shareReceipt(idx) {
-    const h = history[idx];
-    let text = `*NASI KUNING 51*\nID: ${h.id}\n${h.time}\n------------------\n`;
-    h.items.forEach(i => { text += `${i.name} x${i.qty}\n`; });
-    text += `------------------\n*TOTAL: Rp ${h.total.toLocaleString('id-ID')}*\nBayar: Rp ${h.bayar.toLocaleString('id-ID')}\nKembali: Rp ${h.change.toLocaleString('id-ID')}\n_Terima Kasih!_`;
+    const data = history[idx];
+    let receipt = `*NASI KUNING 51*\n_Terima Kasih Atas Kunjungan Anda_\n--------------------------------------------\n`;
+    receipt += `ID : ${data.id}\nTgl: ${data.time}\n--------------------------------------------\n`;
+    data.items.forEach(i => {
+      receipt += `${i.name}\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`;
+    });
+    receipt += `--------------------------------------------\n*TOTAL: Rp ${data.total.toLocaleString('id-ID')}*\nBayar: Rp ${data.bayar.toLocaleString('id-ID')}\nKembali: Rp ${data.change.toLocaleString('id-ID')}\n--------------------------------------------\n*Selamat Menikmati!*`;
     
     if (navigator.share) {
-      navigator.share({ title: 'Struk', text: text }).catch(() => {});
+      navigator.share({ title: 'Struk', text: receipt }).catch(() => {});
     } else {
-      const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+      const el = document.createElement('textarea'); el.value = receipt; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
       alert("Struk disalin!");
     }
   }
 
-  // File Save Logic
   function saveHistory(){
-    if(!history.length) return alert("Kosong.");
+    if(history.length === 0) return alert("Kosong.");
+    const now = new Date();
+    const filename = `bucek_history_${now.getFullYear()}${now.getMonth()+1}${now.getDate()}.txt`;
     let text = "HISTORY PENJUALAN\n\n";
     history.forEach(h => {
-        text += `ID: ${h.id}\nWaktu: ${h.time}\nTotal: Rp ${h.total.toLocaleString('id-ID')}\n----------------\n`;
+      text += `Waktu: ${h.time}\nMetode: ${h.paymentMethod}\nItems:\n`;
+      h.items.forEach(i => { text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`; });
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\nBayar: Rp ${h.bayar.toLocaleString('id-ID')}\nKembali: Rp ${h.change.toLocaleString('id-ID')}\n---------------------------------\n`;
     });
-    downloadFile("history.txt", text);
+    downloadFile(filename, text);
   }
 
   function closeCashier(){
-    if(!history.length) return;
+    if(history.length === 0) return;
     saveHistory();
-    if(confirm("Hapus riwayat?")) { history = []; saveToStorage(); renderHistory(); showTab('transaksi'); }
+    if(confirm("Hapus riwayat setelah tutup kasir?")) { history = []; saveToStorage(); renderHistory(); showTab('transaksi'); }
   }
 
   function downloadFile(n, c){
@@ -347,6 +370,7 @@
     a.href = URL.createObjectURL(b); a.download = n; a.click();
   }
 
+  function resetHistory(){ if(confirm("Hapus semua history?")) { history = []; saveToStorage(); renderHistory(); } }
   function openQrisPopup(){ document.getElementById("qrisPopup").classList.remove("hide"); }
   function closeQrisPopup(){ document.getElementById("qrisPopup").classList.add("hide"); }
   function qrisConfirmSuccess(){ closeQrisPopup(); finalize(); }
