@@ -265,8 +265,7 @@ function loadFromStorage(){
   history = JSON.parse(localStorage.getItem("bucek_history")) || [];
   paymentMethod = localStorage.getItem("bucek_payment") || "";
   currentMenuTab = localStorage.getItem("bucek_menuTab") || "utama";
-}
-function showTab(tab){
+}function showTab(tab){
   document.getElementById("pageTransaksi").classList.add("hide");
   document.getElementById("pageHistory").classList.add("hide");
   document.getElementById("tabTrans").classList.remove("active");
