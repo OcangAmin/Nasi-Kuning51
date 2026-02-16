@@ -236,6 +236,7 @@
   .muted{color:var(--muted);}
   .hide{display:none;}
 
+  /* QRIS Popup */
   .popup-overlay{
     position:fixed;
     inset:0;
@@ -386,16 +387,11 @@
   let paymentMethod = "";
   let currentMenuTab = "utama";
 
-  // --- BAGIAN YANG DIPERBAIKI (LOGIKA KEMBALIAN) ---
+  // --- PERBAIKAN LOGIKA ANGKA SINKRON ---
   function getCleanNumber(id) {
     const el = document.getElementById(id);
-    let val = "";
-    if (el.tagName === "INPUT") {
-      val = el.value;
-    } else {
-      val = el.innerText;
-    }
-    // Hapus semua yang bukan angka (\D)
+    let val = (el.tagName === "INPUT") ? el.value : el.innerText;
+    // Sikat semua kuman (karakter non-angka) agar sinkron di semua HP
     return parseInt(val.toString().replace(/\D/g, '')) || 0;
   }
 
@@ -411,7 +407,7 @@
     document.getElementById("uangBayar").value = total;
     calculateChange();
   }
-  // --- SELESAI PERBAIKAN ---
+  // --- SELESAI PERBAIKAN LOGIKA ---
 
   function saveToStorage(){
     localStorage.setItem("bucek_cart", JSON.stringify(cart));
@@ -568,6 +564,8 @@
   }
 
   function completeTransaction(){
+    // Re-hitung paksa kembalian agar tidak meleset saat klik selesai
+    calculateChange();
     const total = getCleanNumber("totalHarga");
     const bayar = getCleanNumber("uangBayar");
 
@@ -598,15 +596,18 @@
     const change = bayar - total;
     const now = new Date();
     
-    history.push({
+    const record = {
       time: now.toLocaleString('id-ID'),
       items: JSON.parse(JSON.stringify(cart)),
       total,
       bayar,
       change,
       paymentMethod
-    });
+    };
     
+    history.push(record);
+    saveToStorage();
+
     cart = [];
     calculateTotal();
     renderCart();
@@ -614,8 +615,7 @@
     paymentMethod = "";
     document.getElementById("btnCash").classList.remove("active");
     document.getElementById("btnQris").classList.remove("active");
-    saveToStorage();
-    alert("Transaksi Berhasil!");
+    alert("Transaksi berhasil disimpan.");
   }
 
   function renderHistory(){
@@ -645,16 +645,27 @@
       return;
     }
     const now = new Date();
-    const filename = `history_${now.getTime()}.txt`;
+    const filename = `bucek_history_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.txt`;
     let text = "HISTORY PENJUALAN\n\n";
     history.forEach(h => {
-      text += `Waktu: ${h.time} | Total: ${h.total} | Metode: ${h.paymentMethod}\n`;
+      text += `Waktu: ${h.time}\n`;
+      text += `Metode: ${h.paymentMethod}\n`;
+      text += `Items:\n`;
+      h.items.forEach(i => {
+        text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`;
+      });
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
+      text += `Bayar: Rp ${h.bayar.toLocaleString('id-ID')}\n`;
+      text += `Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`;
+      text += `---------------------------------\n`;
     });
+
     const blob = new Blob([text], {type:"text/plain"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = filename;
     a.click();
+    URL.revokeObjectURL(a.href);
   }
 
   function resetHistory(){
@@ -666,19 +677,59 @@
   }
 
   function closeCashier(){
-    saveHistory();
+    if(history.length === 0){
+      alert("Tidak ada transaksi untuk disimpan.");
+      return;
+    }
+    const now = new Date();
+    const filename = `bucek_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.txt`;
+
+    let text = "REKAP TUTUP KASIR\n\n";
+    let totalOmzet = 0;
+    history.forEach(h => {
+      totalOmzet += h.total;
+      text += `Waktu: ${h.time}\n`;
+      text += `Metode: ${h.paymentMethod}\n`;
+      h.items.forEach(i => {
+        text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`;
+      });
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
+      text += `Bayar: Rp ${h.bayar.toLocaleString('id-ID')}\n`;
+      text += `Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`;
+      text += `---------------------------------\n`;
+    });
+    text += `\nTOTAL OMZET: Rp ${totalOmzet.toLocaleString('id-ID')}\n`;
+
+    const blob = new Blob([text], {type:"text/plain"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+
     history = [];
     saveToStorage();
     renderHistory();
     showTab('transaksi');
-    alert("Tutup kasir selesai.");
+    alert("Tutup kasir selesai. History telah disimpan dan direset.");
   }
 
-  function openQrisPopup(){ document.getElementById("qrisPopup").classList.remove("hide"); }
-  function closeQrisPopup(){ document.getElementById("qrisPopup").classList.add("hide"); }
-  function qrisConfirmSuccess(){ closeQrisPopup(); processFinalSuccess(); }
-  function qrisConfirmFail(){ closeQrisPopup(); alert("QRIS gagal."); }
+  function openQrisPopup(){
+    document.getElementById("qrisPopup").classList.remove("hide");
+  }
+  function closeQrisPopup(){
+    document.getElementById("qrisPopup").classList.add("hide");
+  }
+  function qrisConfirmSuccess(){
+    closeQrisPopup();
+    processFinalSuccess();
+  }
+  function qrisConfirmFail(){
+    closeQrisPopup();
+    alert("QRIS gagal. Silakan coba lagi.");
+  }
 
+  // init
   loadFromStorage();
   setMenuTab(currentMenuTab);
   renderCart();
