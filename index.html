@@ -15,7 +15,7 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; font-family: Arial, sans-serif; background: var(--brand-light); color: #333; }
   
-  .container { max-width: 420px; margin: 0 auto; min-height: 100vh; padding-bottom: 200px; }
+  .container { max-width: 420px; margin: 0 auto; min-height: 100vh; padding-bottom: 220px; }
   
   /* Header */
   .header-box { background: var(--brand-maroon); color: var(--white); padding: 20px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
@@ -43,7 +43,7 @@
   .cart-item { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
   .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 5px; padding: 5px 10px; font-weight: bold; cursor: pointer; margin: 0 2px; }
 
-  /* Card Pembayaran */
+  /* Pembayaran */
   .pay-card { background: var(--white); border-radius: 15px; margin: 10px 15px; padding: 15px; border: 1px solid #ddd; }
   input[type="number"] {
     width: 100%; border: 1px solid #ccc; border-radius: 10px; padding: 12px; font-size: 16px; font-weight: 700; margin: 10px 0; outline: none;
@@ -51,7 +51,7 @@
   .quick-pay-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
   .small-btn { flex: 1; padding: 10px; background: var(--brand-maroon); color: white; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
 
-  /* Sticky Bottom Bar */
+  /* Sticky Bottom Action Bar */
   .action-bar {
     position: fixed; bottom: 70px; left: 0; right: 0; background: var(--brand-light);
     padding: 10px 15px; display: flex; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 900;
@@ -102,10 +102,6 @@
       <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: 800; border-top: 1px solid var(--border); padding-top: 10px;">
         <span>Total Bayar</span>
         <span id="totalHarga">0</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; margin-top: 5px;">
-        <span>Item Terpilih</span>
-        <span id="totalItem">0</span>
       </div>
     </div>
 
@@ -159,8 +155,8 @@
     <div class="popup">
       <h3 style="color:var(--brand-maroon); margin-top:0">Konfirmasi QRIS</h3>
       <p>Apakah pembayaran QRIS sudah berhasil?</p>
-      <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
-      <button class="btn-main-action" style="width:100%; margin:5px 0; background:var(--brand-gold)" onclick="qrisConfirmFail()">QRIS GAGAL</button>
+      <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="qrisConfirmSuccess()">SUDAH BAYAR</button>
+      <button class="btn-main-action" style="width:100%; margin:5px 0; background:var(--brand-gold)" onclick="qrisConfirmFail()">BELUM BAYAR</button>
       <button class="btn-reset-action" style="width:100%; margin:5px 0" onclick="closeQrisPopup()">BATAL</button>
     </div>
   </div>
@@ -260,10 +256,9 @@
   }
 
   function calculateTotal(){
-    let total = 0, items = 0;
-    cart.forEach(i => { total += (i.price*i.qty); items += i.qty; });
+    let total = 0;
+    cart.forEach(i => { total += (i.price*i.qty); });
     document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID');
-    document.getElementById("totalItem").innerText = items;
     calculateChange();
   }
 
@@ -278,11 +273,29 @@
   function setExact(){ document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
   function clearUangBayar(){ document.getElementById("uangBayar").value = ""; calculateChange(); }
 
+  // LOGIKA VALIDASI ASLI (DIPISAH)
   function completeTransaction(){
     const total = getNum("totalHarga");
     const bayar = getNum("uangBayar");
-    if(!cart.length || !paymentMethod || bayar < total) return alert("Periksa pesanan, metode bayar, atau uang kurang.");
-    if(paymentMethod === "qris") { openQrisPopup(); } else { finalize(); }
+
+    if(cart.length === 0){
+      alert("Tidak ada pesanan.");
+      return;
+    }
+    if(!paymentMethod){
+      alert("Pilih metode pembayaran.");
+      return;
+    }
+    if(bayar < total){
+      alert("Uang tidak cukup.");
+      return;
+    }
+
+    if(paymentMethod === "qris") { 
+      openQrisPopup(); 
+    } else { 
+      finalize(); 
+    }
   }
 
   function finalize(){
@@ -302,7 +315,7 @@
     clearUangBayar(); renderCart(); calculateTotal(); saveToStorage();
   }
 
-  function resetCart(){ if(confirm("Bersihkan keranjang?")) { cart = []; clearUangBayar(); renderCart(); calculateTotal(); saveToStorage(); } }
+  function resetCart(){ if(confirm("Reset?")) { cart = []; clearUangBayar(); renderCart(); calculateTotal(); saveToStorage(); } }
 
   function showTab(t){
     document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi");
@@ -344,27 +357,39 @@
       navigator.share({ title: 'Struk Nasi Kuning 51', text: receipt }).catch(() => {});
     } else {
       const el = document.createElement('textarea'); el.value = receipt; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-      alert("Struk disalin! Silakan paste ke WA.");
+      alert("Struk disalin!");
     }
   }
 
   function saveHistory(){
-    if(history.length === 0) return alert("Belum ada riwayat.");
+    if(history.length === 0){ alert("History kosong."); return; }
     const now = new Date();
-    const filename = `history_penjualan_${now.getDate()}${now.getMonth()+1}.txt`;
-    let text = "=== LAPORAN PENJUALAN NASI KUNING 51 ===\n\n";
+    const filename = `bucek_history_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
+    let text = "HISTORY PENJUALAN\n\n";
     history.forEach(h => {
-      text += `ID: ${h.id}\nWaktu: ${h.time}\nMetode: ${h.paymentMethod}\nDetail Items:\n`;
+      text += `Waktu: ${h.time}\nMetode: ${h.paymentMethod}\nItems:\n`;
       h.items.forEach(i => { text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`; });
-      text += `TOTAL: Rp ${h.total.toLocaleString('id-ID')}\nBAYAR: Rp ${h.bayar.toLocaleString('id-ID')}\n----------------------------------------\n`;
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\nBayar: Rp ${h.bayar.toLocaleString('id-ID')}\n---------------------------------\n`;
     });
     downloadFile(filename, text);
   }
 
   function closeCashier(){
-    if(history.length === 0) return alert("Tidak ada data untuk ditutup.");
-    saveHistory();
-    if(confirm("Laporan sudah disimpan. Hapus semua riwayat untuk memulai sesi baru?")) { history = []; saveToStorage(); renderHistory(); showTab('transaksi'); }
+    if(history.length === 0){ alert("Tidak ada transaksi untuk disimpan."); return; }
+    const now = new Date();
+    const filename = `bucek_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
+    let text = "REKAP TUTUP KASIR\n\n";
+    let totalOmzet = 0;
+    history.forEach(h => {
+      totalOmzet += h.total;
+      text += `Waktu: ${h.time}\nMetode: ${h.paymentMethod}\n`;
+      h.items.forEach(i => { text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`; });
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\n---------------------------------\n`;
+    });
+    text += `\nTOTAL OMZET: Rp ${totalOmzet.toLocaleString('id-ID')}\n`;
+    downloadFile(filename, text);
+    history = []; saveToStorage(); renderHistory(); showTab('transaksi');
+    alert("Tutup kasir selesai. History telah disimpan dan direset.");
   }
 
   function downloadFile(n, c){
@@ -372,11 +397,11 @@
     a.href = URL.createObjectURL(b); a.download = n; a.click();
   }
 
-  function resetHistory(){ if(confirm("Hapus seluruh riwayat secara permanen?")) { history = []; saveToStorage(); renderHistory(); } }
+  function resetHistory(){ if(confirm("Hapus seluruh history?")) { history = []; saveToStorage(); renderHistory(); } }
   function openQrisPopup(){ document.getElementById("qrisPopup").classList.remove("hide"); }
   function closeQrisPopup(){ document.getElementById("qrisPopup").classList.add("hide"); }
   function qrisConfirmSuccess(){ closeQrisPopup(); finalize(); }
-  function qrisConfirmFail(){ closeQrisPopup(); alert("Transaksi QRIS dibatalkan."); }
+  function qrisConfirmFail(){ closeQrisPopup(); alert("Transaksi QRIS belum selesai."); }
 
   loadFromStorage(); renderMenu();
 </script>
