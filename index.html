@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>POS Nasi Kuning 51 - BCA Style Professional</title>
+<title>POS Nasi Kuning 51 - BCA Style</title>
 <style>
   :root {
     --bca-dark: #002651;
@@ -54,7 +54,7 @@
   .quick-pay-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
   .small-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-  /* Bottom Nav (Clean Style) */
+  /* Bottom Nav */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 75px;
     display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid #ddd;
@@ -82,12 +82,11 @@
 <div class="container">
   <div class="header-bca">
     <div>
-      <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 4px;">KASIR AKTIF</div>
+      <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 4px;">SELAMAT DATANG,</div>
       <div class="user-name">HALILINTAR BUCEK</div>
     </div>
     <div style="text-align: right;">
       <div style="font-size: 10px; font-weight: 800; color: var(--muted);">NASI KUNING 51</div>
-      <div id="liveClock" style="font-size: 11px; font-weight: 700; color: var(--accent-blue);">00:00:00</div>
     </div>
   </div>
 
@@ -101,12 +100,12 @@
 
     <div class="card-bca" style="margin-top: 20px;">
       <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px;">
-        <span>Daftar Pesanan</span>
+        <span>Ringkasan Pesanan</span>
         <span id="totalItem" style="color: var(--muted);">0 Item</span>
       </div>
       <div id="cartList" style="max-height: 180px; overflow-y: auto;"></div>
       <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 10px;">
-        <span style="font-weight: 600;">Total Transaksi</span>
+        <span style="font-weight: 600;">Total Bayar</span>
         <span style="color: #5cc9ff; font-weight: 800; font-size: 18px;">Rp <span id="totalHarga">0</span></span>
       </div>
     </div>
@@ -130,28 +129,25 @@
       </div>
     </div>
 
-    <button class="btn-main bg-blue" onclick="completeTransaction()">PROSES BAYAR</button>
-    <button class="btn-main bg-red" style="opacity: 0.6;" onclick="resetCart()">RESET</button>
+    <button class="btn-main bg-blue" onclick="completeTransaction()">SELESAIKAN TRANSAKSI</button>
+    <button class="btn-main bg-red" style="opacity: 0.6;" onclick="resetCart()">RESET TRANSAKSI</button>
   </div>
 
   <div id="pageHistory" class="hide">
     <h3 style="margin-top:0; color: #fff;">Riwayat Transaksi</h3>
     <div id="historyList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
-    <button class="btn-main bg-blue" onclick="saveHistory()">DOWNLOAD HARIAN (.TXT)</button>
-    <button class="btn-main bg-blue" style="background: #2a9d8f;" onclick="closeCashier()">TUTUP KASIR (REKAP FINAL)</button>
-    <button class="btn-main bg-red" onclick="resetHistory()">HAPUS HISTORY</button>
+    <button class="btn-main bg-blue" onclick="saveHistory()">SIMPAN HISTORY</button>
+    <button class="btn-main bg-blue" style="background: #2a9d8f;" onclick="closeCashier()">TUTUP KASIR</button>
+    <button class="btn-main bg-red" onclick="resetHistory()">RESET HISTORY</button>
   </div>
 </div>
 
 <nav class="bottom-nav">
   <div class="nav-item active" id="navHome" onclick="showTab('transaksi')">
-    <div class="nav-icon">🏠</div><div>m-Bayar</div>
+    <div class="nav-icon">🏠</div><div>Home</div>
   </div>
   <div class="nav-item" id="navHist" onclick="showTab('history')">
-    <div class="nav-icon">📋</div><div>m-Info</div>
-  </div>
-  <div class="nav-item" onclick="alert('Fitur m-Admin: Pengaturan Menu (Segera Hadir)')">
-    <div class="nav-icon">⚙️</div><div>m-Admin</div>
+    <div class="nav-icon">📋</div><div>Riwayat</div>
   </div>
 </nav>
 
@@ -159,8 +155,8 @@
   <div class="popup-overlay">
     <div class="popup">
       <h3 style="color: var(--bca-blue);">Konfirmasi QRIS</h3>
-      <p>Pastikan dana sudah masuk ke aplikasi merchant sebelum menekan Berhasil.</p>
-      <button class="btn-main bg-blue" onclick="qrisConfirmSuccess()">PEMBAYARAN BERHASIL</button>
+      <p>Apakah pembayaran QRIS sudah berhasil?</p>
+      <button class="btn-main bg-blue" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
       <button class="btn-main bg-red" onclick="closeQrisPopup()">BATAL</button>
     </div>
   </div>
@@ -185,23 +181,20 @@
   let history = [];
   let paymentMethod = "";
   let currentMenuTab = "utama";
-  let sessionStart = new Date().toLocaleString('id-ID');
 
   function saveToStorage(){
+    localStorage.setItem("bucek_cart", JSON.stringify(cart));
     localStorage.setItem("bucek_history", JSON.stringify(history));
-    localStorage.setItem("bucek_session", sessionStart);
+    localStorage.setItem("bucek_payment", paymentMethod);
+    localStorage.setItem("bucek_menuTab", currentMenuTab);
   }
 
   function loadFromStorage(){
+    cart = JSON.parse(localStorage.getItem("bucek_cart")) || [];
     history = JSON.parse(localStorage.getItem("bucek_history")) || [];
-    sessionStart = localStorage.getItem("bucek_session") || new Date().toLocaleString('id-ID');
+    paymentMethod = localStorage.getItem("bucek_payment") || "";
+    currentMenuTab = localStorage.getItem("bucek_menuTab") || "utama";
   }
-
-  // Live Clock
-  setInterval(() => {
-    const now = new Date();
-    document.getElementById("liveClock").innerText = now.toLocaleTimeString('id-ID');
-  }, 1000);
 
   function getNum(id) {
     const el = document.getElementById(id);
@@ -221,6 +214,7 @@
     document.getElementById("tabUtama").classList.toggle("active", tab==='utama');
     document.getElementById("tabAdd").classList.toggle("active", tab==='additional');
     renderMenu();
+    saveToStorage();
   }
 
   function renderMenu(){
@@ -236,7 +230,7 @@
   function addToCart(name, price){
     const item = cart.find(i => i.name === name);
     if(item) item.qty++; else cart.push({name, price, qty:1});
-    renderCart(); calculateTotal();
+    renderCart(); calculateTotal(); saveToStorage();
   }
 
   function renderCart(){
@@ -257,7 +251,7 @@
   function changeQty(idx, delta){
     cart[idx].qty += delta;
     if(cart[idx].qty <= 0) cart.splice(idx,1);
-    renderCart(); calculateTotal();
+    renderCart(); calculateTotal(); saveToStorage();
   }
 
   function calculateTotal(){
@@ -273,18 +267,11 @@
     document.getElementById("btnCash").classList.toggle("active", m==='cash');
     document.getElementById("btnQris").classList.toggle("active", m==='qris');
     if(m==='qris') setExact();
+    saveToStorage();
   }
 
-  function setQuick(amt){
-    document.getElementById("uangBayar").value = getNum("uangBayar") + amt;
-    calculateChange();
-  }
-
-  function setExact(){
-    document.getElementById("uangBayar").value = getNum("totalHarga");
-    calculateChange();
-  }
-
+  function setQuick(amt){ document.getElementById("uangBayar").value = getNum("uangBayar") + amt; calculateChange(); }
+  function setExact(){ document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
   function clearUangBayar(){ document.getElementById("uangBayar").value = ""; calculateChange(); }
 
   function completeTransaction(){
@@ -302,7 +289,7 @@
       items: JSON.parse(JSON.stringify(cart)),
       total, bayar, change: bayar - total, paymentMethod
     });
-    alert("Transaksi Disimpan!");
+    alert("Transaksi Berhasil!");
     cart = []; resetCartUI(); saveToStorage();
   }
 
@@ -313,7 +300,7 @@
     clearUangBayar(); renderCart(); calculateTotal();
   }
 
-  function resetCart(){ if(confirm("Hapus pesanan saat ini?")) { cart = []; resetCartUI(); } }
+  function resetCart(){ if(confirm("Reset transaksi?")) { cart = []; resetCartUI(); saveToStorage(); } }
 
   function showTab(t){
     document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi");
@@ -337,65 +324,52 @@
     `).join("");
   }
 
-  // DOWNLOAD HARIAN
+  // --- FORMAT FILE ASLI KAKAK (TIDAK BERUBAH) ---
   function saveHistory(){
-    if(!history.length) return alert("History kosong.");
-    let text = "RIWAYAT PENJUALAN HARIAN - NASI KUNING 51\n" + "=".repeat(40) + "\n\n";
+    if(history.length === 0){ alert("History kosong."); return; }
+    const now = new Date();
+    const filename = `bucek_history_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.txt`;
+    
+    let text = "HISTORY PENJUALAN\n\n";
     history.forEach(h => {
-      text += `[${h.time}] ${h.paymentMethod.toUpperCase()}\n`;
-      h.items.forEach(i => text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString()})\n`);
-      text += `TOTAL: Rp ${h.total.toLocaleString()}\n` + "-".repeat(40) + "\n";
+      text += `Waktu: ${h.time}\n`;
+      text += `Metode: ${h.paymentMethod}\n`;
+      text += `Items:\n`;
+      h.items.forEach(i => {
+        text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`;
+      });
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
+      text += `Bayar: Rp ${h.bayar.toLocaleString('id-ID')}\n`;
+      text += `Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`;
+      text += `---------------------------------\n`;
     });
-    downloadFile(`history_${new Date().toLocaleDateString('id-ID')}.txt`, text);
+    downloadFile(filename, text);
   }
 
-  // REKAP TUTUP KASIR (DETAIL)
   function closeCashier(){
-    if(!history.length) return alert("Tidak ada data transaksi.");
-    
-    let totalCash = 0, totalQris = 0, totalOmzet = 0;
-    let menuSummary = {};
+    if(history.length === 0){ alert("Tidak ada transaksi."); return; }
+    const now = new Date();
+    const filename = `bucek_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.txt`;
 
+    let text = "REKAP TUTUP KASIR\n\n";
+    let totalOmzet = 0;
     history.forEach(h => {
       totalOmzet += h.total;
-      if(h.paymentMethod === 'cash') totalCash += h.total;
-      else totalQris += h.total;
-
-      h.items.forEach(item => {
-        if(!menuSummary[item.name]) menuSummary[item.name] = 0;
-        menuSummary[item.name] += item.qty;
+      text += `Waktu: ${h.time}\n`;
+      text += `Metode: ${h.paymentMethod}\n`;
+      h.items.forEach(i => {
+        text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`;
       });
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
+      text += `Bayar: Rp ${h.bayar.toLocaleString('id-ID')}\n`;
+      text += `Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`;
+      text += `---------------------------------\n`;
     });
+    text += `\nTOTAL OMZET: Rp ${totalOmzet.toLocaleString('id-ID')}\n`;
 
-    let text = "=== LAPORAN REKAP TUTUP KASIR ===\n";
-    text += `Nama Kasir   : HALILINTAR BUCEK\n`;
-    text += `Waktu Buka   : ${sessionStart}\n`;
-    text += `Waktu Tutup  : ${new Date().toLocaleString('id-ID')}\n`;
-    text += "=".repeat(35) + "\n\n";
-
-    text += "RINCIAN PENJUALAN MENU:\n";
-    for(let menu in menuSummary){
-      text += `- ${menu.padEnd(25)} : ${menuSummary[menu]} Porsi\n`;
-    }
-
-    text += "\n" + "=".repeat(35) + "\n";
-    text += "RINGKASAN PEMBAYARAN:\n";
-    text += `Total CASH   : Rp ${totalCash.toLocaleString('id-ID')}\n`;
-    text += `Total QRIS   : Rp ${totalQris.toLocaleString('id-ID')}\n`;
-    text += "-".repeat(35) + "\n";
-    text += `TOTAL OMZET  : Rp ${totalOmzet.toLocaleString('id-ID')}\n`;
-    text += "=".repeat(35) + "\n\n";
-    text += "Laporan ini sah sebagai bukti serah terima kasir.";
-
-    downloadFile(`REKAP_FINAL_${new Date().toLocaleDateString('id-ID')}.txt`, text);
-    
-    if(confirm("Tutup Kasir Selesai. Ingin reset data untuk shift berikutnya?")) {
-      history = [];
-      sessionStart = new Date().toLocaleString('id-ID');
-      saveToStorage();
-      renderHistory();
-      showTab('transaksi');
-    }
+    downloadFile(filename, text);
+    history = []; saveToStorage(); renderHistory(); showTab('transaksi');
+    alert("Tutup kasir selesai. History direset.");
   }
 
   function downloadFile(name, content){
@@ -404,13 +378,13 @@
     a.href = URL.createObjectURL(blob); a.download = name; a.click();
   }
 
-  function resetHistory(){ if(confirm("Hapus semua riwayat?")) { history = []; saveToStorage(); renderHistory(); } }
+  function resetHistory(){ if(confirm("Hapus semua history?")) { history = []; saveToStorage(); renderHistory(); } }
   function openQrisPopup(){ document.getElementById("qrisPopup").classList.remove("hide"); }
   function closeQrisPopup(){ document.getElementById("qrisPopup").classList.add("hide"); }
   function qrisConfirmSuccess(){ closeQrisPopup(); finalize(); }
 
   loadFromStorage();
-  setMenuTab('utama');
+  setMenuTab(currentMenuTab);
 </script>
 </body>
 </html>
