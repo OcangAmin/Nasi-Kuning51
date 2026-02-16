@@ -3,366 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>POS Kasir Nasi Kuning 51</title>
+<title>POS Nasi Kuning 51 - BCA Style</title>
 <style>
-  :root{
-    --bg:#F4F6F7;
-    --card:#FFFFFF;
-    --text:#1F2A3A;
-    --muted:#6B7785;
-    --accent:#1F7A8C;
-    --danger:#D9534F;
-    --success:#2ECC71;
-    --border:rgba(31,42,58,0.12);
+  :root {
+    --bca-dark: #002651;
+    --bca-blue: #00569c;
+    --accent-blue: #3a86ff;
+    --text-white: #ffffff;
+    --muted: #8e9aaf;
+    --border: rgba(255, 255, 255, 0.1);
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    font-family: Arial, sans-serif;
-    background:var(--bg);
-    color:var(--text);
-  }
-  .container{
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 10px 10px 90px;
-  }
-  .header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:10px 0;
-  }
-  .tabs{
-    display:flex;
-    gap:8px;
-  }
-  .tab{
-    padding:10px 10px;
-    border-radius:12px;
-    background:var(--card);
-    border:1px solid var(--border);
-    cursor:pointer;
-    font-weight:700;
-    font-size:14px;
-  }
-  .tab.active{
-    background:var(--accent);
-    border-color:rgba(31,122,140,0.7);
-    color:#0b1220;
-  }
-  .section{
-    margin-top:10px;
-  }
-  .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:10px;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap:8px;
-    margin-top:10px;
-  }
-  .menu-btn{
-    background:rgba(31,42,58,0.06);
-    border:1px solid rgba(31,42,58,0.12);
-    border-radius:14px;
-    padding:12px;
-    cursor:pointer;
-    text-align:left;
-    font-weight:800;
-    font-size:14px;
-    line-height:1.2;
-  }
-  .menu-btn span{
-    display:block;
-    margin-top:6px;
-    font-size:12px;
-    color:var(--muted);
-    font-weight:600;
-  }
-  .menu-btn:hover{background:rgba(31,42,58,0.10);}
-  .cart-item{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    margin-bottom:10px;
-    padding-bottom:10px;
-    border-bottom:1px solid rgba(31,42,58,0.12);
-  }
-  .cart-left{
-    width:70%;
-  }
-  .cart-name{
-    font-weight:900;
-    font-size:14px;
-  }
-  .cart-qty{
-    display:flex;
-    gap:6px;
-    margin-top:8px;
-    flex-wrap:wrap;
-  }
-  .qty-btn{
-    padding:6px 10px;
-    border-radius:12px;
-    border:1px solid var(--border);
-    background:rgba(31,42,58,0.06);
-    cursor:pointer;
-    font-weight:800;
-    font-size:13px;
-  }
-  .qty-btn:hover{background:rgba(31,42,58,0.10);}
-  .cart-right{
-    width:30%;
-    text-align:right;
-    font-weight:900;
-    font-size:14px;
-  }
-  .total{
-    display:flex;
-    justify-content:space-between;
-    font-weight:900;
-    padding-top:10px;
-    border-top:1px solid rgba(31,42,58,0.12);
-    margin-top:10px;
-    font-size:14px;
-  }
-  .payment-row{
-    display:flex;
-    gap:8px;
-    margin-top:10px;
-  }
-  .pay-btn{
-    flex:1;
-    padding:12px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:rgba(31,42,58,0.06);
-    cursor:pointer;
-    font-weight:900;
-    font-size:14px;
-  }
-  .pay-btn.active{
-    background:var(--accent);
-    border-color:rgba(31,122,140,0.7);
-    color:#0b1220;
-  }
-  .input-group{
-    display:flex;
-    gap:8px;
-    margin-top:10px;
-    flex-wrap:wrap;
-  }
-  input[type="number"]{
-    width:100%;
-    padding:12px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:rgba(31,42,58,0.06);
-    color:var(--text);
-    font-weight:900;
-    font-size:16px;
-  }
-  .small-btn{
-    flex:1;
-    padding:12px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:rgba(31,42,58,0.06);
-    cursor:pointer;
-    font-weight:900;
-    font-size:13px;
-  }
-  .small-btn:hover{background:rgba(31,42,58,0.10);}
-  .footer-fixed{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    padding:10px;
-    background:rgba(244,246,247,0.95);
-    border-top:1px solid rgba(31,42,58,0.12);
-    z-index:999;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .footer-inner{
-    max-width:420px;
-    margin:0 auto;
-    display:flex;
-    gap:8px;
-  }
-  .btn-wide{
-    flex:1;
-    padding:14px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:var(--accent);
-    color:#0b1220;
-    font-weight:900;
-    cursor:pointer;
-    font-size:14px;
-  }
-  .btn-danger{
-    background:var(--danger);
-    color:#0b1220;
-  }
-  .history-list{
-    max-height: 430px;
-    overflow:auto;
-    margin-top:10px;
-  }
-  .hist-item{
-    border:1px solid rgba(31,42,58,0.12);
-    border-radius:14px;
-    padding:10px;
-    margin-bottom:10px;
-  }
-  .hist-top{
-    display:flex;
-    justify-content:space-between;
-    font-weight:900;
-    font-size:13px;
-  }
-  .hist-detail{
-    margin-top:8px;
-    font-size:13px;
-    color:var(--muted);
-    line-height:1.4;
-  }
-  .muted{color:var(--muted);}
-  .hide{display:none;}
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: Arial, sans-serif; background: var(--bca-dark); color: var(--text-white); overflow-x: hidden; }
+  
+  .container { max-width: 420px; margin: 0 auto; padding: 20px 15px 100px; min-height: 100vh; }
+  
+  /* Header */
+  .header-bca { padding: 10px 0 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .user-name { font-size: 20px; font-weight: 700; }
 
-  /* QRIS Popup */
-  .popup-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.25);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:999;
+  /* Tab Menu */
+  .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; }
+  .tab-item {
+    flex: 1; padding: 12px; text-align: center; background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600;
   }
-  .popup{
-    width:90%;
-    max-width:360px;
-    background:var(--card);
-    border-radius:14px;
-    padding:16px;
-    border:1px solid var(--border);
+  .tab-item.active { background: var(--bca-blue); border-color: var(--accent-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+  /* Menu Grid */
+  .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .bca-icon-btn {
+    background: linear-gradient(145deg, #1e4b82, #002651); border-radius: 18px; padding: 15px; 
+    text-align: left; border: 1px solid var(--border); cursor: pointer; transition: 0.1s;
   }
-  .popup h3{
-    margin-top:0;
-    margin-bottom:8px;
+  .bca-icon-btn:active { transform: scale(0.96); }
+  .bca-icon-btn .price { display: block; font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  /* Cards */
+  .card-bca { background: rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+  
+  /* Cart Items */
+  .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; }
+  .qty-ctrl { display: flex; align-items: center; gap: 10px; }
+  .qty-btn { background: var(--bca-blue); border: none; color: white; border-radius: 6px; width: 28px; height: 28px; font-weight: bold; cursor: pointer; }
+
+  /* Inputs */
+  input[type="number"] {
+    width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border); border-radius: 12px;
+    padding: 15px; color: white; font-size: 18px; font-weight: 700; margin: 10px 0; outline: none;
   }
+  .quick-pay-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+  .small-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+  /* Bottom Nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 75px;
+    display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid #ddd;
+  }
+  .nav-item { text-align: center; color: #8e9aaf; font-size: 10px; cursor: pointer; flex: 1; }
+  .nav-item.active { color: var(--bca-blue); font-weight: 700; }
+  .qris-float { width: 62px; height: 62px; background: var(--bca-blue); border-radius: 18px; margin-top: -45px; border: 4px solid #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+  /* Action Buttons */
+  .btn-main { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; margin-top: 10px; font-size: 14px; }
+  .bg-blue { background: var(--bca-blue); color: white; }
+  .bg-red { background: #d9534f; color: white; }
+  .hide { display: none; }
+
+  /* History List */
+  .hist-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; margin-bottom: 10px; border-left: 4px solid var(--bca-blue); }
+  
+  /* Popup */
+  .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+  .popup { width: 85%; background: white; color: #333; border-radius: 20px; padding: 20px; text-align: center; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="header">
-    <div class="tabs">
-      <div class="tab active" id="tabTrans" onclick="showTab('transaksi')">Transaksi</div>
-      <div class="tab" id="tabHist" onclick="showTab('history')">Riwayat Transaksi</div>
+  <div class="header-bca">
+    <div>
+      <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px;">SELAMAT DATANG,</div>
+      <div class="user-name">HALILINTAR BUCEK</div>
     </div>
-    <div class="muted">NASI KUNING 51</div>
+    <div style="font-size: 10px; font-weight: 800; color: var(--muted);">NASI KUNING 51</div>
   </div>
 
   <div id="pageTransaksi">
-    <div class="section card">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div style="font-weight:900;">Menu</div>
-        <div style="font-size:12px;color:var(--muted);">HALILINTAR BUCEK</div>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-top:10px;">
-        <button class="pay-btn active" id="tabMenuUtama" onclick="setMenuTab('utama')">UTAMA</button>
-        <button class="pay-btn" id="tabMenuAdd" onclick="setMenuTab('additional')">TAMBAHAN</button>
-      </div>
-
-      <div class="grid" id="menuGrid"></div>
+    <div class="tabs-container">
+      <div class="tab-item active" id="tabUtama" onclick="setMenuTab('utama')">MENU UTAMA</div>
+      <div class="tab-item" id="tabAdd" onclick="setMenuTab('additional')">TAMBAHAN</div>
     </div>
 
-    <div class="section card" style="margin-top:10px;">
-      <div style="font-weight:900;">Pesanan</div>
-      <div id="cartList" style="margin-top:10px;"></div>
+    <div class="menu-grid" id="menuGrid"></div>
 
-      <div class="total">
-        <div>Total</div>
-        <div id="totalHarga">0</div>
+    <div class="card-bca" style="margin-top: 20px;">
+      <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px;">
+        <span>Ringkasan Pesanan</span>
+        <span id="totalItem" style="color: var(--muted);">0 Item</span>
       </div>
-      <div class="total">
-        <div>Item</div>
-        <div id="totalItem">0</div>
+      <div id="cartList" style="max-height: 200px; overflow-y: auto;"></div>
+      <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 10px;">
+        <span style="font-weight: 600;">Total Bayar</span>
+        <span style="color: #5cc9ff; font-weight: 800; font-size: 18px;">Rp <span id="totalHarga">0</span></span>
       </div>
     </div>
 
-    <div class="section card" style="margin-top:10px;">
-      <div style="font-weight:900;">Pembayaran</div>
-
-      <div class="payment-row">
-        <button class="pay-btn" id="btnCash" onclick="setPayment('cash')">CASH</button>
-        <button class="pay-btn" id="btnQris" onclick="setPayment('qris')">QRIS</button>
+    <div class="card-bca">
+      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+        <button class="tab-item" id="btnCash" onclick="setPayment('cash')">CASH</button>
+        <button class="tab-item" id="btnQris" onclick="setPayment('qris')">QRIS</button>
       </div>
-
-      <div class="input-group">
-        <input type="number" id="uangBayar" placeholder="Uang Bayar" oninput="calculateChange()" />
-      </div>
-
-      <div class="input-group">
-        <button class="small-btn" onclick="setQuick(5000)">5K</button>
+      <input type="number" id="uangBayar" placeholder="0" oninput="calculateChange()" inputmode="numeric">
+      <div class="quick-pay-row">
         <button class="small-btn" onclick="setQuick(10000)">10K</button>
         <button class="small-btn" onclick="setQuick(20000)">20K</button>
         <button class="small-btn" onclick="setQuick(50000)">50K</button>
-        <button class="small-btn" onclick="setQuick(100000)">100K</button>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-top:10px;">
-        <button class="small-btn" onclick="setExact()">UANG PAS</button>
+        <button class="small-btn" onclick="setExact()">PAS</button>
         <button class="small-btn" onclick="clearUangBayar()">Clear</button>
       </div>
-
-      <div class="total" style="margin-top:10px;">
-        <div>Kembalian</div>
-        <div id="kembalian">0</div>
+      <div style="display: flex; justify-content: space-between; font-weight: 700; margin-top: 10px;">
+        <span>Kembalian</span>
+        <span style="color: #2ecc71;">Rp <span id="kembalian">0</span></span>
       </div>
     </div>
+
+    <button class="btn-main bg-blue" onclick="completeTransaction()">SELESAIKAN TRANSAKSI</button>
+    <button class="btn-main bg-red" style="opacity: 0.6;" onclick="resetCart()">RESET TRANSAKSI</button>
   </div>
 
   <div id="pageHistory" class="hide">
-    <div class="section card">
-      <div style="font-weight:900;">History Penjualan</div>
-      <div class="history-list" id="historyList"></div>
-
-      <div style="display:flex;gap:8px;margin-top:10px;">
-        <button class="btn-wide" onclick="saveHistory()">Simpan History</button>
-        <button class="btn-wide btn-danger" onclick="resetHistory()">Reset History</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:10px;">
-        <button class="btn-wide" onclick="closeCashier()">Tutup Kasir</button>
-      </div>
-    </div>
+    <h3 style="margin-top:0;">History Penjualan</h3>
+    <div id="historyList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
+    <button class="btn-main bg-blue" onclick="saveHistory()">SIMPAN HISTORY (.TXT)</button>
+    <button class="btn-main bg-blue" style="background: #2a9d8f;" onclick="closeCashier()">TUTUP KASIR (REKAP)</button>
+    <button class="btn-main bg-red" onclick="resetHistory()">HAPUS SEMUA HISTORY</button>
   </div>
 </div>
 
-<div class="footer-fixed">
-  <div class="footer-inner">
-    <button class="btn-wide btn-danger" onclick="resetCart()">Reset Transaksi</button>
-    <button class="btn-wide" onclick="completeTransaction()">Selesaikan Transaksi</button>
-  </div>
-</div>
+<nav class="bottom-nav">
+  <div class="nav-item active" id="navHome" onclick="showTab('transaksi')">🏠<div>Home</div></div>
+  <div class="nav-item" id="navHist" onclick="showTab('history')">📋<div>Riwayat</div></div>
+  <div class="qris-float">🔳<div style="font-size: 10px; font-weight: 900;">QRIS</div></div>
+  <div class="nav-item">🔔<div>Notif</div></div>
+  <div class="nav-item">👤<div>Akun</div></div>
+</nav>
 
 <div id="qrisPopup" class="hide">
   <div class="popup-overlay">
     <div class="popup">
-      <h3>Konfirmasi QRIS</h3>
+      <h3 style="color: var(--bca-blue);">Konfirmasi QRIS</h3>
       <p>Apakah pembayaran QRIS sudah berhasil?</p>
-      <button class="btn-wide" onclick="qrisConfirmSuccess()">QRIS BERHASIL</button>
-      <button class="btn-wide btn-danger" onclick="qrisConfirmFail()">QRIS GAGAL</button>
-      <button class="btn-wide" onclick="closeQrisPopup()">BATAL</button>
+      <button class="btn-main bg-blue" onclick="qrisConfirmSuccess()">YA, BERHASIL</button>
+      <button class="btn-main bg-red" onclick="closeQrisPopup()">BATAL / GAGAL</button>
     </div>
   </div>
 </div>
@@ -387,6 +180,7 @@
   let paymentMethod = "";
   let currentMenuTab = "utama";
 
+  // --- LOGIKA STORAGE ---
   function saveToStorage(){
     localStorage.setItem("bucek_cart", JSON.stringify(cart));
     localStorage.setItem("bucek_history", JSON.stringify(history));
@@ -401,352 +195,193 @@
     currentMenuTab = localStorage.getItem("bucek_menuTab") || "utama";
   }
 
-  function showTab(tab){
-    document.getElementById("pageTransaksi").classList.add("hide");
-    document.getElementById("pageHistory").classList.add("hide");
-    document.getElementById("tabTrans").classList.remove("active");
-    document.getElementById("tabHist").classList.remove("active");
+  // --- LOGIKA TRANSAKSI ---
+  function getNum(id) {
+    const el = document.getElementById(id);
+    let val = (el.tagName === "INPUT") ? el.value : el.innerText;
+    return parseInt(val.toString().replace(/\D/g, '')) || 0;
+  }
 
-    if(tab === "transaksi"){
-      document.getElementById("pageTransaksi").classList.remove("hide");
-      document.getElementById("tabTrans").classList.add("active");
-    } else {
-      document.getElementById("pageHistory").classList.remove("hide");
-      document.getElementById("tabHist").classList.add("active");
-      renderHistory();
-    }
+  function calculateChange(){
+    const total = getNum("totalHarga");
+    const bayar = getNum("uangBayar");
+    const change = bayar - total;
+    document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0";
   }
 
   function setMenuTab(tab){
     currentMenuTab = tab;
-    document.getElementById("tabMenuUtama").classList.remove("active");
-    document.getElementById("tabMenuAdd").classList.remove("active");
-    if(tab === "utama") document.getElementById("tabMenuUtama").classList.add("active");
-    else document.getElementById("tabMenuAdd").classList.add("active");
+    document.getElementById("tabUtama").classList.toggle("active", tab==='utama');
+    document.getElementById("tabAdd").classList.toggle("active", tab==='additional');
     renderMenu();
     saveToStorage();
   }
 
   function renderMenu(){
     const grid = document.getElementById("menuGrid");
-    grid.innerHTML = "";
-    const filtered = menus.filter(m => m.type === currentMenuTab);
-    filtered.forEach(m => {
-      const btn = document.createElement("button");
-      btn.className = "menu-btn";
-      btn.innerHTML = `${m.name}<span>Rp ${m.price.toLocaleString('id-ID')}</span>`;
-      btn.onclick = () => addToCart(m.name, m.price);
-      grid.appendChild(btn);
-    });
+    grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `
+      <div class="bca-icon-btn" onclick="addToCart('${m.name}', ${m.price})">
+        <div style="font-weight:700; font-size:13px;">${m.name}</div>
+        <span class="price">Rp ${m.price.toLocaleString('id-ID')}</span>
+      </div>
+    `).join("");
   }
 
   function addToCart(name, price){
-    const existing = cart.find(i => i.name === name);
-    if(existing){
-      existing.qty += 1;
-    } else {
-      cart.push({name, price, qty:1});
-    }
-    calculateTotal();
-    renderCart();
-    saveToStorage();
+    const item = cart.find(i => i.name === name);
+    if(item) item.qty++; else cart.push({name, price, qty:1});
+    renderCart(); calculateTotal(); saveToStorage();
   }
 
   function renderCart(){
-    const cartList = document.getElementById("cartList");
-    cartList.innerHTML = "";
-    cart.forEach((item, idx) => {
-      const div = document.createElement("div");
-      div.className = "cart-item";
-      div.innerHTML = `
-        <div class="cart-left">
-          <div class="cart-name">${item.name}</div>
-          <div class="cart-qty">
-            <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
-            <div>${item.qty}</div>
-            <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
-            <button class="qty-btn" onclick="removeItem(${idx})">Hapus</button>
-          </div>
+    const list = document.getElementById("cartList");
+    list.innerHTML = cart.map((i, idx) => `
+      <div class="cart-item">
+        <div style="font-weight:600;">${i.name}</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${idx},-1)">-</button>
+          <span style="min-width:20px; text-align:center;">${i.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
+          <span style="min-width:80px; text-align:right; font-weight:700;">Rp ${(i.price*i.qty).toLocaleString('id-ID')}</span>
         </div>
-        <div class="cart-right">
-          <div>Rp ${ (item.price * item.qty).toLocaleString('id-ID') }</div>
-        </div>
-      `;
-      cartList.appendChild(div);
-    });
+      </div>
+    `).join("");
   }
 
   function changeQty(idx, delta){
     cart[idx].qty += delta;
-    if(cart[idx].qty <= 0){
-      cart.splice(idx,1);
-    }
-    calculateTotal();
-    renderCart();
-    saveToStorage();
-  }
-
-  function removeItem(idx){
-    cart.splice(idx,1);
-    calculateTotal();
-    renderCart();
-    saveToStorage();
+    if(cart[idx].qty <= 0) cart.splice(idx,1);
+    renderCart(); calculateTotal(); saveToStorage();
   }
 
   function calculateTotal(){
-    let total = 0;
-    let itemCount = 0;
-    cart.forEach(i => {
-      total += i.price * i.qty;
-      itemCount += i.qty;
-    });
+    let total = 0, items = 0;
+    cart.forEach(i => { total += (i.price*i.qty); items += i.qty; });
     document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID');
-    document.getElementById("totalItem").innerText = itemCount;
+    document.getElementById("totalItem").innerText = items + " Item";
     calculateChange();
   }
 
-  function setPayment(method){
-    paymentMethod = method;
-    document.getElementById("btnCash").classList.remove("active");
-    document.getElementById("btnQris").classList.remove("active");
-    if(method === "cash") document.getElementById("btnCash").classList.add("active");
-    if(method === "qris"){
-      document.getElementById("btnQris").classList.add("active");
-      document.getElementById("uangBayar").value = document.getElementById("totalHarga").innerText.replace(/\D/g,'');
-    }
+  function setPayment(m){
+    paymentMethod = m;
+    document.getElementById("btnCash").classList.toggle("active", m==='cash');
+    document.getElementById("btnQris").classList.toggle("active", m==='qris');
+    if(m==='qris') setExact();
     saveToStorage();
-    calculateChange();
   }
 
-  function setQuick(amount){
-    // Membersihkan karakter non-angka sebelum dijumlahkan
-    const currentStr = document.getElementById("uangBayar").value.replace(/\D/g,'');
-    const current = Number(currentStr || 0);
-    document.getElementById("uangBayar").value = current + amount;
+  function setQuick(amt){
+    document.getElementById("uangBayar").value = getNum("uangBayar") + amt;
     calculateChange();
   }
 
   function setExact(){
-    document.getElementById("uangBayar").value = document.getElementById("totalHarga").innerText.replace(/\D/g,'');
+    document.getElementById("uangBayar").value = getNum("totalHarga");
     calculateChange();
   }
 
-  function clearUangBayar(){
-    document.getElementById("uangBayar").value = "";
-    calculateChange();
-  }
-
-  function calculateChange(){
-    // Membersihkan titik/koma agar matematika JS tetap akurat (Integer Only)
-    const total = Number(document.getElementById("totalHarga").innerText.replace(/\D/g,'') || 0);
-    const bayar = Number(document.getElementById("uangBayar").value.replace(/\D/g,'') || 0);
-    const change = bayar - total;
-    document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0";
-  }
-
-  function resetCart(){
-    if(confirm("Reset transaksi saat ini?")) {
-      cart = [];
-      calculateTotal();
-      renderCart();
-      clearUangBayar();
-      paymentMethod = "";
-      document.getElementById("btnCash").classList.remove("active");
-      document.getElementById("btnQris").classList.remove("active");
-      saveToStorage();
-    }
-  }
+  function clearUangBayar(){ document.getElementById("uangBayar").value = ""; calculateChange(); }
 
   function completeTransaction(){
-    const total = Number(document.getElementById("totalHarga").innerText.replace(/\D/g,'') || 0);
-    const bayar = Number(document.getElementById("uangBayar").value.replace(/\D/g,'') || 0);
+    const total = getNum("totalHarga");
+    const bayar = getNum("uangBayar");
+    if(!cart.length || !paymentMethod || bayar < total) return alert("Periksa pesanan, metode bayar, atau jumlah uang!");
+    if(paymentMethod === "qris") { openQrisPopup(); } else { finalize(); }
+  }
 
-    if(cart.length === 0){
-      alert("Tidak ada pesanan.");
-      return;
-    }
-    if(!paymentMethod){
-      alert("Pilih metode pembayaran.");
-      return;
-    }
-    if(bayar < total){
-      alert("Uang tidak cukup.");
-      return;
-    }
+  function finalize(){
+    const total = getNum("totalHarga");
+    const bayar = getNum("uangBayar");
+    history.push({
+      time: new Date().toLocaleString('id-ID'),
+      items: JSON.parse(JSON.stringify(cart)),
+      total, bayar, change: bayar - total, paymentMethod
+    });
+    alert("Transaksi Berhasil!");
+    cart = []; resetCartUI(); saveToStorage();
+  }
 
-    if(paymentMethod === "qris"){
-      openQrisPopup();
-      return;
-    }
-
-    const change = bayar - total;
-    const now = new Date();
-    const record = {
-      time: now.toLocaleString('id-ID'),
-      items: JSON.parse(JSON.stringify(cart)), // Deep copy agar tidak berantakan
-      total,
-      bayar,
-      change,
-      paymentMethod
-    };
-    history.push(record);
-    saveToStorage();
-
-    cart = [];
-    calculateTotal();
-    renderCart();
-    clearUangBayar();
+  function resetCartUI(){
     paymentMethod = "";
     document.getElementById("btnCash").classList.remove("active");
     document.getElementById("btnQris").classList.remove("active");
-    alert("Transaksi berhasil disimpan.");
+    clearUangBayar(); renderCart(); calculateTotal();
+  }
+
+  function resetCart(){ if(confirm("Reset transaksi saat ini?")) { cart = []; resetCartUI(); saveToStorage(); } }
+
+  // --- LOGIKA RIWAYAT & FILE ---
+  function showTab(t){
+    document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi");
+    document.getElementById("pageHistory").classList.toggle("hide", t !== "history");
+    document.getElementById("navHome").classList.toggle("active", t === "transaksi");
+    document.getElementById("navHist").classList.toggle("active", t === "history");
+    if(t === "history") renderHistory();
   }
 
   function renderHistory(){
     const list = document.getElementById("historyList");
-    list.innerHTML = "";
-    history.slice().reverse().forEach(h => {
-      const div = document.createElement("div");
-      div.className = "hist-item";
-      let itemsText = h.items.map(i => `${i.name} x${i.qty}`).join(", ");
-      div.innerHTML = `
-        <div class="hist-top">
-          <div>${h.time}</div>
-          <div>${h.paymentMethod.toUpperCase()}</div>
+    list.innerHTML = history.slice().reverse().map(h => `
+      <div class="hist-item">
+        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
+          <span>${h.time}</span>
+          <span style="color: #5cc9ff;">${h.paymentMethod.toUpperCase()}</span>
         </div>
-        <div class="hist-detail">
-          ${itemsText}<br>
-          Total: Rp ${h.total.toLocaleString('id-ID')} • Bayar: Rp ${h.bayar.toLocaleString('id-ID')} • Kembali: Rp ${h.change.toLocaleString('id-ID')}
-        </div>
-      `;
-      list.appendChild(div);
-    });
+        <div style="font-size:12px; color:var(--muted); margin: 5px 0;">${h.items.map(i => i.name + ' x' + i.qty).join(", ")}</div>
+        <div style="text-align:right; font-weight:800; font-size:14px;">Rp ${h.total.toLocaleString('id-ID')}</div>
+      </div>
+    `).join("");
   }
 
   function saveHistory(){
-    if(history.length === 0){
-      alert("History kosong.");
-      return;
-    }
+    if(!history.length) return alert("History kosong.");
     const now = new Date();
     const filename = `bucek_history_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.txt`;
-    let text = "HISTORY PENJUALAN\n\n";
+    
+    let text = "HISTORY PENJUALAN NASI KUNING 51\n" + "=".repeat(35) + "\n\n";
     history.forEach(h => {
-      text += `Waktu: ${h.time}\n`;
-      text += `Metode: ${h.paymentMethod}\n`;
-      text += `Items:\n`;
-      h.items.forEach(i => {
-        text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`;
-      });
-      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
-      text += `Bayar: Rp ${h.bayar.toLocaleString('id-ID')}\n`;
-      text += `Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`;
-      text += `---------------------------------\n`;
+      text += `WAKTU  : ${h.time}\nMETODE : ${h.paymentMethod.toUpperCase()}\nITEM   :\n`;
+      h.items.forEach(i => text += `- ${i.name} x${i.qty} (@Rp ${i.price.toLocaleString()})\n`);
+      text += `TOTAL  : Rp ${h.total.toLocaleString()}\n` + "-".repeat(35) + "\n\n";
     });
-
-    const blob = new Blob([text], {type:"text/plain"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  function resetHistory(){
-    if(confirm("Reset history penjualan?")) {
-      history = [];
-      saveToStorage();
-      renderHistory();
-    }
+    downloadFile(filename, text);
   }
 
   function closeCashier(){
-    if(history.length === 0){
-      alert("Tidak ada transaksi untuk disimpan.");
-      return;
-    }
+    if(!history.length) return alert("Tidak ada transaksi untuk rekap.");
     const now = new Date();
-    const filename = `bucek_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.txt`;
-
-    let text = "REKAP TUTUP KASIR\n\n";
+    const filename = `bucek_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
+    
     let totalOmzet = 0;
+    let text = "REKAP TUTUP KASIR\n" + "=".repeat(35) + "\n";
     history.forEach(h => {
       totalOmzet += h.total;
-      text += `Waktu: ${h.time}\n`;
-      text += `Metode: ${h.paymentMethod}\n`;
-      h.items.forEach(i => {
-        text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`;
-      });
-      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
-      text += `Bayar: Rp ${h.bayar.toLocaleString('id-ID')}\n`;
-      text += `Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`;
-      text += `---------------------------------\n`;
+      text += `[${h.time}] Rp ${h.total.toLocaleString()} (${h.paymentMethod.toUpperCase()})\n`;
     });
-    text += `\nTOTAL OMZET: Rp ${totalOmzet.toLocaleString('id-ID')}\n`;
+    text += "=".repeat(35) + `\nTOTAL OMZET : Rp ${totalOmzet.toLocaleString()}`;
+    
+    downloadFile(filename, text);
+    if(confirm("Tutup kasir berhasil. Hapus history sekarang?")) { history = []; saveToStorage(); renderHistory(); }
+  }
 
-    const blob = new Blob([text], {type:"text/plain"});
+  function downloadFile(name, content){
+    const blob = new Blob([content], {type:"text/plain"});
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-
-    history = [];
-    saveToStorage();
-    renderHistory();
-    showTab('transaksi');
-    alert("Tutup kasir selesai. History telah disimpan dan direset.");
+    a.href = URL.createObjectURL(blob); a.download = name; a.click();
   }
 
-  // QRIS Popup
-  function openQrisPopup(){
-    document.getElementById("qrisPopup").classList.remove("hide");
-  }
-  function closeQrisPopup(){
-    document.getElementById("qrisPopup").classList.add("hide");
-  }
-  function qrisConfirmSuccess(){
-    closeQrisPopup();
-    processQrisTransaction();
-  }
-  function qrisConfirmFail(){
-    closeQrisPopup();
-    alert("QRIS gagal. Silakan coba lagi.");
-  }
+  function resetHistory(){ if(confirm("Hapus seluruh riwayat permanen?")) { history = []; saveToStorage(); renderHistory(); } }
 
-  function processQrisTransaction(){
-    const total = Number(document.getElementById("totalHarga").innerText.replace(/\D/g,'') || 0);
-    const bayar = Number(document.getElementById("uangBayar").value.replace(/\D/g,'') || 0);
+  // --- QRIS ---
+  function openQrisPopup(){ document.getElementById("qrisPopup").classList.remove("hide"); }
+  function closeQrisPopup(){ document.getElementById("qrisPopup").classList.add("hide"); }
+  function qrisConfirmSuccess(){ closeQrisPopup(); finalize(); }
 
-    const change = bayar - total;
-    const now = new Date();
-    const record = {
-      time: now.toLocaleString('id-ID'),
-      items: JSON.parse(JSON.stringify(cart)),
-      total,
-      bayar,
-      change,
-      paymentMethod
-    };
-    history.push(record);
-    saveToStorage();
-
-    cart = [];
-    calculateTotal();
-    renderCart();
-    clearUangBayar();
-    paymentMethod = "";
-    document.getElementById("btnCash").classList.remove("active");
-    document.getElementById("btnQris").classList.remove("active");
-    alert("Transaksi QRIS berhasil disimpan.");
-  }
-
-  // init
+  // --- INIT ---
   loadFromStorage();
   setMenuTab(currentMenuTab);
   renderCart();
   calculateTotal();
-  showTab('transaksi');
 </script>
 </body>
 </html>
