@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>POS Nasi Kuning 51 - BCA Style</title>
+<title>POS Nasi Kuning 51 - BCA Style Professional</title>
 <style>
   :root {
     --bca-dark: #002651;
@@ -19,14 +19,14 @@
   .container { max-width: 420px; margin: 0 auto; padding: 20px 15px 100px; min-height: 100vh; }
   
   /* Header */
-  .header-bca { padding: 10px 0 20px; display: flex; justify-content: space-between; align-items: flex-end; }
-  .user-name { font-size: 20px; font-weight: 700; }
+  .header-bca { padding: 10px 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+  .user-name { font-size: 20px; font-weight: 700; color: #fff; }
 
   /* Tab Menu */
   .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; }
   .tab-item {
     flex: 1; padding: 12px; text-align: center; background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600;
+    border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff;
   }
   .tab-item.active { background: var(--bca-blue); border-color: var(--accent-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 
@@ -34,9 +34,8 @@
   .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .bca-icon-btn {
     background: linear-gradient(145deg, #1e4b82, #002651); border-radius: 18px; padding: 15px; 
-    text-align: left; border: 1px solid var(--border); cursor: pointer; transition: 0.1s;
+    text-align: left; border: 1px solid var(--border); cursor: pointer;
   }
-  .bca-icon-btn:active { transform: scale(0.96); }
   .bca-icon-btn .price { display: block; font-size: 11px; color: var(--muted); margin-top: 5px; }
 
   /* Cards */
@@ -55,14 +54,14 @@
   .quick-pay-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
   .small-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-  /* Bottom Nav */
+  /* Bottom Nav (Clean Style) */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 75px;
     display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid #ddd;
   }
-  .nav-item { text-align: center; color: #8e9aaf; font-size: 10px; cursor: pointer; flex: 1; }
+  .nav-item { text-align: center; color: #8e9aaf; font-size: 10px; cursor: pointer; flex: 1; text-decoration: none; }
   .nav-item.active { color: var(--bca-blue); font-weight: 700; }
-  .qris-float { width: 62px; height: 62px; background: var(--bca-blue); border-radius: 18px; margin-top: -45px; border: 4px solid #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+  .nav-icon { font-size: 24px; margin-bottom: 2px; }
 
   /* Action Buttons */
   .btn-main { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; margin-top: 10px; font-size: 14px; }
@@ -74,7 +73,7 @@
   .hist-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; margin-bottom: 10px; border-left: 4px solid var(--bca-blue); }
   
   /* Popup */
-  .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+  .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
   .popup { width: 85%; background: white; color: #333; border-radius: 20px; padding: 20px; text-align: center; }
 </style>
 </head>
@@ -83,15 +82,18 @@
 <div class="container">
   <div class="header-bca">
     <div>
-      <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px;">SELAMAT DATANG,</div>
+      <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 4px;">KASIR AKTIF</div>
       <div class="user-name">HALILINTAR BUCEK</div>
     </div>
-    <div style="font-size: 10px; font-weight: 800; color: var(--muted);">NASI KUNING 51</div>
+    <div style="text-align: right;">
+      <div style="font-size: 10px; font-weight: 800; color: var(--muted);">NASI KUNING 51</div>
+      <div id="liveClock" style="font-size: 11px; font-weight: 700; color: var(--accent-blue);">00:00:00</div>
+    </div>
   </div>
 
   <div id="pageTransaksi">
     <div class="tabs-container">
-      <div class="tab-item active" id="tabUtama" onclick="setMenuTab('utama')">MENU UTAMA</div>
+      <div class="tab-item active" id="tabUtama" onclick="setMenuTab('utama')">UTAMA</div>
       <div class="tab-item" id="tabAdd" onclick="setMenuTab('additional')">TAMBAHAN</div>
     </div>
 
@@ -99,12 +101,12 @@
 
     <div class="card-bca" style="margin-top: 20px;">
       <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px;">
-        <span>Ringkasan Pesanan</span>
+        <span>Daftar Pesanan</span>
         <span id="totalItem" style="color: var(--muted);">0 Item</span>
       </div>
-      <div id="cartList" style="max-height: 200px; overflow-y: auto;"></div>
+      <div id="cartList" style="max-height: 180px; overflow-y: auto;"></div>
       <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 10px;">
-        <span style="font-weight: 600;">Total Bayar</span>
+        <span style="font-weight: 600;">Total Transaksi</span>
         <span style="color: #5cc9ff; font-weight: 800; font-size: 18px;">Rp <span id="totalHarga">0</span></span>
       </div>
     </div>
@@ -128,34 +130,38 @@
       </div>
     </div>
 
-    <button class="btn-main bg-blue" onclick="completeTransaction()">SELESAIKAN TRANSAKSI</button>
-    <button class="btn-main bg-red" style="opacity: 0.6;" onclick="resetCart()">RESET TRANSAKSI</button>
+    <button class="btn-main bg-blue" onclick="completeTransaction()">PROSES BAYAR</button>
+    <button class="btn-main bg-red" style="opacity: 0.6;" onclick="resetCart()">RESET</button>
   </div>
 
   <div id="pageHistory" class="hide">
-    <h3 style="margin-top:0;">History Penjualan</h3>
+    <h3 style="margin-top:0; color: #fff;">Riwayat Transaksi</h3>
     <div id="historyList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
-    <button class="btn-main bg-blue" onclick="saveHistory()">SIMPAN HISTORY (.TXT)</button>
-    <button class="btn-main bg-blue" style="background: #2a9d8f;" onclick="closeCashier()">TUTUP KASIR (REKAP)</button>
-    <button class="btn-main bg-red" onclick="resetHistory()">HAPUS SEMUA HISTORY</button>
+    <button class="btn-main bg-blue" onclick="saveHistory()">DOWNLOAD HARIAN (.TXT)</button>
+    <button class="btn-main bg-blue" style="background: #2a9d8f;" onclick="closeCashier()">TUTUP KASIR (REKAP FINAL)</button>
+    <button class="btn-main bg-red" onclick="resetHistory()">HAPUS HISTORY</button>
   </div>
 </div>
 
 <nav class="bottom-nav">
-  <div class="nav-item active" id="navHome" onclick="showTab('transaksi')">🏠<div>Home</div></div>
-  <div class="nav-item" id="navHist" onclick="showTab('history')">📋<div>Riwayat</div></div>
-  <div class="qris-float">🔳<div style="font-size: 10px; font-weight: 900;">QRIS</div></div>
-  <div class="nav-item">🔔<div>Notif</div></div>
-  <div class="nav-item">👤<div>Akun</div></div>
+  <div class="nav-item active" id="navHome" onclick="showTab('transaksi')">
+    <div class="nav-icon">🏠</div><div>m-Bayar</div>
+  </div>
+  <div class="nav-item" id="navHist" onclick="showTab('history')">
+    <div class="nav-icon">📋</div><div>m-Info</div>
+  </div>
+  <div class="nav-item" onclick="alert('Fitur m-Admin: Pengaturan Menu (Segera Hadir)')">
+    <div class="nav-icon">⚙️</div><div>m-Admin</div>
+  </div>
 </nav>
 
 <div id="qrisPopup" class="hide">
   <div class="popup-overlay">
     <div class="popup">
       <h3 style="color: var(--bca-blue);">Konfirmasi QRIS</h3>
-      <p>Apakah pembayaran QRIS sudah berhasil?</p>
-      <button class="btn-main bg-blue" onclick="qrisConfirmSuccess()">YA, BERHASIL</button>
-      <button class="btn-main bg-red" onclick="closeQrisPopup()">BATAL / GAGAL</button>
+      <p>Pastikan dana sudah masuk ke aplikasi merchant sebelum menekan Berhasil.</p>
+      <button class="btn-main bg-blue" onclick="qrisConfirmSuccess()">PEMBAYARAN BERHASIL</button>
+      <button class="btn-main bg-red" onclick="closeQrisPopup()">BATAL</button>
     </div>
   </div>
 </div>
@@ -179,23 +185,24 @@
   let history = [];
   let paymentMethod = "";
   let currentMenuTab = "utama";
+  let sessionStart = new Date().toLocaleString('id-ID');
 
-  // --- LOGIKA STORAGE ---
   function saveToStorage(){
-    localStorage.setItem("bucek_cart", JSON.stringify(cart));
     localStorage.setItem("bucek_history", JSON.stringify(history));
-    localStorage.setItem("bucek_payment", paymentMethod);
-    localStorage.setItem("bucek_menuTab", currentMenuTab);
+    localStorage.setItem("bucek_session", sessionStart);
   }
 
   function loadFromStorage(){
-    cart = JSON.parse(localStorage.getItem("bucek_cart")) || [];
     history = JSON.parse(localStorage.getItem("bucek_history")) || [];
-    paymentMethod = localStorage.getItem("bucek_payment") || "";
-    currentMenuTab = localStorage.getItem("bucek_menuTab") || "utama";
+    sessionStart = localStorage.getItem("bucek_session") || new Date().toLocaleString('id-ID');
   }
 
-  // --- LOGIKA TRANSAKSI ---
+  // Live Clock
+  setInterval(() => {
+    const now = new Date();
+    document.getElementById("liveClock").innerText = now.toLocaleTimeString('id-ID');
+  }, 1000);
+
   function getNum(id) {
     const el = document.getElementById(id);
     let val = (el.tagName === "INPUT") ? el.value : el.innerText;
@@ -214,14 +221,13 @@
     document.getElementById("tabUtama").classList.toggle("active", tab==='utama');
     document.getElementById("tabAdd").classList.toggle("active", tab==='additional');
     renderMenu();
-    saveToStorage();
   }
 
   function renderMenu(){
     const grid = document.getElementById("menuGrid");
     grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `
       <div class="bca-icon-btn" onclick="addToCart('${m.name}', ${m.price})">
-        <div style="font-weight:700; font-size:13px;">${m.name}</div>
+        <div style="font-weight:700; font-size:13px; color: #fff;">${m.name}</div>
         <span class="price">Rp ${m.price.toLocaleString('id-ID')}</span>
       </div>
     `).join("");
@@ -230,7 +236,7 @@
   function addToCart(name, price){
     const item = cart.find(i => i.name === name);
     if(item) item.qty++; else cart.push({name, price, qty:1});
-    renderCart(); calculateTotal(); saveToStorage();
+    renderCart(); calculateTotal();
   }
 
   function renderCart(){
@@ -240,7 +246,7 @@
         <div style="font-weight:600;">${i.name}</div>
         <div class="qty-ctrl">
           <button class="qty-btn" onclick="changeQty(${idx},-1)">-</button>
-          <span style="min-width:20px; text-align:center;">${i.qty}</span>
+          <span>${i.qty}</span>
           <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
           <span style="min-width:80px; text-align:right; font-weight:700;">Rp ${(i.price*i.qty).toLocaleString('id-ID')}</span>
         </div>
@@ -251,7 +257,7 @@
   function changeQty(idx, delta){
     cart[idx].qty += delta;
     if(cart[idx].qty <= 0) cart.splice(idx,1);
-    renderCart(); calculateTotal(); saveToStorage();
+    renderCart(); calculateTotal();
   }
 
   function calculateTotal(){
@@ -267,7 +273,6 @@
     document.getElementById("btnCash").classList.toggle("active", m==='cash');
     document.getElementById("btnQris").classList.toggle("active", m==='qris');
     if(m==='qris') setExact();
-    saveToStorage();
   }
 
   function setQuick(amt){
@@ -285,7 +290,7 @@
   function completeTransaction(){
     const total = getNum("totalHarga");
     const bayar = getNum("uangBayar");
-    if(!cart.length || !paymentMethod || bayar < total) return alert("Periksa pesanan, metode bayar, atau jumlah uang!");
+    if(!cart.length || !paymentMethod || bayar < total) return alert("Periksa data transaksi!");
     if(paymentMethod === "qris") { openQrisPopup(); } else { finalize(); }
   }
 
@@ -297,7 +302,7 @@
       items: JSON.parse(JSON.stringify(cart)),
       total, bayar, change: bayar - total, paymentMethod
     });
-    alert("Transaksi Berhasil!");
+    alert("Transaksi Disimpan!");
     cart = []; resetCartUI(); saveToStorage();
   }
 
@@ -308,9 +313,8 @@
     clearUangBayar(); renderCart(); calculateTotal();
   }
 
-  function resetCart(){ if(confirm("Reset transaksi saat ini?")) { cart = []; resetCartUI(); saveToStorage(); } }
+  function resetCart(){ if(confirm("Hapus pesanan saat ini?")) { cart = []; resetCartUI(); } }
 
-  // --- LOGIKA RIWAYAT & FILE ---
   function showTab(t){
     document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi");
     document.getElementById("pageHistory").classList.toggle("hide", t !== "history");
@@ -328,40 +332,70 @@
           <span style="color: #5cc9ff;">${h.paymentMethod.toUpperCase()}</span>
         </div>
         <div style="font-size:12px; color:var(--muted); margin: 5px 0;">${h.items.map(i => i.name + ' x' + i.qty).join(", ")}</div>
-        <div style="text-align:right; font-weight:800; font-size:14px;">Rp ${h.total.toLocaleString('id-ID')}</div>
+        <div style="text-align:right; font-weight:800;">Rp ${h.total.toLocaleString('id-ID')}</div>
       </div>
     `).join("");
   }
 
+  // DOWNLOAD HARIAN
   function saveHistory(){
     if(!history.length) return alert("History kosong.");
-    const now = new Date();
-    const filename = `bucek_history_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.txt`;
-    
-    let text = "HISTORY PENJUALAN NASI KUNING 51\n" + "=".repeat(35) + "\n\n";
+    let text = "RIWAYAT PENJUALAN HARIAN - NASI KUNING 51\n" + "=".repeat(40) + "\n\n";
     history.forEach(h => {
-      text += `WAKTU  : ${h.time}\nMETODE : ${h.paymentMethod.toUpperCase()}\nITEM   :\n`;
-      h.items.forEach(i => text += `- ${i.name} x${i.qty} (@Rp ${i.price.toLocaleString()})\n`);
-      text += `TOTAL  : Rp ${h.total.toLocaleString()}\n` + "-".repeat(35) + "\n\n";
+      text += `[${h.time}] ${h.paymentMethod.toUpperCase()}\n`;
+      h.items.forEach(i => text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString()})\n`);
+      text += `TOTAL: Rp ${h.total.toLocaleString()}\n` + "-".repeat(40) + "\n";
     });
-    downloadFile(filename, text);
+    downloadFile(`history_${new Date().toLocaleDateString('id-ID')}.txt`, text);
   }
 
+  // REKAP TUTUP KASIR (DETAIL)
   function closeCashier(){
-    if(!history.length) return alert("Tidak ada transaksi untuk rekap.");
-    const now = new Date();
-    const filename = `bucek_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
+    if(!history.length) return alert("Tidak ada data transaksi.");
     
-    let totalOmzet = 0;
-    let text = "REKAP TUTUP KASIR\n" + "=".repeat(35) + "\n";
+    let totalCash = 0, totalQris = 0, totalOmzet = 0;
+    let menuSummary = {};
+
     history.forEach(h => {
       totalOmzet += h.total;
-      text += `[${h.time}] Rp ${h.total.toLocaleString()} (${h.paymentMethod.toUpperCase()})\n`;
+      if(h.paymentMethod === 'cash') totalCash += h.total;
+      else totalQris += h.total;
+
+      h.items.forEach(item => {
+        if(!menuSummary[item.name]) menuSummary[item.name] = 0;
+        menuSummary[item.name] += item.qty;
+      });
     });
-    text += "=".repeat(35) + `\nTOTAL OMZET : Rp ${totalOmzet.toLocaleString()}`;
+
+    let text = "=== LAPORAN REKAP TUTUP KASIR ===\n";
+    text += `Nama Kasir   : HALILINTAR BUCEK\n`;
+    text += `Waktu Buka   : ${sessionStart}\n`;
+    text += `Waktu Tutup  : ${new Date().toLocaleString('id-ID')}\n`;
+    text += "=".repeat(35) + "\n\n";
+
+    text += "RINCIAN PENJUALAN MENU:\n";
+    for(let menu in menuSummary){
+      text += `- ${menu.padEnd(25)} : ${menuSummary[menu]} Porsi\n`;
+    }
+
+    text += "\n" + "=".repeat(35) + "\n";
+    text += "RINGKASAN PEMBAYARAN:\n";
+    text += `Total CASH   : Rp ${totalCash.toLocaleString('id-ID')}\n`;
+    text += `Total QRIS   : Rp ${totalQris.toLocaleString('id-ID')}\n`;
+    text += "-".repeat(35) + "\n";
+    text += `TOTAL OMZET  : Rp ${totalOmzet.toLocaleString('id-ID')}\n`;
+    text += "=".repeat(35) + "\n\n";
+    text += "Laporan ini sah sebagai bukti serah terima kasir.";
+
+    downloadFile(`REKAP_FINAL_${new Date().toLocaleDateString('id-ID')}.txt`, text);
     
-    downloadFile(filename, text);
-    if(confirm("Tutup kasir berhasil. Hapus history sekarang?")) { history = []; saveToStorage(); renderHistory(); }
+    if(confirm("Tutup Kasir Selesai. Ingin reset data untuk shift berikutnya?")) {
+      history = [];
+      sessionStart = new Date().toLocaleString('id-ID');
+      saveToStorage();
+      renderHistory();
+      showTab('transaksi');
+    }
   }
 
   function downloadFile(name, content){
@@ -370,18 +404,13 @@
     a.href = URL.createObjectURL(blob); a.download = name; a.click();
   }
 
-  function resetHistory(){ if(confirm("Hapus seluruh riwayat permanen?")) { history = []; saveToStorage(); renderHistory(); } }
-
-  // --- QRIS ---
+  function resetHistory(){ if(confirm("Hapus semua riwayat?")) { history = []; saveToStorage(); renderHistory(); } }
   function openQrisPopup(){ document.getElementById("qrisPopup").classList.remove("hide"); }
   function closeQrisPopup(){ document.getElementById("qrisPopup").classList.add("hide"); }
   function qrisConfirmSuccess(){ closeQrisPopup(); finalize(); }
 
-  // --- INIT ---
   loadFromStorage();
-  setMenuTab(currentMenuTab);
-  renderCart();
-  calculateTotal();
+  setMenuTab('utama');
 </script>
 </body>
 </html>
