@@ -217,7 +217,8 @@
         <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:var(--brand-maroon);"><span>ID: ${h.id}</span><span>${h.paymentMethod.toUpperCase()}</span></div>
         <div style="font-size:10px; color:#666; margin:5px 0;">${h.time}</div>
         <div style="font-size:12px; border-top:1px dashed #ddd; padding:5px 0;">${h.items.map(i => `<div>${i.name} x${i.qty}</div>`).join("")}</div>
-        <div style="text-align:right; font-weight:800; border-top:1px dashed #ddd; padding-top:5px;">Total: Rp ${h.total.toLocaleString('id-ID')}</div>
+        <div style="text-align:right; font-weight:800; border-top:1px dashed #ddd; padding-top:5px; font-size:14px;">Total: Rp ${h.total.toLocaleString('id-ID')}</div>
+        <div style="text-align:right; font-weight:700; color:var(--brand-gold); font-size:12px;">Kembali: Rp ${h.change.toLocaleString('id-ID')}</div>
         <button class="share-btn" onclick="shareReceipt(${history.length - 1 - idx})"><span>📤</span> SHARE STRUK WA</button>
       </div>
     `).join("");
@@ -238,29 +239,24 @@
     history.forEach(h => {
       text += `ID: ${h.id}\nWaktu: ${h.time}\nMetode: ${h.paymentMethod.toUpperCase()}\nItems:\n`;
       h.items.forEach(i => { text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`; });
-      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\n---------------------------------\n`;
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\nKembali: Rp ${h.change.toLocaleString('id-ID')}\n---------------------------------\n`;
     });
     downloadFile(filename, text);
   }
 
-  // FITUR TUTUP KASIR (REKAP DI ATAS + REKAP LAUK)
   function closeCashier(){
     if(history.length === 0){ alert("Tidak ada transaksi."); return; }
     const now = new Date(); const filename = `rekap_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
     
     let totalOmzet = 0; let countCash = 0; let countQris = 0; let totalCash = 0; let totalQris = 0;
-    let laukTerjual = {}; // Objek untuk hitung porsi lauk
+    let laukTerjual = {};
 
-    // 1. Hitung Semua Data
     history.forEach(h => {
       totalOmzet += h.total;
       if(h.paymentMethod === 'cash') { countCash++; totalCash += h.total; } else { countQris++; totalQris += h.total; }
-      h.items.forEach(i => {
-        if(laukTerjual[i.name]) { laukTerjual[i.name] += i.qty; } else { laukTerjual[i.name] = i.qty; }
-      });
+      h.items.forEach(i => { if(laukTerjual[i.name]) { laukTerjual[i.name] += i.qty; } else { laukTerjual[i.name] = i.qty; } });
     });
 
-    // 2. Susun Header (Pindah ke Atas)
     let text = "=== REKAP TUTUP KASIR ===\n";
     text += `Tanggal: ${now.toLocaleDateString('id-ID')}\n`;
     text += `Waktu Tutup: ${now.toLocaleTimeString('id-ID')}\n\n`;
@@ -271,22 +267,20 @@
     text += `- QRIS : ${countQris} Transaksi (Rp ${totalQris.toLocaleString('id-ID')})\n`;
     text += `-----------------------------------\n`;
     text += `RINGKASAN LAUK TERJUAL:\n`;
-    for (let menu in laukTerjual) {
-      text += `- ${menu}: ${laukTerjual[menu]} Porsi\n`;
-    }
+    for (let menu in laukTerjual) { text += `- ${menu}: ${laukTerjual[menu]} Porsi\n`; }
     text += `-----------------------------------\n\n`;
 
-    // 3. Detail Per Transaksi (Di Bawah Ringkasan)
     text += "DETAIL TRANSAKSI:\n";
     history.forEach(h => {
-      text += `ID: ${h.id} | ${h.paymentMethod.toUpperCase()} | Rp ${h.total.toLocaleString('id-ID')}\n`;
+      text += `ID: ${h.id} | ${h.paymentMethod.toUpperCase()} | Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
+      text += `Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`; // KEMBALIAN DITAMBAHKAN DI DETAIL TUTUP KASIR
       h.items.forEach(i => { text += `  > ${i.name} x${i.qty}\n`; });
       text += `-----------------------------------\n`;
     });
 
     downloadFile(filename, text);
     history = []; saveToStorage(); renderHistory(); showTab('transaksi');
-    alert("Tutup kasir berhasil! Data telah disimpan dan direset.");
+    alert("Tutup kasir berhasil! Data telah disimpan.");
   }
 
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
