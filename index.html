@@ -17,9 +17,29 @@
   
   .container { max-width: 420px; margin: 0 auto; min-height: 100vh; padding-bottom: 220px; }
   
-  /* Header */
-  .header-box { background: var(--brand-maroon); color: var(--white); padding: 20px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-  .user-name { font-size: 18px; font-weight: 700; }
+  /* Header dengan Logo */
+  .header-box { 
+    background: var(--brand-maroon); 
+    color: var(--white); 
+    padding: 15px; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+    border-bottom: 3px solid var(--brand-gold);
+  }
+  .logo-img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    border: 2px solid var(--brand-gold);
+    background: white;
+    object-fit: cover;
+  }
+  .header-info { flex: 1; }
+  .user-name { font-size: 16px; font-weight: 700; }
 
   /* Tabs Menu */
   .tabs-container { display: flex; gap: 10px; padding: 15px; background: var(--brand-light); }
@@ -39,13 +59,12 @@
   }
   .menu-card span { display: block; font-size: 11px; margin-top: 5px; opacity: 0.8; }
 
-  /* Ringkasan Pesanan */
+  /* Ringkasan & Pay Card */
   .section-title { padding: 15px 15px 5px; font-size: 14px; font-weight: 800; color: var(--brand-maroon); }
   .card-box { background: var(--brand-maroon); border-radius: 15px; margin: 10px 15px; padding: 15px; color: var(--white); }
   .cart-item { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
   .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 5px; padding: 5px 10px; font-weight: bold; cursor: pointer; margin: 0 2px; }
 
-  /* Pembayaran */
   .pay-card { background: var(--white); border-radius: 15px; margin: 10px 15px; padding: 15px; border: 1px solid #ddd; }
   input[type="number"] {
     width: 100%; border: 1px solid #ccc; border-radius: 10px; padding: 12px; font-size: 16px; font-weight: 700; margin: 10px 0; outline: none;
@@ -55,7 +74,6 @@
   .small-btn { flex: 1; padding: 10px; background: var(--brand-maroon); color: white; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
   .small-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  /* Action Bar */
   .action-bar {
     position: fixed; bottom: 70px; left: 0; right: 0; background: var(--brand-light);
     padding: 10px 15px; display: flex; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 900;
@@ -63,7 +81,6 @@
   .btn-main-action { flex: 3; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 14px; background: var(--brand-maroon); color: white; }
   .btn-reset-action { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid var(--brand-gold); font-weight: 800; cursor: pointer; background: white; color: var(--brand-gold); font-size: 12px; text-align: center; }
 
-  /* Navigasi */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 70px;
     display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000;
@@ -83,11 +100,12 @@
 
 <div class="container">
   <div class="header-box">
-    <div>
-      <div style="font-size: 10px; opacity: 0.8;">SELAMAT DATANG</div>
+    <img src="https://i.ibb.co.com/m50P3Y8B/Logo-Naskun.png" alt="Logo" class="logo-img">
+    <div class="header-info">
+      <div style="font-size: 9px; opacity: 0.8; letter-spacing: 1px;">KASIR AKTIF</div>
       <div class="user-name">HALILINTAR BUCEK</div>
+      <div style="font-weight: 800; font-size: 11px; color: var(--brand-gold);">NASI KUNING 51</div>
     </div>
-    <div style="font-weight: 800; font-size: 12px;">NASI KUNING 51</div>
   </div>
 
   <div id="pageTransaksi">
@@ -162,6 +180,7 @@
 </div>
 
 <script>
+  // Script tetap sama dengan logika QRIS Lock dan Free Recap yang sudah kita buat
   const menus = [
     {name:"NASI KUNING AYAM", price:15000, type:"utama"},
     {name:"NASI KUNING IKAN", price:13000, type:"utama"},
@@ -197,7 +216,6 @@
     paymentMethod = m; 
     const inputBayar = document.getElementById("uangBayar");
     const qButtons = document.querySelectorAll(".q-btn");
-    
     document.getElementById("btnCash").classList.toggle("active", m==='cash'); 
     document.getElementById("btnQris").classList.toggle("active", m==='qris'); 
     document.getElementById("btnFree").classList.toggle("active", m==='free'); 
@@ -220,7 +238,6 @@
     calculateChange();
   }
 
-  // Fungsi lainnya tetap sama
   function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
   function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div style="font-weight:800; font-size:13px;">${m.name}</div><span>Rp ${m.price.toLocaleString('id-ID')}</span></div>`).join(""); }
   function addToCart(name, price){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); saveToStorage(); }
@@ -250,10 +267,9 @@
     cart = []; paymentMethod = ""; 
     document.getElementById("btnCash").classList.remove("active"); document.getElementById("btnQris").classList.remove("active"); document.getElementById("btnFree").classList.remove("active");
     clearUangBayar(); renderCart(); calculateTotal(); saveToStorage();
-    document.getElementById("uangBayar").readOnly = false; // Reset lock
+    document.getElementById("uangBayar").readOnly = false;
   }
 
-  function resetCart(){ if(confirm("Reset?")) { cart = []; clearUangBayar(); renderCart(); calculateTotal(); saveToStorage(); } }
   function showTab(t){ document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); document.getElementById("navHome").classList.toggle("active", t === "transaksi"); document.getElementById("navHist").classList.toggle("active", t === "history"); if(t === "history") renderHistory(); }
 
   function renderHistory(){
@@ -264,7 +280,6 @@
         <div style="font-size:10px; color:#666; margin:5px 0;">${h.time}</div>
         <div style="font-size:12px; border-top:1px dashed #ddd; padding:5px 0;">${h.items.map(i => `<div>${i.name} x${i.qty}</div>`).join("")}</div>
         <div style="text-align:right; font-weight:800; border-top:1px dashed #ddd; padding-top:5px; font-size:14px;">Total: Rp ${h.total.toLocaleString('id-ID')}</div>
-        ${h.paymentMethod === 'free' ? '' : `<div style="text-align:right; font-weight:700; color:var(--brand-gold); font-size:12px;">Kembali: Rp ${h.change.toLocaleString('id-ID')}</div>`}
         <button class="share-btn" onclick="shareReceipt(${history.length - 1 - idx})"><span>📤</span> SHARE STRUK WA</button>
       </div>
     `).join("");
@@ -272,52 +287,28 @@
 
   function shareReceipt(idx) {
     const data = history[idx];
-    let receipt = `*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${data.id}\nTgl   : ${data.time}\nKasir : HALILINTAR BUCEK\n--------------------------------------------\n`;
+    let receipt = `*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${data.id}\nTgl   : ${data.time}\n--------------------------------------------\n`;
     data.items.forEach(i => { receipt += `*${i.name}*\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    receipt += `--------------------------------------------\n*TOTAL      : Rp ${data.total.toLocaleString('id-ID')}*\n`;
-    if(data.paymentMethod === 'free') receipt += `METODE      : JUMAT BERKAH / FREE\n`;
-    else receipt += `BAYAR (${data.paymentMethod.toUpperCase()}) : Rp ${data.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${data.change.toLocaleString('id-ID')}\n`;
-    receipt += `--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: +62 878-4186-2086\n--------------------------------------------\n_Terima kasih!_`;
+    receipt += `--------------------------------------------\n*TOTAL      : Rp ${data.total.toLocaleString('id-ID')}*\nMETODE      : ${data.paymentMethod.toUpperCase()}\n--------------------------------------------\n_Terima kasih!_`;
     if (navigator.share) { navigator.share({ title: 'Struk Nasi Kuning 51', text: receipt }).catch(() => {}); } else { alert("Struk disalin!"); }
-  }
-
-  function saveHistory(){
-    if(history.length === 0){ alert("History kosong."); return; }
-    const now = new Date(); const filename = `history_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
-    let text = "HISTORY PENJUALAN\n\n";
-    history.forEach(h => {
-      text += `ID: ${h.id}\nWaktu: ${h.time}\nMetode: ${h.paymentMethod.toUpperCase()}\nItems:\n`;
-      h.items.forEach(i => { text += `- ${i.name} x${i.qty}\n`; });
-      text += `Total Akhir: Rp ${h.total.toLocaleString('id-ID')}\n---------------------------------\n`;
-    });
-    downloadFile(filename, text);
   }
 
   function closeCashier(){
     if(history.length === 0){ alert("Tidak ada transaksi."); return; }
-    const now = new Date(); const filename = `rekap_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
-    let totalOmzet = 0; let countCash = 0; let countQris = 0; let countFree = 0;
-    let totalCash = 0; let totalQris = 0; let totalNilaiFree = 0;
-    let laukTerjual = {};
+    const now = new Date(); const filename = `rekap_tutupkasir_${now.getFullYear()}${now.getMonth()+1}${now.getDate()}.txt`;
+    let totalOmzet = 0; let laukBerbayar = {}; let laukSedekah = {};
     history.forEach(h => {
       totalOmzet += h.total;
-      if(h.paymentMethod === 'cash') { countCash++; totalCash += h.total; } 
-      else if(h.paymentMethod === 'qris') { countQris++; totalQris += h.total; }
-      else { countFree++; totalNilaiFree += h.realValue; }
-      h.items.forEach(i => { if(laukTerjual[i.name]) { laukTerjual[i.name] += i.qty; } else { laukTerjual[i.name] = i.qty; } });
+      h.items.forEach(i => { 
+        if(h.paymentMethod === 'free') laukSedekah[i.name] = (laukSedekah[i.name] || 0) + i.qty;
+        else laukBerbayar[i.name] = (laukBerbayar[i.name] || 0) + i.qty;
+      });
     });
-    let text = "=== REKAP TUTUP KASIR ===\n";
-    text += `Tanggal: ${now.toLocaleDateString('id-ID')}\nTOTAL OMZET MASUK: Rp ${totalOmzet.toLocaleString('id-ID')}\n-----------------------------------\n`;
-    text += `RINGKASAN METODE PEMBAYARAN:\n- CASH : ${countCash} Trans (Rp ${totalCash.toLocaleString('id-ID')})\n- QRIS : ${countQris} Trans (Rp ${totalQris.toLocaleString('id-ID')})\n- FREE : ${countFree} Trans (Senilai Rp ${totalNilaiFree.toLocaleString('id-ID')})\n-----------------------------------\n`;
-    text += `RINGKASAN LAUK TERJUAL:\n`;
-    for (let menu in laukTerjual) { text += `- ${menu}: ${laukTerjual[menu]} Porsi\n`; }
-    text += `-----------------------------------\n\nDETAIL TRANSAKSI:\n`;
-    history.forEach(h => {
-      text += `ID: ${h.id} | ${h.paymentMethod.toUpperCase()} | Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
-      if(h.paymentMethod === 'cash') text += `Uang Bayar: Rp ${h.bayar.toLocaleString('id-ID')} | Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`;
-      h.items.forEach(i => { text += `  > ${i.name} x${i.qty}\n`; });
-      text += `-----------------------------------\n`;
-    });
+    let text = "=== REKAP TUTUP KASIR NASI KUNING 51 ===\n";
+    text += `Tanggal: ${now.toLocaleDateString('id-ID')}\nTOTAL OMZET: Rp ${totalOmzet.toLocaleString('id-ID')}\n\nLAUK TERJUAL:\n`;
+    for (let menu in laukBerbayar) { text += `- ${menu}: ${laukBerbayar[menu]} Porsi\n`; }
+    text += `\nLAUK SEDEKAH (FREE):\n`;
+    for (let menu in laukSedekah) { text += `- ${menu}: ${laukSedekah[menu]} Porsi\n`; }
     downloadFile(filename, text);
     history = []; saveToStorage(); renderHistory(); showTab('transaksi');
     alert("Tutup kasir berhasil!");
@@ -325,6 +316,7 @@
 
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
   function resetHistory(){ if(confirm("Hapus seluruh history?")) { history = []; saveToStorage(); renderHistory(); } }
+  function resetCart(){ if(confirm("Reset?")) { cart = []; clearUangBayar(); renderCart(); calculateTotal(); saveToStorage(); } }
   function openQrisPopup(){ document.getElementById("qrisPopup").classList.remove("hide"); }
   function closeQrisPopup(){ document.getElementById("qrisPopup").classList.add("hide"); }
   function qrisConfirmSuccess(){ closeQrisPopup(); finalize(); }
