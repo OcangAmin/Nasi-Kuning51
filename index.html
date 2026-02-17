@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-<title>POS Nasi Kuning 51 - Ultimate</title>
+<title>POS Nasi Kuning 51 - Bluetooth Print Ready</title>
 <style>
   :root {
     --brand-maroon: #632626; --brand-gold: #c6943d; --brand-light: #f5f5f5;
@@ -14,68 +14,59 @@
   .container { max-width: 420px; margin: 0 auto; min-height: 100vh; padding-bottom: 220px; }
   
   /* HEADER */
-  .header-box { 
-    background: var(--brand-maroon); color: var(--white); padding: 15px; 
-    display: flex; align-items: center; gap: 12px; position: sticky; top: 0; 
-    z-index: 100; border-bottom: 3px solid var(--brand-gold);
-  }
+  .header-box { background: var(--brand-maroon); color: var(--white); padding: 15px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--brand-gold); }
   .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--brand-gold); background: white; object-fit: cover; }
   .user-name { font-size: 16px; font-weight: 700; text-transform: uppercase; }
 
-  /* SEARCH & FILTER (ANTI-ZOOM) */
-  .search-container { 
-    padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; 
-    position: sticky; top: 93px; z-index: 99; display: flex; gap: 8px;
-  }
-  .filter-select { flex: 1; padding: 10px 5px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 14px; font-weight: 700; outline: none; background: white; color: var(--brand-maroon); }
+  /* SEARCH & TABS */
+  .search-container { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 93px; z-index: 99; display: flex; gap: 8px; }
+  .filter-select { flex: 1; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 14px; font-weight: 700; outline: none; background: white; }
   .search-input { flex: 2; padding: 12px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 16px; outline: none; }
-
-  /* TABS MENU */
   .tabs-container { display: flex; gap: 10px; padding: 15px; background: var(--brand-light); }
   .tab-item { flex: 1; padding: 12px; text-align: center; background: var(--white); border: 2px solid var(--brand-gold); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 800; color: var(--brand-gold); }
   .tab-item.active { background: var(--brand-gold); color: var(--white); }
-  .tab-item.free-mode { border-color: var(--green-success); color: var(--green-success); }
-  .tab-item.free-mode.active { background: var(--green-success); color: white; }
 
-  /* GRID MENU */
+  /* MENU & CART */
   .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
-  .menu-card { background: var(--brand-maroon); border-radius: 12px; padding: 12px; border: 2px solid var(--brand-gold); cursor: pointer; color: var(--white); display: flex; flex-direction: column; justify-content: space-between; min-height: 85px; }
-  .menu-name { font-size: 11px; font-weight: 800; text-transform: uppercase; }
-  .menu-price { font-size: 13px; color: var(--brand-gold); font-weight: 700; text-align: right; border-top: 1px solid var(--border); padding-top: 5px; }
-
-  /* KERANJANG */
+  .menu-card { background: var(--brand-maroon); border-radius: 12px; padding: 12px; border: 2px solid var(--brand-gold); cursor: pointer; color: var(--white); min-height: 85px; display: flex; flex-direction: column; justify-content: space-between; }
   .card-box { background: var(--brand-maroon); border-radius: 15px; margin: 10px 15px; padding: 15px; color: var(--white); }
   .cart-item { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
   .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 5px; padding: 5px 10px; font-weight: bold; }
 
-  /* PEMBAYARAN */
+  /* PAY CARD */
   .pay-card { background: var(--white); border-radius: 15px; margin: 10px 15px; padding: 15px; border: 1px solid #ddd; }
-  input[type="number"] { width: 100%; border: 2px solid #ddd; border-radius: 10px; padding: 12px; font-size: 18px; font-weight: 700; margin: 10px 0; text-align: right; outline: none; }
-  .quick-pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-  .small-btn { padding: 12px 5px; background: var(--brand-maroon); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
-
-  /* ACTION BAR & NAV */
+  input[type="number"] { width: 100%; border: 2px solid #ddd; border-radius: 10px; padding: 12px; font-size: 18px; font-weight: 700; margin: 10px 0; text-align: right; }
+  
+  /* ACTION BUTTONS */
   .action-bar { position: fixed; bottom: 70px; left: 0; right: 0; background: var(--brand-light); padding: 10px 15px; display: flex; gap: 10px; z-index: 900; }
   .btn-main-action { flex: 3; padding: 18px; border-radius: 12px; border: none; font-weight: 800; background: var(--brand-maroon); color: white; }
   .btn-reset-action { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid var(--brand-gold); background: white; color: var(--brand-gold); font-size: 12px; font-weight: 800; }
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 70px; display: flex; border-top: 1px solid #eee; z-index: 1000; }
-  .nav-item { text-align: center; color: var(--brand-maroon); font-size: 11px; cursor: pointer; flex: 1; opacity: 0.4; padding-top: 15px; }
-  .nav-item.active { opacity: 1; font-weight: 800; }
-  
-  /* HISTORY CARD */
+
+  /* RIWAYAT CARD */
   .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:6px solid var(--brand-maroon); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-  .share-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 10px; }
-  
-  /* POPUP */
+  .btn-group { display: flex; gap: 8px; margin-top: 10px; }
+  .share-btn { flex: 1; background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 12px; }
+  .print-btn { flex: 1; background: #333; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 12px; }
+
+  /* PRINT AREA (Hidden on screen) */
+  #printArea { display: none; }
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea { position: absolute; left: 0; top: 0; width: 100%; display: block; color: black; font-family: 'Courier New', Courier, monospace; }
+  }
+
   .hide { display: none; }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 70px; display: flex; border-top: 1px solid #eee; z-index: 1000; }
+  .nav-item { text-align: center; color: var(--brand-maroon); font-size: 11px; flex: 1; padding-top: 15px; opacity: 0.4; }
+  .nav-item.active { opacity: 1; font-weight: 800; }
   .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000; }
   .popup { width: 85%; background: white; border-radius: 20px; padding: 25px; text-align: center; }
-  .confirm-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; }
 </style>
 </head>
 <body>
 
-<div class="container">
+<div id="printArea"></div> <div class="container">
   <div class="header-box">
     <img src="https://i.ibb.co.com/8nkwdhSQ/IMG-3379.png" alt="Logo" class="logo-img">
     <div class="header-info">
@@ -97,24 +88,14 @@
         <span>Total</span><span id="totalHarga">0</span>
       </div>
     </div>
-
     <div class="pay-card">
       <div style="display: flex; gap: 5px; margin-bottom: 10px;">
         <button class="tab-item" id="btnCash" onclick="setPayment('cash')">CASH</button>
         <button class="tab-item" id="btnQris" onclick="setPayment('qris')">QRIS</button>
-        <button class="tab-item free-mode" id="btnFree" onclick="setPayment('free')">FREE</button>
+        <button class="tab-item" id="btnFree" style="border-color:var(--green-success); color:var(--green-success)" onclick="setPayment('free')">FREE</button>
       </div>
       <input type="number" id="uangBayar" placeholder="0" oninput="calculateChange()" inputmode="numeric">
-      <div class="quick-pay-grid" id="quickPayArea">
-        <button class="small-btn q-btn" onclick="setQuick(5000)">5K</button>
-        <button class="small-btn q-btn" onclick="setQuick(10000)">10K</button>
-        <button class="small-btn q-btn" onclick="setQuick(20000)">20K</button>
-        <button class="small-btn q-btn" onclick="setQuick(50000)">50K</button>
-        <button class="small-btn q-btn" onclick="setQuick(100000)">100K</button>
-        <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="setExact()">PAS</button>
-      </div>
-      <button class="small-btn q-btn" style="background:#888; width: 100%;" onclick="clearUangBayar()">HAPUS NOMINAL</button>
-      <div style="display: flex; justify-content: space-between; font-weight: 800; margin-top: 15px; color: var(--brand-maroon); font-size: 16px;">
+      <div style="display: flex; justify-content: space-between; font-weight: 800; margin-top: 15px; color: var(--brand-maroon);">
         <span>Kembalian</span><span id="kembalian">0</span>
       </div>
     </div>
@@ -132,14 +113,12 @@
         <option value="lauk">LAUK</option>
         <option value="metode">METODE</option>
       </select>
-      <input type="text" id="searchInput" class="search-input" placeholder="Ketik di sini..." onkeyup="filterHistory()">
+      <input type="text" id="searchInput" class="search-input" placeholder="Cari..." onkeyup="filterHistory()">
     </div>
-    <div style="padding: 15px; font-weight: 800; color: var(--brand-maroon);">HASIL TRANSAKSI</div>
-    <div id="historyList" style="padding: 0 15px;"></div>
-    <div style="padding: 20px 15px; display: flex; flex-direction: column; gap: 10px;">
+    <div id="historyList" style="padding: 15px;"></div>
+    <div style="padding: 10px 15px; display: flex; flex-direction: column; gap: 10px;">
       <button class="btn-main-action" onclick="saveHistory()">💾 SIMPAN SEMENTARA (.TXT)</button>
       <button class="btn-reset-action" onclick="closeCashier()">🏁 TUTUP KASIR (REKAP)</button>
-      <button class="btn-reset-action" style="background:#f8d7da; border-color:#dc3545; color:#dc3545" onclick="resetHistory()">🗑️ RESET SEMUA DATA</button>
     </div>
   </div>
 </div>
@@ -151,21 +130,15 @@
 
 <div id="confirmPopup" class="hide">
   <div class="popup-overlay"><div class="popup">
-    <h3 id="popupTitle" style="color:var(--brand-maroon)">Konfirmasi</h3>
-    <div id="popupDetails" style="text-align: left; margin-bottom: 20px;"></div>
-    <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="finalize()">KONFIRMASI</button>
-    <button class="btn-reset-action" style="width:100%; margin:5px 0" onclick="closePopup()">BATAL</button>
+    <h3 id="popupTitle">Konfirmasi</h3>
+    <div id="popupDetails" style="text-align:left; margin-bottom:20px;"></div>
+    <button class="btn-main-action" style="width:100%; margin-bottom:10px;" onclick="finalize()">KONFIRMASI</button>
+    <button class="btn-reset-action" style="width:100%;" onclick="closePopup()">BATAL</button>
   </div></div>
 </div>
 
 <script>
-  // KONTAK WARUNG (SILAKAN SESUAIKAN)
-  const warungInfo = {
-    ig: "@nasikuning51",
-    wa: "0812-3456-7890",
-    lokasi: "Jl. Lokasi Warung Nasi Kuning 51"
-  };
-
+  const warungInfo = { ig: "@nasikuning51", wa: "0812-XXXX-XXXX", lokasi: "KENDARI" };
   const menus = [
     {name:"NASI KUNING AYAM", price:15000, type:"utama"}, {name:"NASI KUNING IKAN", price:13000, type:"utama"},
     {name:"NASI KUNING TELUR", price:10000, type:"utama"}, {name:"NASI KUNING AYAM TELUR", price:23000, type:"utama"},
@@ -180,120 +153,143 @@
   function saveToStorage(){ localStorage.setItem("bucek_cart", JSON.stringify(cart)); localStorage.setItem("bucek_history", JSON.stringify(history)); }
   function loadFromStorage(){ cart = JSON.parse(localStorage.getItem("bucek_cart")) || []; history = JSON.parse(localStorage.getItem("bucek_history")) || []; renderCart(); calculateTotal(); }
   function getNum(id) { const el = document.getElementById(id); let val = (el.tagName === "INPUT") ? el.value : el.innerText; return parseInt(val.toString().replace(/\D/g, '')) || 0; }
-  
+
+  // LOGIKA TRANSAKSI
   function setPayment(m){ 
-    paymentMethod = m; const inputBayar = document.getElementById("uangBayar"); const qButtons = document.querySelectorAll(".q-btn");
+    paymentMethod = m; 
     document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
     document.getElementById("btn" + m.charAt(0).toUpperCase() + m.slice(1))?.classList.add('active');
-    if(m==='qris' || m==='free') { inputBayar.value = (m==='qris') ? getNum("totalHarga") : 0; inputBayar.readOnly = true; qButtons.forEach(b => b.disabled = true); } 
-    else { inputBayar.readOnly = false; inputBayar.value = ""; qButtons.forEach(b => b.disabled = false); }
+    const input = document.getElementById("uangBayar");
+    if(m==='qris' || m==='free') { input.value = (m==='qris') ? getNum("totalHarga") : 0; input.readOnly = true; } 
+    else { input.readOnly = false; input.value = ""; }
     calculateChange();
   }
 
-  function calculateChange(){ const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const change = (paymentMethod === 'free' || paymentMethod === 'qris') ? 0 : bayar - total; document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0"; }
+  function calculateChange(){ const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const change = bayar - total; document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0"; }
   function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
   function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div class="menu-name">${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
   function addToCart(name, price){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); saveToStorage(); }
   function renderCart(){ const list = document.getElementById("cartList"); list.innerHTML = cart.map((i, idx) => `<div class="cart-item"><div><b>${i.name}</b><br><small>Rp ${i.price.toLocaleString('id-ID')}</small></div><div><button class="qty-btn" onclick="changeQty(${idx},-1)">-</button> ${i.qty} <button class="qty-btn" onclick="changeQty(${idx},1)">+</button></div></div>`).join(""); }
   function changeQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty <= 0) cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
-  function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); calculateChange(); }
-  
-  function setQuick(amt){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("uangBayar") + amt; calculateChange(); }
-  function setExact(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
-  function clearUangBayar(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = ""; calculateChange(); }
+  function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); }
 
   function completeTransaction(){
-    const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const kembali = getNum("kembalian");
-    if(cart.length === 0){ alert("Pesanan kosong!"); return; }
-    if(!paymentMethod){ alert("Pilih pembayaran!"); return; }
+    if(cart.length === 0) return alert("Keranjang kosong");
+    if(!paymentMethod) return alert("Pilih metode bayar");
+    if(paymentMethod==='cash' && getNum("uangBayar") < getNum("totalHarga")) return alert("Uang kurang");
+    
     const details = document.getElementById("popupDetails");
-    if(paymentMethod === "qris") {
-      document.getElementById("popupTitle").innerText = "Konfirmasi QRIS";
-      details.innerHTML = `<p>Pastikan dana <b>Rp ${total.toLocaleString('id-ID')}</b> sudah masuk ke rekening!</p>`;
-      openPopup();
-    } else if(paymentMethod === "cash") {
-      if(bayar < total) { alert("Uang bayar kurang!"); return; }
-      document.getElementById("popupTitle").innerText = "Konfirmasi Tunai";
-      details.innerHTML = `<div class="confirm-row"><span>Total:</span><span>Rp ${total.toLocaleString('id-ID')}</span></div><div class="confirm-row"><span>Bayar:</span><span>Rp ${bayar.toLocaleString('id-ID')}</span></div><div class="confirm-row" style="color:var(--brand-maroon)"><span>Kembali:</span><span>Rp ${kembali.toLocaleString('id-ID')}</span></div>`;
-      openPopup();
-    } else { finalize(); }
+    details.innerHTML = `Total: Rp ${getNum("totalHarga").toLocaleString('id-ID')}<br>Metode: ${paymentMethod.toUpperCase()}<br>Bayar: Rp ${getNum("uangBayar").toLocaleString('id-ID')}`;
+    document.getElementById("confirmPopup").classList.remove("hide");
   }
 
   function finalize(){
-    const rt = getNum("totalHarga"); const bayar = getNum("uangBayar"); const m = paymentMethod;
-    const cg = (m === 'free' || m === 'qris') ? 0 : bayar - rt;
-    history.push({ id: "NK51-" + Date.now().toString().slice(-4), time: new Date().toLocaleString('id-ID'), items: JSON.parse(JSON.stringify(cart)), total: (m === 'free' ? 0 : rt), realValue: rt, bayar: bayar, change: cg, paymentMethod: m });
-    cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Berhasil!");
+    const rt = getNum("totalHarga"); const bayar = getNum("uangBayar");
+    const hData = {
+      id: "NK51-" + Date.now().toString().slice(-4),
+      time: new Date().toLocaleString('id-ID'),
+      items: JSON.parse(JSON.stringify(cart)),
+      total: (paymentMethod === 'free' ? 0 : rt),
+      realValue: rt, bayar: bayar, 
+      change: (paymentMethod==='cash' ? bayar-rt : 0),
+      paymentMethod: paymentMethod
+    };
+    history.push(hData);
+    cart = []; paymentMethod = ""; 
+    document.getElementById("confirmPopup").classList.add("hide");
+    resetUI(); saveToStorage(); alert("Berhasil Terarsip!");
   }
 
+  // RIWAYAT & PRINT
   function showTab(t){ 
     document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); 
     document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); 
     document.getElementById("navHome").classList.toggle("active", t === "transaksi"); 
     document.getElementById("navHist").classList.toggle("active", t === "history"); 
-    if(t === "history") { document.getElementById("searchInput").value = ""; renderHistory(); } 
+    if(t === "history") renderHistory(); 
   }
 
-  function filterHistory() { renderHistory(document.getElementById("searchInput").value.toLowerCase(), document.getElementById("filterType").value); }
-
-  function renderHistory(filter = "", type = "all"){
+  function renderHistory(f = "", type = "all"){
     const list = document.getElementById("historyList");
     const filtered = history.filter(h => {
-        const mID = h.id.toLowerCase().includes(filter);
-        const mL = h.items.map(i => i.name.toLowerCase()).join(" ").includes(filter);
-        const mM = h.paymentMethod.toLowerCase().includes(filter);
-        return type === "id" ? mID : type === "lauk" ? mL : type === "metode" ? mM : (mID || mL || mM);
+      const k = f.toLowerCase();
+      if(type==="id") return h.id.toLowerCase().includes(k);
+      if(type==="lauk") return h.items.map(i=>i.name).join(" ").toLowerCase().includes(k);
+      return h.id.toLowerCase().includes(k) || h.items.map(i=>i.name).join(" ").toLowerCase().includes(k);
     });
-    list.innerHTML = filtered.slice().reverse().map((h) => `
-      <div class="hist-card" style="${h.paymentMethod === 'free' ? 'border-left-color: #28a745':''}">
-        <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span style="color:var(--brand-gold)">${h.paymentMethod.toUpperCase()}</span></div>
+    
+    list.innerHTML = filtered.slice().reverse().map(h => `
+      <div class="hist-card">
+        <div style="display:flex; justify-content:space-between; font-size:12px;"><b>${h.id}</b> <span>${h.paymentMethod.toUpperCase()}</span></div>
         <div style="font-size:10px; color:#666;">${h.time}</div>
-        <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; padding-top:5px;">${h.items.map(i => i.name + ' x' + i.qty).join(', ')}</div>
-        <div style="text-align:right; font-size:15px;"><b>Total: Rp ${h.total.toLocaleString('id-ID')}</b></div>
-        <button class="share-btn" onclick="shareReceiptByID('${h.id}')">📤 SHARE WA</button>
+        <div style="margin:8px 0; font-size:12px;">${h.items.map(i => i.name + ' x' + i.qty).join('<br>')}</div>
+        <div style="border-top:1px solid #eee; padding-top:5px; text-align:right;">
+          <b>Total: Rp ${h.total.toLocaleString('id-ID')}</b><br>
+          <small>Bayar: ${h.bayar.toLocaleString('id-ID')} | Kembali: ${h.change.toLocaleString('id-ID')}</small>
+        </div>
+        <div class="btn-group">
+          <button class="share-btn" onclick="shareReceiptByID('${h.id}')">WA</button>
+          <button class="print-btn" onclick="printReceiptByID('${h.id}')">PRINT</button>
+        </div>
       </div>
     `).join("");
-    if(filtered.length === 0) list.innerHTML = "<div style='text-align:center; padding:20px; color:#999;'>Tidak ada data.</div>";
+  }
+
+  // FITUR BARU: PRINT STRUK
+  function printReceiptByID(id) {
+    const d = history.find(h => h.id === id); if(!d) return;
+    const printArea = document.getElementById("printArea");
+    
+    let itemsHtml = d.items.map(i => `
+      <div style="display:flex; justify-content:space-between; width:100%;">
+        <span>${i.name} x${i.qty}</span>
+        <span>${(i.price*i.qty).toLocaleString('id-ID')}</span>
+      </div>
+    `).join("");
+
+    printArea.innerHTML = `
+      <div style="width: 300px; padding: 10px; font-size: 14px; text-align: center; border: 1px solid #000;">
+        <h2 style="margin:0;">NASI KUNING 51</h2>
+        <p style="font-size:12px; margin:5px 0;">Kendari - ${warungInfo.wa}<br>--------------------------------</p>
+        <div style="text-align:left; font-size:12px;">
+          Nota: ${d.id}<br>Waktu: ${d.time}<br>Kasir: BUCEK<br>
+          --------------------------------
+          ${itemsHtml}
+          --------------------------------
+          <b>Total: Rp ${d.total.toLocaleString('id-ID')}</b><br>
+          Bayar: Rp ${d.bayar.toLocaleString('id-ID')}<br>
+          Kembali: Rp ${d.change.toLocaleString('id-ID')}<br>
+          Metode: ${d.paymentMethod.toUpperCase()}
+        </div>
+        <p style="margin-top:15px; font-size:12px;">Terima Kasih!<br>IG: ${warungInfo.ig}</p>
+      </div>
+    `;
+    window.print();
   }
 
   function shareReceiptByID(id) {
     const d = history.find(h => h.id === id); if(!d) return;
     let s = `*NASI KUNING 51*\nID: ${d.id}\n${d.time}\n------------------------------\n`;
     d.items.forEach(i => { s += `${i.name} x${i.qty} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    s += `------------------------------\n*TOTAL: Rp ${d.total.toLocaleString('id-ID')}*\nMetode: ${d.paymentMethod.toUpperCase()}\n------------------------------\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\nLokasi: ${warungInfo.lokasi}\nTerima Kasih!`;
+    s += `------------------------------\n*TOTAL: Rp ${d.total.toLocaleString('id-ID')}*\nBayar: Rp ${d.bayar.toLocaleString('id-ID')}\nKembali: Rp ${d.change.toLocaleString('id-ID')}\nMetode: ${d.paymentMethod.toUpperCase()}\n------------------------------\nIG: ${warungInfo.ig}\nLokasi: ${warungInfo.lokasi}\nTerima Kasih!`;
     window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
   }
 
   function generateReportText(isClosing) {
-    let tOmzet = 0, tFreeVal = 0, lBayar = {}, lFree = {};
+    let tOmzet = 0; let txt = `LAPORAN NASI KUNING 51\n========================\n`;
     history.forEach(h => { 
-        tOmzet += h.total; if(h.paymentMethod === 'free') tFreeVal += h.realValue; 
-        h.items.forEach(i => { if(h.paymentMethod === 'free') lFree[i.name] = (lFree[i.name] || 0) + i.qty; else lBayar[i.name] = (lBayar[i.name] || 0) + i.qty; });
+      tOmzet += h.total;
+      txt += `[${h.id}] ${h.total.toLocaleString('id-ID')} (${h.paymentMethod})\n`;
     });
-    const now = new Date().toLocaleString('id-ID'); const sep = "==========================================\n";
-    let txt = `${sep}   LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'}\n   NASI KUNING 51\n${sep}Waktu Cetak : ${now}\nTotal Omzet : Rp ${tOmzet.toLocaleString('id-ID')}\nTotal Free  : Rp ${tFreeVal.toLocaleString('id-ID')}\n${sep}REKAP PRODUK TERJUAL:\n`;
-    for(let k in lBayar) txt += `- ${k}: ${lBayar[k]} Porsi\n`;
-    if(Object.keys(lFree).length > 0) {
-      txt += `\nREKAP PRODUK FREE (SEDEKAH):\n`;
-      for(let k in lFree) txt += `- ${k}: ${lFree[k]} Porsi\n`;
-    }
-    txt += `\n${sep}          DETAIL TRANSAKSI\n${sep}`;
-    history.forEach((h, i) => {
-        txt += `${i+1}. No Nota : ${h.id}\n   Waktu   : ${h.time}\n   Metode  : ${h.paymentMethod.toUpperCase()}\n   Pesanan : ${h.items.map(item => item.name + ' x' + item.qty).join(', ')}\n   Total   : Rp ${h.total.toLocaleString('id-ID')}\n`;
-        if(h.paymentMethod === 'cash') txt += `   Bayar   : Rp ${h.bayar.toLocaleString('id-ID')}\n   Kembali : Rp ${h.change.toLocaleString('id-ID')}\n`;
-        txt += `------------------------------------------\n`;
-    });
-    txt += `\nINFO WARUNG:\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\nLokasi: ${warungInfo.lokasi}\n${sep}-- AKHIR LAPORAN --`;
+    txt += `========================\nTOTAL OMZET: Rp ${tOmzet.toLocaleString('id-ID')}\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}`;
     return txt;
   }
 
-  function saveHistory(){ if(history.length===0) return; downloadFile(`Laporan_Smt_${Date.now()}.txt`, generateReportText(false)); }
-  function closeCashier(){ if(history.length===0) return; if(confirm("Tutup Kasir Sekarang?")){ downloadFile(`Laporan_Final_${Date.now()}.txt`, generateReportText(true)); history = []; saveToStorage(); showTab('transaksi'); } }
+  function saveHistory(){ downloadFile(`Laporan_Smt.txt`, generateReportText(false)); }
+  function closeCashier(){ if(confirm("Tutup Kasir?")){ downloadFile(`Tutup_Kasir.txt`, generateReportText(true)); history = []; saveToStorage(); showTab('transaksi'); } }
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
-  function resetHistory(){ if(confirm("HAPUS SEMUA RIWAYAT?")){ history=[]; saveToStorage(); renderHistory(); } }
-  function resetCart(){ if(confirm("Kosongkan keranjang?")){ cart=[]; resetUI(); saveToStorage(); } }
-  function resetUI(){ document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active')); document.getElementById("tabUtama").classList.add("active"); document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); }
-  function openPopup(){ document.getElementById("confirmPopup").classList.remove("hide"); }
+  function resetCart(){ if(confirm("Hapus pesanan?")) { cart = []; renderCart(); calculateTotal(); } }
+  function resetUI(){ document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); }
   function closePopup(){ document.getElementById("confirmPopup").classList.add("hide"); }
 
   loadFromStorage(); renderMenu();
