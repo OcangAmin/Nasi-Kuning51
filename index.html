@@ -28,6 +28,8 @@
     border: 2px solid var(--brand-gold); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 800; color: var(--brand-gold);
   }
   .tab-item.active { background: var(--brand-gold); color: var(--white); }
+  .tab-item.free-mode { border-color: #28a745; color: #28a745; }
+  .tab-item.free-mode.active { background: #28a745; color: white; }
 
   /* Grid Menu */
   .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
@@ -48,10 +50,12 @@
   input[type="number"] {
     width: 100%; border: 1px solid #ccc; border-radius: 10px; padding: 12px; font-size: 16px; font-weight: 700; margin: 10px 0; outline: none;
   }
+  input[readonly] { background-color: #f0f0f0; color: #888; cursor: not-allowed; }
   .quick-pay-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
   .small-btn { flex: 1; padding: 10px; background: var(--brand-maroon); color: white; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .small-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  /* Sticky Bottom Action Bar */
+  /* Action Bar */
   .action-bar {
     position: fixed; bottom: 70px; left: 0; right: 0; background: var(--brand-light);
     padding: 10px 15px; display: flex; gap: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 900;
@@ -59,7 +63,7 @@
   .btn-main-action { flex: 3; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 14px; background: var(--brand-maroon); color: white; }
   .btn-reset-action { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid var(--brand-gold); font-weight: 800; cursor: pointer; background: white; color: var(--brand-gold); font-size: 12px; text-align: center; }
 
-  /* Navigasi Utama */
+  /* Navigasi */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 70px;
     display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000;
@@ -67,12 +71,10 @@
   .nav-item { text-align: center; color: var(--brand-maroon); font-size: 10px; cursor: pointer; flex: 1; opacity: 0.5; }
   .nav-item.active { opacity: 1; font-weight: 800; }
   
-  /* Riwayat */
   .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:5px solid var(--brand-maroon); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
   .share-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .hide { display: none; }
 
-  /* Popup */
   .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000; }
   .popup { width: 85%; background: white; border-radius: 20px; padding: 25px; text-align: center; }
 </style>
@@ -103,21 +105,22 @@
       </div>
     </div>
     <div class="pay-card">
-      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+      <div style="display: flex; gap: 5px; margin-bottom: 10px;">
         <button class="tab-item" id="btnCash" onclick="setPayment('cash')">CASH</button>
         <button class="tab-item" id="btnQris" onclick="setPayment('qris')">QRIS</button>
+        <button class="tab-item free-mode" id="btnFree" onclick="setPayment('free')">FREE</button>
       </div>
       <input type="number" id="uangBayar" placeholder="Uang Bayar" oninput="calculateChange()" inputmode="numeric">
-      <div class="quick-pay-row">
-        <button class="small-btn" onclick="setQuick(5000)">5K</button>
-        <button class="small-btn" onclick="setQuick(10000)">10K</button>
-        <button class="small-btn" onclick="setQuick(20000)">20K</button>
-        <button class="small-btn" onclick="setQuick(50000)">50K</button>
-        <button class="small-btn" onclick="setQuick(100000)">100K</button>
+      <div class="quick-pay-row" id="quickPayArea">
+        <button class="small-btn q-btn" onclick="setQuick(5000)">5K</button>
+        <button class="small-btn q-btn" onclick="setQuick(10000)">10K</button>
+        <button class="small-btn q-btn" onclick="setQuick(20000)">20K</button>
+        <button class="small-btn q-btn" onclick="setQuick(50000)">50K</button>
+        <button class="small-btn q-btn" onclick="setQuick(100000)">100K</button>
       </div>
       <div style="display: flex; gap: 8px;">
-        <button class="small-btn" style="background:var(--brand-gold)" onclick="setExact()">UANG PAS</button>
-        <button class="small-btn" style="background:var(--brand-gold)" onclick="clearUangBayar()">Clear</button>
+        <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="setExact()">UANG PAS</button>
+        <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="clearUangBayar()">Clear</button>
       </div>
       <div style="display: flex; justify-content: space-between; font-weight: 800; margin-top: 15px; color: var(--brand-maroon);">
         <span>Kembalian</span>
@@ -178,7 +181,46 @@
   function saveToStorage(){ localStorage.setItem("bucek_cart", JSON.stringify(cart)); localStorage.setItem("bucek_history", JSON.stringify(history)); }
   function loadFromStorage(){ cart = JSON.parse(localStorage.getItem("bucek_cart")) || []; history = JSON.parse(localStorage.getItem("bucek_history")) || []; renderCart(); calculateTotal(); }
   function getNum(id) { const el = document.getElementById(id); let val = (el.tagName === "INPUT") ? el.value : el.innerText; return parseInt(val.toString().replace(/\D/g, '')) || 0; }
-  function calculateChange(){ const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const change = bayar - total; document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0"; }
+  
+  function calculateChange(){ 
+    const total = getNum("totalHarga"); 
+    const bayar = getNum("uangBayar"); 
+    if(paymentMethod === 'free' || paymentMethod === 'qris') {
+        document.getElementById("kembalian").innerText = "0";
+    } else {
+        const change = bayar - total; 
+        document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0"; 
+    }
+  }
+
+  function setPayment(m){ 
+    paymentMethod = m; 
+    const inputBayar = document.getElementById("uangBayar");
+    const qButtons = document.querySelectorAll(".q-btn");
+    
+    document.getElementById("btnCash").classList.toggle("active", m==='cash'); 
+    document.getElementById("btnQris").classList.toggle("active", m==='qris'); 
+    document.getElementById("btnFree").classList.toggle("active", m==='free'); 
+    
+    if(m==='qris') {
+        inputBayar.value = getNum("totalHarga");
+        inputBayar.readOnly = true;
+        qButtons.forEach(b => b.disabled = true);
+        document.getElementById("quickPayArea").style.opacity = "0.3";
+    } else if(m==='free') {
+        inputBayar.value = 0;
+        inputBayar.readOnly = true;
+        qButtons.forEach(b => b.disabled = true);
+        document.getElementById("quickPayArea").style.opacity = "0.3";
+    } else {
+        inputBayar.readOnly = false;
+        qButtons.forEach(b => b.disabled = false);
+        document.getElementById("quickPayArea").style.opacity = "1";
+    }
+    calculateChange();
+  }
+
+  // Fungsi lainnya tetap sama
   function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
   function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div style="font-weight:800; font-size:13px;">${m.name}</div><span>Rp ${m.price.toLocaleString('id-ID')}</span></div>`).join(""); }
   function addToCart(name, price){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); saveToStorage(); }
@@ -186,25 +228,29 @@
   function changeQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty <= 0) cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
   function removeItem(idx){ cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
   function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); calculateChange(); }
-  function setPayment(m){ paymentMethod = m; document.getElementById("btnCash").classList.toggle("active", m==='cash'); document.getElementById("btnQris").classList.toggle("active", m==='qris'); if(m==='qris') setExact(); }
-  function setQuick(amt){ document.getElementById("uangBayar").value = getNum("uangBayar") + amt; calculateChange(); }
-  function setExact(){ document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
-  function clearUangBayar(){ document.getElementById("uangBayar").value = ""; calculateChange(); }
+  function setQuick(amt){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("uangBayar") + amt; calculateChange(); }
+  function setExact(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
+  function clearUangBayar(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = ""; calculateChange(); }
 
   function completeTransaction(){
     const total = getNum("totalHarga"); const bayar = getNum("uangBayar");
     if(cart.length === 0){ alert("Tidak ada pesanan."); return; }
     if(!paymentMethod){ alert("Pilih metode pembayaran."); return; }
-    if(bayar < total){ alert("Uang tidak cukup."); return; }
+    if(paymentMethod !== 'free' && bayar < total){ alert("Uang tidak cukup."); return; }
     if(paymentMethod === "qris") { openQrisPopup(); } else { finalize(); }
   }
 
   function finalize(){
-    const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const transId = "NK51-" + Date.now().toString().slice(-6);
-    history.push({ id: transId, time: new Date().toLocaleString('id-ID'), items: JSON.parse(JSON.stringify(cart)), total, bayar, change: bayar - total, paymentMethod });
-    alert("Transaksi Berhasil!"); cart = []; paymentMethod = ""; 
-    document.getElementById("btnCash").classList.remove("active"); document.getElementById("btnQris").classList.remove("active");
+    const realTotal = getNum("totalHarga"); 
+    const finalTotal = (paymentMethod === 'free') ? 0 : realTotal;
+    const finalBayar = (paymentMethod === 'free') ? 0 : getNum("uangBayar");
+    const transId = "NK51-" + Date.now().toString().slice(-6);
+    history.push({ id: transId, time: new Date().toLocaleString('id-ID'), items: JSON.parse(JSON.stringify(cart)), total: finalTotal, realValue: realTotal, bayar: finalBayar, change: finalBayar - finalTotal, paymentMethod });
+    alert(paymentMethod === 'free' ? "Berbagi itu Indah!" : "Transaksi Berhasil!"); 
+    cart = []; paymentMethod = ""; 
+    document.getElementById("btnCash").classList.remove("active"); document.getElementById("btnQris").classList.remove("active"); document.getElementById("btnFree").classList.remove("active");
     clearUangBayar(); renderCart(); calculateTotal(); saveToStorage();
+    document.getElementById("uangBayar").readOnly = false; // Reset lock
   }
 
   function resetCart(){ if(confirm("Reset?")) { cart = []; clearUangBayar(); renderCart(); calculateTotal(); saveToStorage(); } }
@@ -213,12 +259,12 @@
   function renderHistory(){
     const list = document.getElementById("historyList");
     list.innerHTML = history.slice().reverse().map((h, idx) => `
-      <div class="hist-card">
+      <div class="hist-card" style="${h.paymentMethod === 'free' ? 'border-left-color: #28a745' : ''}">
         <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:var(--brand-maroon);"><span>ID: ${h.id}</span><span>${h.paymentMethod.toUpperCase()}</span></div>
         <div style="font-size:10px; color:#666; margin:5px 0;">${h.time}</div>
         <div style="font-size:12px; border-top:1px dashed #ddd; padding:5px 0;">${h.items.map(i => `<div>${i.name} x${i.qty}</div>`).join("")}</div>
         <div style="text-align:right; font-weight:800; border-top:1px dashed #ddd; padding-top:5px; font-size:14px;">Total: Rp ${h.total.toLocaleString('id-ID')}</div>
-        <div style="text-align:right; font-weight:700; color:var(--brand-gold); font-size:12px;">Kembali: Rp ${h.change.toLocaleString('id-ID')}</div>
+        ${h.paymentMethod === 'free' ? '' : `<div style="text-align:right; font-weight:700; color:var(--brand-gold); font-size:12px;">Kembali: Rp ${h.change.toLocaleString('id-ID')}</div>`}
         <button class="share-btn" onclick="shareReceipt(${history.length - 1 - idx})"><span>📤</span> SHARE STRUK WA</button>
       </div>
     `).join("");
@@ -228,7 +274,10 @@
     const data = history[idx];
     let receipt = `*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${data.id}\nTgl   : ${data.time}\nKasir : HALILINTAR BUCEK\n--------------------------------------------\n`;
     data.items.forEach(i => { receipt += `*${i.name}*\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    receipt += `--------------------------------------------\n*TOTAL      : Rp ${data.total.toLocaleString('id-ID')}*\nBAYAR (${data.paymentMethod.toUpperCase()}) : Rp ${data.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${data.change.toLocaleString('id-ID')}\n--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: +62 878-4186-2086\n--------------------------------------------\n*LOKASI OUTLET:*\n📍 1. PRAMUKA (IMAJINASI)\n📍 2. DERMAGA (PANTAI)\n📍 3. PEMUDA (LPNG Konggoasa)\n📍 4. ABADI (Lrg KDRT)\n--------------------------------------------\n_Terima kasih!_`;
+    receipt += `--------------------------------------------\n*TOTAL      : Rp ${data.total.toLocaleString('id-ID')}*\n`;
+    if(data.paymentMethod === 'free') receipt += `METODE      : JUMAT BERKAH / FREE\n`;
+    else receipt += `BAYAR (${data.paymentMethod.toUpperCase()}) : Rp ${data.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${data.change.toLocaleString('id-ID')}\n`;
+    receipt += `--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: +62 878-4186-2086\n--------------------------------------------\n_Terima kasih!_`;
     if (navigator.share) { navigator.share({ title: 'Struk Nasi Kuning 51', text: receipt }).catch(() => {}); } else { alert("Struk disalin!"); }
   }
 
@@ -238,56 +287,40 @@
     let text = "HISTORY PENJUALAN\n\n";
     history.forEach(h => {
       text += `ID: ${h.id}\nWaktu: ${h.time}\nMetode: ${h.paymentMethod.toUpperCase()}\nItems:\n`;
-      h.items.forEach(i => { text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`; });
-      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\nBayar: Rp ${h.bayar.toLocaleString('id-ID')}\nKembali: Rp ${h.change.toLocaleString('id-ID')}\n---------------------------------\n`;
+      h.items.forEach(i => { text += `- ${i.name} x${i.qty}\n`; });
+      text += `Total Akhir: Rp ${h.total.toLocaleString('id-ID')}\n---------------------------------\n`;
     });
     downloadFile(filename, text);
   }
 
-  // FITUR TUTUP KASIR (DENGAN DETAIL UANG BAYAR CASH)
   function closeCashier(){
     if(history.length === 0){ alert("Tidak ada transaksi."); return; }
     const now = new Date(); const filename = `rekap_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
-    
-    let totalOmzet = 0; let countCash = 0; let countQris = 0; let totalCash = 0; let totalQris = 0;
+    let totalOmzet = 0; let countCash = 0; let countQris = 0; let countFree = 0;
+    let totalCash = 0; let totalQris = 0; let totalNilaiFree = 0;
     let laukTerjual = {};
-
     history.forEach(h => {
       totalOmzet += h.total;
-      if(h.paymentMethod === 'cash') { countCash++; totalCash += h.total; } else { countQris++; totalQris += h.total; }
+      if(h.paymentMethod === 'cash') { countCash++; totalCash += h.total; } 
+      else if(h.paymentMethod === 'qris') { countQris++; totalQris += h.total; }
+      else { countFree++; totalNilaiFree += h.realValue; }
       h.items.forEach(i => { if(laukTerjual[i.name]) { laukTerjual[i.name] += i.qty; } else { laukTerjual[i.name] = i.qty; } });
     });
-
     let text = "=== REKAP TUTUP KASIR ===\n";
-    text += `Tanggal: ${now.toLocaleDateString('id-ID')}\n`;
-    text += `Waktu Tutup: ${now.toLocaleTimeString('id-ID')}\n\n`;
-    text += `TOTAL OMZET KESELURUHAN: Rp ${totalOmzet.toLocaleString('id-ID')}\n`;
-    text += `-----------------------------------\n`;
-    text += `RINGKASAN METODE PEMBAYARAN:\n`;
-    text += `- CASH : ${countCash} Transaksi (Rp ${totalCash.toLocaleString('id-ID')})\n`;
-    text += `- QRIS : ${countQris} Transaksi (Rp ${totalQris.toLocaleString('id-ID')})\n`;
-    text += `-----------------------------------\n`;
+    text += `Tanggal: ${now.toLocaleDateString('id-ID')}\nTOTAL OMZET MASUK: Rp ${totalOmzet.toLocaleString('id-ID')}\n-----------------------------------\n`;
+    text += `RINGKASAN METODE PEMBAYARAN:\n- CASH : ${countCash} Trans (Rp ${totalCash.toLocaleString('id-ID')})\n- QRIS : ${countQris} Trans (Rp ${totalQris.toLocaleString('id-ID')})\n- FREE : ${countFree} Trans (Senilai Rp ${totalNilaiFree.toLocaleString('id-ID')})\n-----------------------------------\n`;
     text += `RINGKASAN LAUK TERJUAL:\n`;
     for (let menu in laukTerjual) { text += `- ${menu}: ${laukTerjual[menu]} Porsi\n`; }
-    text += `-----------------------------------\n\n`;
-
-    text += "DETAIL TRANSAKSI:\n";
+    text += `-----------------------------------\n\nDETAIL TRANSAKSI:\n`;
     history.forEach(h => {
       text += `ID: ${h.id} | ${h.paymentMethod.toUpperCase()} | Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
-      // JIKA CASH, TAMPILKAN UANG BAYAR & KEMBALIAN
-      if(h.paymentMethod === 'cash') {
-        text += `Uang Bayar: Rp ${h.bayar.toLocaleString('id-ID')}\n`;
-        text += `Kembali   : Rp ${h.change.toLocaleString('id-ID')}\n`;
-      } else {
-        text += `Status: QRIS BERHASIL\n`;
-      }
+      if(h.paymentMethod === 'cash') text += `Uang Bayar: Rp ${h.bayar.toLocaleString('id-ID')} | Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`;
       h.items.forEach(i => { text += `  > ${i.name} x${i.qty}\n`; });
       text += `-----------------------------------\n`;
     });
-
     downloadFile(filename, text);
     history = []; saveToStorage(); renderHistory(); showTab('transaksi');
-    alert("Tutup kasir berhasil! Detail uang bayar sudah tercatat di file.");
+    alert("Tutup kasir berhasil!");
   }
 
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
