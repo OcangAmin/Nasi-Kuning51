@@ -239,11 +239,12 @@
     history.forEach(h => {
       text += `ID: ${h.id}\nWaktu: ${h.time}\nMetode: ${h.paymentMethod.toUpperCase()}\nItems:\n`;
       h.items.forEach(i => { text += `- ${i.name} x${i.qty} (Rp ${i.price.toLocaleString('id-ID')} each)\n`; });
-      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\nKembali: Rp ${h.change.toLocaleString('id-ID')}\n---------------------------------\n`;
+      text += `Total: Rp ${h.total.toLocaleString('id-ID')}\nBayar: Rp ${h.bayar.toLocaleString('id-ID')}\nKembali: Rp ${h.change.toLocaleString('id-ID')}\n---------------------------------\n`;
     });
     downloadFile(filename, text);
   }
 
+  // FITUR TUTUP KASIR (DENGAN DETAIL UANG BAYAR CASH)
   function closeCashier(){
     if(history.length === 0){ alert("Tidak ada transaksi."); return; }
     const now = new Date(); const filename = `rekap_tutupkasir_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.txt`;
@@ -273,14 +274,20 @@
     text += "DETAIL TRANSAKSI:\n";
     history.forEach(h => {
       text += `ID: ${h.id} | ${h.paymentMethod.toUpperCase()} | Total: Rp ${h.total.toLocaleString('id-ID')}\n`;
-      text += `Kembali: Rp ${h.change.toLocaleString('id-ID')}\n`; // KEMBALIAN DITAMBAHKAN DI DETAIL TUTUP KASIR
+      // JIKA CASH, TAMPILKAN UANG BAYAR & KEMBALIAN
+      if(h.paymentMethod === 'cash') {
+        text += `Uang Bayar: Rp ${h.bayar.toLocaleString('id-ID')}\n`;
+        text += `Kembali   : Rp ${h.change.toLocaleString('id-ID')}\n`;
+      } else {
+        text += `Status: QRIS BERHASIL\n`;
+      }
       h.items.forEach(i => { text += `  > ${i.name} x${i.qty}\n`; });
       text += `-----------------------------------\n`;
     });
 
     downloadFile(filename, text);
     history = []; saveToStorage(); renderHistory(); showTab('transaksi');
-    alert("Tutup kasir berhasil! Data telah disimpan.");
+    alert("Tutup kasir berhasil! Detail uang bayar sudah tercatat di file.");
   }
 
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
