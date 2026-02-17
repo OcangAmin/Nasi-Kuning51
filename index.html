@@ -22,7 +22,7 @@
   .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--brand-gold); background: white; object-fit: cover; }
   .user-name { font-size: 16px; font-weight: 700; text-transform: uppercase; }
 
-  /* SEARCH & FILTER (ANTI-ZOOM) */
+  /* SEARCH & FILTER */
   .search-container { 
     padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; 
     position: sticky; top: 93px; z-index: 99; display: flex; gap: 8px;
@@ -159,10 +159,10 @@
 </div>
 
 <script>
-  // KONTAK WARUNG (SILAKAN SESUAIKAN)
+  // KONTAK WARUNG
   const warungInfo = {
-    ig: "@nasikuning51",
-    wa: "0812-3456-7890",
+    ig: "@naskun_kolaka51",
+    wa: "+62 878-4186-2086",
     lokasi: "Jl. Lokasi Warung Nasi Kuning 51"
   };
 
@@ -222,7 +222,7 @@
   function finalize(){
     const rt = getNum("totalHarga"); const bayar = getNum("uangBayar"); const m = paymentMethod;
     const cg = (m === 'free' || m === 'qris') ? 0 : bayar - rt;
-    history.push({ id: "NK51-" + Date.now().toString().slice(-4), time: new Date().toLocaleString('id-ID'), items: JSON.parse(JSON.stringify(cart)), total: (m === 'free' ? 0 : rt), realValue: rt, bayar: bayar, change: cg, paymentMethod: m });
+    history.push({ id: "NK51-" + Date.now().toString().slice(-6), time: new Date().toLocaleString('id-ID'), items: JSON.parse(JSON.stringify(cart)), total: (m === 'free' ? 0 : rt), realValue: rt, bayar: (m === 'qris' ? rt : (m === 'free' ? 0 : bayar)), change: cg, paymentMethod: m });
     cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Berhasil!");
   }
 
@@ -249,7 +249,11 @@
         <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span style="color:var(--brand-gold)">${h.paymentMethod.toUpperCase()}</span></div>
         <div style="font-size:10px; color:#666;">${h.time}</div>
         <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; padding-top:5px;">${h.items.map(i => i.name + ' x' + i.qty).join(', ')}</div>
-        <div style="text-align:right; font-size:15px;"><b>Total: Rp ${h.total.toLocaleString('id-ID')}</b></div>
+        <div style="text-align:right; font-size:15px; border-bottom:1px solid #eee; padding-bottom:5px;"><b>Total: Rp ${h.total.toLocaleString('id-ID')}</b></div>
+        <div style="font-size:11px; color:#555; padding-top:5px;">
+          <div style="display:flex; justify-content:space-between;"><span>Bayar:</span><span>Rp ${h.bayar.toLocaleString('id-ID')}</span></div>
+          <div style="display:flex; justify-content:space-between;"><span>Kembali:</span><span>Rp ${h.change.toLocaleString('id-ID')}</span></div>
+        </div>
         <button class="share-btn" onclick="shareReceiptByID('${h.id}')">📤 SHARE WA</button>
       </div>
     `).join("");
@@ -258,9 +262,33 @@
 
   function shareReceiptByID(id) {
     const d = history.find(h => h.id === id); if(!d) return;
-    let s = `*NASI KUNING 51*\nID: ${d.id}\n${d.time}\n------------------------------\n`;
-    d.items.forEach(i => { s += `${i.name} x${i.qty} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    s += `------------------------------\n*TOTAL: Rp ${d.total.toLocaleString('id-ID')}*\nMetode: ${d.paymentMethod.toUpperCase()}\n------------------------------\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\nLokasi: ${warungInfo.lokasi}\nTerima Kasih!`;
+    let s = `*NASI KUNING 51*\n`;
+    s += `_Bukti Pembayaran Digital_\n`;
+    s += `--------------------------------------------\n`;
+    s += `ID    : ${d.id}\n`;
+    s += `Tgl   : ${d.time}\n`;
+    s += `Kasir : HALILINTAR BUCEK\n`;
+    s += `--------------------------------------------\n`;
+    d.items.forEach(i => { 
+        s += `*${i.name.toUpperCase()}*\n`;
+        s += `${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; 
+    });
+    s += `--------------------------------------------\n`;
+    s += `*TOTAL      : Rp ${d.total.toLocaleString('id-ID')}*\n`;
+    s += `BAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\n`;
+    s += `KEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n`;
+    s += `--------------------------------------------\n`;
+    s += `*HUBUNGI KAMI:*\n`;
+    s += `📸 IG: @naskun_kolaka51\n`;
+    s += `📞 WA: +62 878-4186-2086\n`;
+    s += `--------------------------------------------\n`;
+    s += `*LOKASI OUTLET:*\n`;
+    s += `📍 1. PRAMUKA Depan (IMAJINASI)\n`;
+    s += `📍 2. DERMAGA (PANTAI)\n`;
+    s += `📍 3. PEMUDA Lalomba (Dpn LPNG Konggoasa)\n`;
+    s += `📍 4. ABADI (Lrg KDRT)\n`;
+    s += `--------------------------------------------\n`;
+    s += `_Terima kasih & Selamat Menikmati!_`;
     window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
   }
 
@@ -280,7 +308,7 @@
     txt += `\n${sep}          DETAIL TRANSAKSI\n${sep}`;
     history.forEach((h, i) => {
         txt += `${i+1}. No Nota : ${h.id}\n   Waktu   : ${h.time}\n   Metode  : ${h.paymentMethod.toUpperCase()}\n   Pesanan : ${h.items.map(item => item.name + ' x' + item.qty).join(', ')}\n   Total   : Rp ${h.total.toLocaleString('id-ID')}\n`;
-        if(h.paymentMethod === 'cash') txt += `   Bayar   : Rp ${h.bayar.toLocaleString('id-ID')}\n   Kembali : Rp ${h.change.toLocaleString('id-ID')}\n`;
+        txt += `   Bayar   : Rp ${h.bayar.toLocaleString('id-ID')}\n   Kembali : Rp ${h.change.toLocaleString('id-ID')}\n`;
         txt += `------------------------------------------\n`;
     });
     txt += `\nINFO WARUNG:\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\nLokasi: ${warungInfo.lokasi}\n${sep}-- AKHIR LAPORAN --`;
