@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-<title>POS Nasi Kuning 51 - Full Version</title>
+<title>POS NASI KUNING 51 - FINAL ULTIMATE</title>
 <style>
   :root {
     --brand-maroon: #632626; --brand-gold: #c6943d; --brand-light: #f5f5f5;
@@ -21,7 +21,7 @@
 
   /* TABS & MENU */
   .tabs-container { display: flex; gap: 10px; padding: 15px; }
-  .tab-item { flex: 1; padding: 12px; text-align: center; background: var(--white); border: 2px solid var(--brand-gold); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 800; color: var(--brand-gold); }
+  .tab-item { flex: 1; padding: 12px; text-align: center; background: var(--white); border: 2px solid var(--brand-gold); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 800; color: var(--brand-gold); transition: 0.3s; }
   .tab-item.active { background: var(--brand-gold); color: var(--white); }
   .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
   .menu-card { background: var(--brand-maroon); border-radius: 12px; padding: 12px; border: 2px solid var(--brand-gold); cursor: pointer; color: var(--white); display: flex; flex-direction: column; justify-content: space-between; min-height: 85px; }
@@ -37,7 +37,7 @@
   /* PEMBAYARAN */
   .pay-card { background: var(--white); border-radius: 15px; margin: 10px 15px; padding: 15px; border: 1px solid #ddd; }
   input[type="number"] { width: 100%; border: 2px solid #ddd; border-radius: 10px; padding: 12px; font-size: 18px; font-weight: 700; margin: 10px 0; text-align: right; outline: none; }
-  .quick-pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .quick-pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
   .small-btn { padding: 12px 5px; background: var(--brand-maroon); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
   /* ACTION & NAV */
@@ -48,18 +48,19 @@
   .nav-item { text-align: center; color: var(--brand-maroon); font-size: 11px; cursor: pointer; flex: 1; opacity: 0.4; padding-top: 15px; transition: 0.3s; }
   .nav-item.active { opacity: 1; font-weight: 800; }
 
-  /* HISTORY & SEARCH */
+  /* SEARCH & STATS */
   .search-container { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; display: flex; gap: 8px; position: sticky; top: 93px; z-index: 99; }
-  .filter-select { flex: 1; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 13px; font-weight: 700; }
+  .filter-select { flex: 1; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 13px; font-weight: 700; background: white; }
   .search-input { flex: 2; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 14px; outline: none; }
   .search-stats { background: var(--brand-gold); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; margin: 10px 15px; display: inline-block; }
   .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:6px solid var(--brand-maroon); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
   .share-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 10px; cursor: pointer; }
+  .print-btn { background: #333; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 5px; cursor: pointer; }
 
-  /* POPUP STYLES */
+  /* POPUP */
   .hide { display: none; }
   .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-  .popup { width: 85%; background: white; border-radius: 20px; padding: 25px; text-align: center; }
+  .popup { width: 85%; background: white; border-radius: 20px; padding: 25px; text-align: center; max-height: 80vh; overflow-y: auto; }
   .confirm-row { display: flex; justify-content: space-between; margin: 8px 0; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; }
 </style>
 </head>
@@ -80,8 +81,9 @@
       <div class="tab-item active" id="tabUtama" onclick="setMenuTab('utama')">UTAMA</div>
       <div class="tab-item" id="tabAdd" onclick="setMenuTab('additional')">TAMBAHAN</div>
     </div>
+
     <div class="menu-grid" id="menuGrid"></div>
-    
+
     <div class="card-box">
       <div id="cartList"></div>
       <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: 800; border-top: 1px solid var(--border); padding-top: 10px; font-size: 18px;">
@@ -96,6 +98,7 @@
         <button class="tab-item" id="btnFree" style="border-color:var(--green-success); color:var(--green-success);" onclick="setPayment('free')">FREE</button>
       </div>
       <input type="number" id="uangBayar" placeholder="0" oninput="calculateChange()" inputmode="numeric">
+      
       <div class="quick-pay-grid">
         <button class="small-btn" onclick="setQuick(5000)">5K</button>
         <button class="small-btn" onclick="setQuick(10000)">10K</button>
@@ -104,7 +107,9 @@
         <button class="small-btn" onclick="setQuick(100000)">100K</button>
         <button class="small-btn" style="background:var(--brand-gold)" onclick="setExact()">PAS</button>
       </div>
-      <div style="display: flex; justify-content: space-between; font-weight: 800; color: var(--brand-maroon); font-size: 16px; margin-top: 15px;">
+      <button class="small-btn" style="background:#888; width: 100%; margin: 10px 0;" onclick="clearUangBayar()">HAPUS NOMINAL</button>
+      
+      <div style="display: flex; justify-content: space-between; font-weight: 800; color: var(--brand-maroon); font-size: 16px;">
         <span>Kembalian</span><span id="kembalian">0</span>
       </div>
     </div>
@@ -125,10 +130,13 @@
       </select>
       <input type="text" id="searchInput" class="search-input" placeholder="Cari transaksi..." onkeyup="filterHistory()">
     </div>
+    
     <div id="searchStatsContainer" class="hide">
         <div id="searchCountBadge" class="search-stats">Ditemukan: 0</div>
     </div>
+
     <div id="historyList" style="padding: 0 15px;"></div>
+
     <div style="padding: 20px 15px; display: flex; flex-direction: column; gap: 10px;">
       <button class="btn-main-action" style="background:#28a745" onclick="saveHistory()">💾 SIMPAN LOG (.TXT)</button>
       <button class="btn-main-action" style="background:var(--brand-gold)" onclick="closeCashier()">🏁 TUTUP KASIR (RESET DATA)</button>
@@ -138,7 +146,7 @@
 
 <div id="confirmPopup" class="hide">
   <div class="popup-overlay"><div class="popup">
-    <h3 style="color:var(--brand-maroon); margin-top:0;">DETAIL PEMBAYARAN</h3>
+    <h3 style="color:var(--brand-maroon); margin-top:0;">KONFIRMASI BAYAR</h3>
     <div id="popupDetails" style="text-align: left; margin-bottom: 20px; font-size:13px; border-top:1px solid #eee; padding-top:10px;"></div>
     <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="finalize()">KONFIRMASI</button>
     <button class="btn-reset-action" style="width:100%; margin:5px 0" onclick="closePopup()">BATAL</button>
@@ -153,7 +161,12 @@
 <script>
   const warungInfo = {
     wa: "+62 878-4186-2086",
-    lokasi: ["📍 1. PRAMUKA Depan (IMAJINASI)", "📍 2. DERMAGA (PANTAI)", "📍 3. PEMUDA Lalomba", "📍 4. ABADI (Lrg KDRT)"]
+    lokasi: [
+        "📍 1. PRAMUKA Depan (IMAJINASI)",
+        "📍 2. DERMAGA (PANTAI)",
+        "📍 3. PEMUDA Lalomba (Dpn LPNG Konggoasa)",
+        "📍 4. ABADI (Lrg KDRT)"
+    ]
   };
 
   const menus = [
@@ -167,10 +180,11 @@
 
   let cart = []; let history = []; let paymentMethod = ""; let currentMenuTab = "utama";
 
-  function saveToStorage(){ localStorage.setItem("naskun51_final_db", JSON.stringify({cart, history})); }
-  function loadFromStorage(){ const db = JSON.parse(localStorage.getItem("naskun51_final_db")) || {cart:[], history:[]}; cart = db.cart; history = db.history; renderCart(); calculateTotal(); }
+  function saveToStorage(){ localStorage.setItem("naskun51_ultra_vfinal", JSON.stringify({cart, history})); }
+  function loadFromStorage(){ const db = JSON.parse(localStorage.getItem("naskun51_ultra_vfinal")) || {cart:[], history:[]}; cart = db.cart; history = db.history; renderCart(); calculateTotal(); }
   function getNum(id) { const el = document.getElementById(id); let val = (el.tagName === "INPUT") ? el.value : el.innerText; return parseInt(val.toString().replace(/\D/g, '')) || 0; }
 
+  // MENU & KERANJANG
   function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
   function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div class="menu-name">${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
   function addToCart(n, p){ const i = cart.find(x => x.name === n); if(i) i.qty++; else cart.push({name:n, price:p, qty:1}); renderCart(); calculateTotal(); saveToStorage(); }
@@ -190,6 +204,7 @@
   function removeFromCart(idx){ if(confirm("Hapus item?")){ cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); } }
   function calculateTotal(){ let t = 0; cart.forEach(i => t += (i.price*i.qty)); document.getElementById("totalHarga").innerText = t.toLocaleString('id-ID'); calculateChange(); }
 
+  // PEMBAYARAN
   function setPayment(m){ 
     paymentMethod = m; const i = document.getElementById("uangBayar");
     document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
@@ -201,8 +216,9 @@
   function calculateChange(){ const t = getNum("totalHarga"); const b = getNum("uangBayar"); const c = (paymentMethod === 'free' || paymentMethod === 'qris') ? 0 : b - t; document.getElementById("kembalian").innerText = c >= 0 ? c.toLocaleString('id-ID') : "0"; }
   function setQuick(a){ if(paymentMethod==='cash'){ document.getElementById("uangBayar").value = getNum("uangBayar")+a; calculateChange(); } }
   function setExact(){ if(paymentMethod==='cash'){ document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); } }
+  function clearUangBayar(){ document.getElementById("uangBayar").value = ""; calculateChange(); }
 
-  // POPUP KONFIRMASI DENGAN TOTAL ITEM & KEMBALIAN
+  // POPUP KONFIRMASI (ITEM + TOTAL + BAYAR + KEMBALI)
   function completeTransaction(){
     if(cart.length === 0 || !paymentMethod) return alert("Pilih pesanan & metode bayar!");
     const t = getNum("totalHarga"); const b = getNum("uangBayar"); const c = getNum("kembalian");
@@ -222,14 +238,14 @@
   function finalize(){
     const rt = getNum("totalHarga"); const b = getNum("uangBayar"); const m = paymentMethod;
     history.push({ 
-        id: "NK51-" + Math.floor(100000 + Math.random() * 999999), time: new Date().toLocaleString('id-ID'), 
+        id: "NK51-" + Math.floor(100000 + Math.random() * 900000), time: new Date().toLocaleString('id-ID'), 
         items: JSON.parse(JSON.stringify(cart)), total: (m === 'free' ? 0 : rt), realValue: rt, 
         bayar: (m === 'qris' ? rt : (m === 'free' ? 0 : b)), change: (m === 'cash' ? b - rt : 0), paymentMethod: m 
     });
-    cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage();
+    cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Transaksi Berhasil!");
   }
 
-  // RIWAYAT DENGAN DETAIL NOMINAL BAYAR & KEMBALI
+  // RIWAYAT DENGAN LIVE STATS & DETAIL NOMINAL
   function filterHistory() {
     const kw = document.getElementById("searchInput").value.toLowerCase();
     const type = document.getElementById("filterType").value;
@@ -262,6 +278,7 @@
         ` : ''}
 
         <button class="share-btn" onclick="shareReceiptByID('${h.id}')">📤 SHARE WHATSAPP</button>
+        <button class="print-btn" onclick="printBluetooth('${h.id}')">🖨️ PRINT STRUK</button>
       </div>`).join("");
   }
 
@@ -273,24 +290,36 @@
     window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
   }
 
+  async function printBluetooth(id) {
+    const d = history.find(h => h.id === id); if (!d) return;
+    let text = `\x1B\x61\x01NASI KUNING 51\nID: ${d.id}\n--------------------------------\n\x1B\x61\x00`;
+    d.items.forEach(i => text += `${i.name} x${i.qty}\nRp ${(i.price*i.qty).toLocaleString()}\n`);
+    text += `--------------------------------\nTOTAL: Rp ${d.total.toLocaleString()}\n\nTerima Kasih!\n\n\n\n`;
+    try {
+      const dev = await navigator.bluetooth.requestDevice({ filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb'] }] });
+      const srv = await dev.gatt.connect();
+      const chr = await (await srv.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb')).getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+      const enc = new TextEncoder(); const data = enc.encode(text);
+      for (let i = 0; i < data.length; i += 20) await chr.writeValue(data.slice(i, i + 20));
+    } catch (e) { alert("Bluetooth Error: " + e.message); }
+  }
+
   function generateReportText(isClosing) {
     let tO = 0, tF = 0, rekap = {};
     history.forEach(h => {
         if(h.paymentMethod !== 'free') tO += h.total; else tF += h.realValue;
         h.items.forEach(i => rekap[i.name] = (rekap[i.name] || 0) + i.qty);
     });
-    let txt = `=== LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'} ===\nWaktu Cetak: ${new Date().toLocaleString()}\nOmzet: Rp ${tO.toLocaleString()}\nSedekah: Rp ${tF.toLocaleString()}\n\nREKAP PRODUK:\n`;
-    for(let k in rekap) txt += `- ${k}: ${rekap[k]} Porsi\n`;
-    txt += `\nDETAIL TRANSAKSI:\n`;
-    history.forEach((h, i) => {
-        txt += `${i+1}. ${h.id} [${h.paymentMethod.toUpperCase()}] Total: Rp ${h.total.toLocaleString()}\n   Bayar: Rp ${h.bayar.toLocaleString()} | Kembali: Rp ${h.change.toLocaleString()}\n`;
-    });
+    let txt = `=== LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'} ===\nWaktu: ${new Date().toLocaleString()}\nOmzet: Rp ${tO.toLocaleString()}\nSedekah: Rp ${tF.toLocaleString()}\n\nREKAP PRODUK:\n`;
+    for(let k in rekap) txt += `- ${k}: ${rekap[k]}\n`;
+    txt += `\nDETAIL:\n`;
+    history.forEach((h, i) => txt += `${i+1}. ${h.id} [${h.paymentMethod.toUpperCase()}] Rp ${h.total.toLocaleString()}\n`);
     return txt;
   }
 
   function showTab(t){ document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); document.getElementById("navHome").classList.toggle("active", t === "transaksi"); document.getElementById("navHist").classList.toggle("active", t === "history"); if(t === "history") filterHistory(); }
-  function saveHistory(){ downloadFile(`Laporan_Naskun51_${Date.now()}.txt`, generateReportText(false)); }
-  function closeCashier(){ if(confirm("Tutup Kasir? Data riwayat akan dihapus.")){ downloadFile(`Tutup_Kasir_Naskun51_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
+  function saveHistory(){ downloadFile(`Log_Penjualan_${Date.now()}.txt`, generateReportText(false)); }
+  function closeCashier(){ if(confirm("Tutup Kasir? Data akan di-reset.")){ downloadFile(`Laporan_Tutup_Kasir_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
   function resetCart(){ if(confirm("Reset keranjang?")){ cart=[]; resetUI(); saveToStorage(); } }
   function resetUI(){ document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); setPayment(""); }
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
