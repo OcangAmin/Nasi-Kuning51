@@ -188,7 +188,6 @@
   function loadFromStorage(){ cart = JSON.parse(localStorage.getItem("naskun51_cart")) || []; history = JSON.parse(localStorage.getItem("naskun51_history")) || []; renderCart(); calculateTotal(); }
   function getNum(id) { const el = document.getElementById(id); let val = (el.tagName === "INPUT") ? el.value : el.innerText; return parseInt(val.toString().replace(/\D/g, '')) || 0; }
 
-  // KERANJANG & MENU
   function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
   function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div class="menu-name">${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
   function addToCart(name, price){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); saveToStorage(); }
@@ -211,7 +210,6 @@
   function removeFromCart(idx){ if(confirm("Hapus " + cart[idx].name + "?")){ cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); } }
   function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); calculateChange(); }
 
-  // PEMBAYARAN
   function setPayment(m){ 
     paymentMethod = m; const inputBayar = document.getElementById("uangBayar"); const qButtons = document.querySelectorAll(".q-btn");
     document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
@@ -225,7 +223,6 @@
   function setExact(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
   function clearUangBayar(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = ""; calculateChange(); }
 
-  // TRANSAKSI
   function completeTransaction(){
     const total = getNum("totalHarga"); const bayar = getNum("uangBayar");
     if(cart.length === 0){ alert("Keranjang masih kosong!"); return; }
@@ -258,47 +255,62 @@
     cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Transaksi Berhasil!");
   }
 
-  // RIWAYAT DENGAN FORMAT BARU (FINAL)
   function renderHistory(filter = "", type = "all"){
     const list = document.getElementById("historyList");
+    
+    // 1. HITUNG RINGKASAN DASHBOARD
+    let sOmzet = 0, sCash = 0, sQris = 0, sCountCash = 0, sCountQris = 0, sCountFree = 0;
+    history.forEach(h => {
+        if(h.paymentMethod === 'cash') { sOmzet += h.total; sCash += h.total; sCountCash++; }
+        else if(h.paymentMethod === 'qris') { sOmzet += h.total; sQris += h.total; sCountQris++; }
+        else if(h.paymentMethod === 'free') { sCountFree++; }
+    });
+
+    let summaryHTML = `
+      <div style="background: var(--brand-maroon); color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--brand-gold); box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <div style="font-size: 10px; opacity: 0.8; margin-bottom: 5px; text-align: center; letter-spacing: 1.5px; font-weight:800;">DASHBOARD PENDAPATAN</div>
+        <div style="font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 15px; color: var(--brand-gold);">Rp ${sOmzet.toLocaleString('id-ID')}</div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; border-top: 1px solid var(--border); padding-top: 12px;">
+          <div style="flex:1;"><b>TUNAI (${sCountCash} Trx):</b><br>Rp ${sCash.toLocaleString('id-ID')}</div>
+          <div style="flex:1; text-align: right; border-left:1px solid var(--border);"><b>QRIS (${sCountQris} Trx):</b><br>Rp ${sQris.toLocaleString('id-ID')}</div>
+        </div>
+        <div style="text-align:center; font-size:10px; margin-top:8px; opacity:0.7;">Sedekah (FREE): ${sCountFree} Transaksi</div>
+      </div>
+    `;
+
     const filtered = history.filter(h => {
         const mID = h.id.toLowerCase().includes(filter);
         const mL = h.items.map(i => i.name.toLowerCase()).join(" ").includes(filter);
         const mM = h.paymentMethod.toLowerCase().includes(filter);
         return type === "id" ? mID : type === "lauk" ? mL : type === "metode" ? mM : (mID || mL || mM);
     });
-    list.innerHTML = filtered.slice().reverse().map((h) => {
+
+    // 2. RENDER LIST NOTA
+    list.innerHTML = summaryHTML + filtered.slice().reverse().map((h) => {
       const mColor = h.paymentMethod === 'free' ? '#28a745' : (h.paymentMethod === 'qris' ? '#007bff' : '#c6943d');
       return `
       <div class="hist-card" style="border-left: 6px solid ${mColor};">
-        <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span style="background:${mColor}; color:white; padding:2px 5px; border-radius:4px;">${h.paymentMethod.toUpperCase()}</span></div>
+        <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span style="background:${mColor}; color:white; padding:2px 5px; border-radius:4px; font-weight:800;">${h.paymentMethod.toUpperCase()}</span></div>
         <div style="font-size:10px; color:#666; margin-bottom:5px;">${h.time}</div>
         
-        <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; border-bottom:1px dashed #ddd; padding:5px 0;">
+        <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; border-bottom:1px dashed #ddd; padding:6px 0;">
           ${h.items.map(i => `
             <div style="margin-bottom:4px; line-height:1.4;">
               <span style="font-weight:800; text-transform:uppercase;">${i.name}</span> 
               <span style="color:#666;">${i.qty} x ${i.price.toLocaleString('id-ID')}</span> 
-              <span style="font-weight:700;">= Rp ${(i.price * i.qty).toLocaleString('id-ID')}</span>
+              <span style="font-weight:700; color:#222;">= Rp ${(i.price * i.qty).toLocaleString('id-ID')}</span>
             </div>
           `).join("")}
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center;">
-           <span style="font-size:12px; color:#666;">Total Akhir:</span>
-           <b style="font-size:15px; color:var(--brand-maroon);">Rp ${h.total.toLocaleString('id-ID')}</b>
+           <span style="font-size:12px; color:#666;">Total:</span>
+           <b style="font-size:16px; color:var(--brand-maroon);">Rp ${h.total.toLocaleString('id-ID')}</b>
         </div>
 
-        ${h.paymentMethod === 'cash' ? `
-          <div style="font-size:10px; color:#777; margin-top:3px; display:flex; justify-content:space-between;">
-            <span>Bayar: Rp ${h.bayar.toLocaleString('id-ID')}</span>
-            <span>Kembali: Rp ${h.change.toLocaleString('id-ID')}</span>
-          </div>
-        ` : ''}
-
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:10px;">
-          <button class="share-btn" style="margin:0; padding:8px; font-size:11px;" onclick="shareReceiptByID('${h.id}')">📲 WHATSAPP</button>
-          <button class="print-btn" style="margin:0; padding:8px; font-size:11px;" onclick="printBluetooth('${h.id}')">🖨️ CETAK</button>
+          <button class="share-btn" style="margin:0; padding:10px; font-size:11px;" onclick="shareReceiptByID('${h.id}')">📲 WHATSAPP</button>
+          <button class="print-btn" style="margin:0; padding:10px; font-size:11px;" onclick="printBluetooth('${h.id}')">🖨️ CETAK</button>
         </div>
       </div>
     `}).join("");
@@ -329,19 +341,30 @@
 
   function generateReportText(isClosing) {
     let tOmzet = 0, tFreeVal = 0, tCash = 0, tQris = 0, lBayar = {}, lFree = {};
+    let countCash = 0, countQris = 0, countFree = 0;
+
     history.forEach(h => { 
-        if(h.paymentMethod !== 'free') { 
-            tOmzet += h.total; 
-            if(h.paymentMethod === 'cash') tCash += h.total; else tQris += h.total; 
-        } else { tFreeVal += h.realValue; }
+        if(h.paymentMethod === 'cash') { 
+            tOmzet += h.total; tCash += h.total; countCash++;
+        } else if(h.paymentMethod === 'qris') {
+            tOmzet += h.total; tQris += h.total; countQris++;
+        } else if(h.paymentMethod === 'free') {
+            tFreeVal += h.realValue; countFree++;
+        }
         h.items.forEach(i => { 
             if(h.paymentMethod === 'free') lFree[i.name] = (lFree[i.name] || 0) + i.qty; 
             else lBayar[i.name] = (lBayar[i.name] || 0) + i.qty; 
         });
     });
+
     const sep = "==========================================\n";
     let txt = `${sep}   LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'}\n   NASI KUNING 51\n${sep}`;
-    txt += `Waktu Cetak : ${new Date().toLocaleString('id-ID')}\nTotal Omzet : Rp ${tOmzet.toLocaleString('id-ID')}\n  - Tunai   : Rp ${tCash.toLocaleString('id-ID')}\n  - QRIS    : Rp ${tQris.toLocaleString('id-ID')}\nTotal Free  : Rp ${tFreeVal.toLocaleString('id-ID')}\n${sep}REKAP PRODUK TERJUAL:\n`;
+    txt += `Waktu Cetak : ${new Date().toLocaleString('id-ID')}\n`;
+    txt += `Total Omzet : Rp ${tOmzet.toLocaleString('id-ID')}\n`;
+    txt += `  - TUNAI (${countCash} Trx) : Rp ${tCash.toLocaleString('id-ID')}\n`;
+    txt += `  - QRIS  (${countQris} Trx) : Rp ${tQris.toLocaleString('id-ID')}\n`;
+    txt += `Total FREE (${countFree} Trx) : Rp ${tFreeVal.toLocaleString('id-ID')}\n`;
+    txt += `${sep}REKAP PRODUK TERJUAL:\n`;
     for(let k in lBayar) txt += `- ${k}: ${lBayar[k]} Porsi\n`;
     if(Object.keys(lFree).length > 0) {
         txt += `\nREKAP PRODUK FREE (SEDEKAH):\n`;
@@ -349,7 +372,7 @@
     }
     txt += `\n${sep}          DETAIL TRANSAKSI\n${sep}`;
     history.forEach((h, i) => {
-        txt += `${i+1}. No Nota : ${h.id}\n   Waktu   : ${h.time}\n   Metode  : ${h.paymentMethod.toUpperCase()}\n   Pesanan : ${h.items.map(item => item.name + ' x' + item.qty).join(', ')}\n   Total   : Rp ${h.total.toLocaleString('id-ID')}\n   Bayar   : Rp ${h.bayar.toLocaleString('id-ID')}\n   Kembali : Rp ${h.change.toLocaleString('id-ID')}\n------------------------------------------\n`;
+        txt += `${i+1}. Nota : ${h.id}\n   Waktu : ${h.time}\n   Metode : ${h.paymentMethod.toUpperCase()}\n   Total : Rp ${h.total.toLocaleString('id-ID')}\n------------------------------------------\n`;
     });
     txt += `\nINFO WARUNG:\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\n${sep}-- AKHIR LAPORAN --`;
     return txt;
