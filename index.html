@@ -257,6 +257,7 @@
 
   function renderHistory(filter = "", type = "all"){
     const list = document.getElementById("historyList");
+    const isSearching = filter.length > 0;
     
     // 1. HITUNG RINGKASAN DASHBOARD
     let sOmzet = 0, sCash = 0, sQris = 0, sCountCash = 0, sCountQris = 0, sCountFree = 0;
@@ -266,17 +267,20 @@
         else if(h.paymentMethod === 'free') { sCountFree++; }
     });
 
-    let summaryHTML = `
-      <div style="background: var(--brand-maroon); color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--brand-gold); box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-        <div style="font-size: 10px; opacity: 0.8; margin-bottom: 5px; text-align: center; letter-spacing: 1.5px; font-weight:800;">DASHBOARD PENDAPATAN</div>
-        <div style="font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 15px; color: var(--brand-gold);">Rp ${sOmzet.toLocaleString('id-ID')}</div>
-        <div style="display: flex; justify-content: space-between; font-size: 11px; border-top: 1px solid var(--border); padding-top: 12px;">
-          <div style="flex:1;"><b>TUNAI (${sCountCash} Trx):</b><br>Rp ${sCash.toLocaleString('id-ID')}</div>
-          <div style="flex:1; text-align: right; border-left:1px solid var(--border);"><b>QRIS (${sCountQris} Trx):</b><br>Rp ${sQris.toLocaleString('id-ID')}</div>
-        </div>
-        <div style="text-align:center; font-size:10px; margin-top:8px; opacity:0.7;">Sedekah (FREE): ${sCountFree} Transaksi</div>
-      </div>
-    `;
+    let summaryHTML = "";
+    if (!isSearching) {
+        summaryHTML = `
+          <div style="background: var(--brand-maroon); color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--brand-gold); box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+            <div style="font-size: 10px; opacity: 0.8; margin-bottom: 5px; text-align: center; letter-spacing: 1.5px; font-weight:800;">DASHBOARD PENDAPATAN</div>
+            <div style="font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 15px; color: var(--brand-gold);">Rp ${sOmzet.toLocaleString('id-ID')}</div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; border-top: 1px solid var(--border); padding-top: 12px;">
+              <div style="flex:1;"><b>TUNAI (${sCountCash}x transaksi):</b><br>Rp ${sCash.toLocaleString('id-ID')}</div>
+              <div style="flex:1; text-align: right; border-left:1px solid var(--border);"><b>QRIS (${sCountQris}x transaksi):</b><br>Rp ${sQris.toLocaleString('id-ID')}</div>
+            </div>
+            <div style="text-align:center; font-size:10px; margin-top:8px; opacity:0.7;">Sedekah (FREE): ${sCountFree}x transaksi</div>
+          </div>
+        `;
+    }
 
     const filtered = history.filter(h => {
         const mID = h.id.toLowerCase().includes(filter);
@@ -284,6 +288,11 @@
         const mM = h.paymentMethod.toLowerCase().includes(filter);
         return type === "id" ? mID : type === "lauk" ? mL : type === "metode" ? mM : (mID || mL || mM);
     });
+
+    if (isSearching && filtered.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:30px; color:#999; font-style:italic;">Hasil pencarian "${filter}" tidak ditemukan.</div>`;
+        return;
+    }
 
     // 2. RENDER LIST NOTA
     list.innerHTML = summaryHTML + filtered.slice().reverse().map((h) => {
@@ -361,9 +370,9 @@
     let txt = `${sep}   LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'}\n   NASI KUNING 51\n${sep}`;
     txt += `Waktu Cetak : ${new Date().toLocaleString('id-ID')}\n`;
     txt += `Total Omzet : Rp ${tOmzet.toLocaleString('id-ID')}\n`;
-    txt += `  - TUNAI (${countCash} Trx) : Rp ${tCash.toLocaleString('id-ID')}\n`;
-    txt += `  - QRIS  (${countQris} Trx) : Rp ${tQris.toLocaleString('id-ID')}\n`;
-    txt += `Total FREE (${countFree} Trx) : Rp ${tFreeVal.toLocaleString('id-ID')}\n`;
+    txt += `  - TUNAI (${countCash}x transaksi) : Rp ${tCash.toLocaleString('id-ID')}\n`;
+    txt += `  - QRIS  (${countQris}x transaksi) : Rp ${tQris.toLocaleString('id-ID')}\n`;
+    txt += `Total FREE (${countFree}x transaksi) : Rp ${tFreeVal.toLocaleString('id-ID')}\n`;
     txt += `${sep}REKAP PRODUK TERJUAL:\n`;
     for(let k in lBayar) txt += `- ${k}: ${lBayar[k]} Porsi\n`;
     if(Object.keys(lFree).length > 0) {
