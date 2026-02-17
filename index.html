@@ -38,7 +38,7 @@
   .card-box { background: var(--brand-maroon); border-radius: 15px; margin: 10px 15px; padding: 15px; color: var(--white); }
   .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
   .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 5px; padding: 5px 10px; font-weight: bold; }
-  .delete-btn { background: var(--red-danger); color: white; border: none; border-radius: 5px; padding: 5px 8px; font-weight: bold; cursor: pointer; }
+  .delete-btn { background: var(--red-danger); color: white; border: none; border-radius: 5px; padding: 5px 8px; font-weight: bold; margin-left: 5px; cursor: pointer; }
 
   /* PEMBAYARAN */
   .pay-card { background: var(--white); border-radius: 15px; margin: 10px 15px; padding: 15px; border: 1px solid #ddd; }
@@ -50,7 +50,6 @@
   .action-bar { position: fixed; bottom: 70px; left: 0; right: 0; background: var(--brand-light); padding: 10px 15px; display: flex; gap: 10px; z-index: 900; }
   .btn-main-action { flex: 3; padding: 18px; border-radius: 12px; border: none; font-weight: 800; background: var(--brand-maroon); color: white; cursor: pointer; }
   .btn-reset-action { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid var(--brand-gold); background: white; color: var(--brand-gold); font-size: 12px; font-weight: 800; cursor: pointer; }
-  
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 70px; display: flex; border-top: 1px solid #eee; z-index: 1000; }
   .nav-item { text-align: center; color: var(--brand-maroon); font-size: 11px; cursor: pointer; flex: 1; opacity: 0.4; padding-top: 15px; transition: 0.3s; }
   .nav-item.active { opacity: 1; font-weight: 800; }
@@ -58,15 +57,17 @@
   /* HISTORY CARD */
   .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:6px solid var(--brand-maroon); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
   .share-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 10px; cursor: pointer; }
+  .print-btn { background: #333; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 5px; cursor: pointer; }
   
-  /* SEARCH AREA */
-  .search-container { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; display: flex; gap: 8px; position: sticky; top: 93px; z-index: 99; }
-  .filter-select { flex: 1; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 13px; font-weight: 700; background: white; }
-  .search-input { flex: 2; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 14px; outline: none; }
-
   .hide { display: none; }
   .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000; }
   .popup { width: 85%; background: white; border-radius: 20px; padding: 25px; text-align: center; }
+  .confirm-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+
+  /* SEARCH & FILTER AREA */
+  .search-container { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; display: flex; gap: 8px; position: sticky; top: 93px; z-index: 99; }
+  .filter-select { flex: 1; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 13px; font-weight: 700; background: white; }
+  .search-input { flex: 2; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 14px; outline: none; }
 </style>
 </head>
 <body>
@@ -86,13 +87,16 @@
       <div class="tab-item active" id="tabUtama" onclick="setMenuTab('utama')">UTAMA</div>
       <div class="tab-item" id="tabAdd" onclick="setMenuTab('additional')">TAMBAHAN</div>
     </div>
+
     <div class="menu-grid" id="menuGrid"></div>
+
     <div class="card-box">
       <div id="cartList"></div>
       <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: 800; border-top: 1px solid var(--border); padding-top: 10px; font-size: 18px;">
         <span>Total</span><span id="totalHarga">0</span>
       </div>
     </div>
+
     <div class="pay-card">
       <div style="display: flex; gap: 5px; margin-bottom: 10px;">
         <button class="tab-item" id="btnCash" onclick="setPayment('cash')">CASH</button>
@@ -109,10 +113,12 @@
         <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="setExact()">PAS</button>
       </div>
       <button class="small-btn q-btn" style="background:#888; width: 100%; margin-bottom:10px;" onclick="clearUangBayar()">HAPUS NOMINAL</button>
+      
       <div style="display: flex; justify-content: space-between; font-weight: 800; color: var(--brand-maroon); font-size: 16px;">
         <span>Kembalian</span><span id="kembalian">0</span>
       </div>
     </div>
+
     <div class="action-bar">
       <button class="btn-reset-action" onclick="resetCart()">RESET</button>
       <button class="btn-main-action" onclick="completeTransaction()">BAYAR SEKARANG</button>
@@ -129,10 +135,13 @@
       </select>
       <input type="text" id="searchInput" class="search-input" placeholder="Cari transaksi..." onkeyup="filterHistory()">
     </div>
-    <div id="historyList" style="padding: 15px;"></div>
-    <div style="padding: 0 15px 20px; display: flex; flex-direction: column; gap: 10px;">
+    
+    <div style="padding: 15px; font-weight: 800; color: var(--brand-maroon);">RIWAYAT HARI INI</div>
+    <div id="historyList" style="padding: 0 15px;"></div>
+
+    <div style="padding: 20px 15px; display: flex; flex-direction: column; gap: 10px;">
       <button class="btn-main-action" style="background:#28a745" onclick="saveHistory()">💾 SIMPAN LOG (.TXT)</button>
-      <button class="btn-main-action" style="background:var(--brand-gold)" onclick="closeCashier()">🏁 TUTUP KASIR (DOWNLOAD)</button>
+      <button class="btn-main-action" style="background:var(--brand-gold)" onclick="closeCashier()">🏁 TUTUP KASIR (DOWNLOAD REKAP)</button>
       <button class="btn-reset-action" style="border-color:#dc3545; color:#dc3545" onclick="resetHistory()">🗑️ RESET SEMUA DATA</button>
     </div>
   </div>
@@ -146,153 +155,239 @@
 <div id="confirmPopup" class="hide">
   <div class="popup-overlay"><div class="popup">
     <h3 id="popupTitle" style="color:var(--brand-maroon)">Konfirmasi</h3>
-    <div id="popupDetails" style="text-align: left; margin-bottom: 20px;"></div>
-    <button class="btn-main-action" style="width:100%; margin-bottom:10px;" onclick="finalize()">KONFIRMASI</button>
-    <button class="btn-reset-action" style="width:100%;" onclick="closePopup()">BATAL</button>
+    <div id="popupDetails" style="text-align: left; margin-bottom: 20px; font-size:14px;"></div>
+    <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="finalize()">KONFIRMASI</button>
+    <button class="btn-reset-action" style="width:100%; margin:5px 0" onclick="closePopup()">BATAL</button>
   </div></div>
 </div>
 
 <script>
   const warungInfo = {
-    wa: "+62 878-4186-2086", ig: "@naskun_kolaka51",
-    lokasi: ["📍 1. PRAMUKA", "📍 2. DERMAGA", "📍 3. PEMUDA", "📍 4. ABADI"]
+    ig: "@naskun_kolaka51",
+    wa: "+62 878-4186-2086",
+    lokasi: [
+        "📍 1. PRAMUKA Depan (IMAJINASI)",
+        "📍 2. DERMAGA (PANTAI)",
+        "📍 3. PEMUDA Lalomba (Dpn LPNG Konggoasa)",
+        "📍 4. ABADI (Lrg KDRT)"
+    ]
   };
+
   const menus = [
     {name:"NASI KUNING AYAM", price:15000, type:"utama"}, {name:"NASI KUNING IKAN", price:13000, type:"utama"},
     {name:"NASI KUNING TELUR", price:10000, type:"utama"}, {name:"NASI KUNING AYAM TELUR", price:23000, type:"utama"},
-    {name:"IKAN", price:5000, type:"additional"}, {name:"BAKWAN", price:2000, type:"additional"}, 
-    {name:"NASI", price:5000, type:"additional"}, {name:"TELUR", price:5000, type:"additional"},
-    {name:"AYAM", price:5000, type:"additional"}, {name:"AIR MINERAL", price:5000, type:"additional"}
+    {name:"NASI KUNING IKAN TELUR", price:20000, type:"utama"}, {name:"IKAN", price:5000, type:"additional"},
+    {name:"BAKWAN", price:2000, type:"additional"}, {name:"NASI", price:5000, type:"additional"},
+    {name:"TELUR", price:5000, type:"additional"}, {name:"AYAM", price:5000, type:"additional"},
+    {name:"AIR MINERAL", price:5000, type:"additional"},
   ];
+
   let cart = []; let history = []; let paymentMethod = ""; let currentMenuTab = "utama";
 
   function saveToStorage(){ localStorage.setItem("naskun51_cart", JSON.stringify(cart)); localStorage.setItem("naskun51_history", JSON.stringify(history)); }
   function loadFromStorage(){ cart = JSON.parse(localStorage.getItem("naskun51_cart")) || []; history = JSON.parse(localStorage.getItem("naskun51_history")) || []; renderCart(); calculateTotal(); }
-  function getNum(id) { const el = document.getElementById(id); return parseInt(el.value || el.innerText || 0) || 0; }
+  function getNum(id) { const el = document.getElementById(id); let val = (el.tagName === "INPUT") ? el.value : el.innerText; return parseInt(val.toString().replace(/\D/g, '')) || 0; }
 
   function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
-  function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div>${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
+  function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div class="menu-name">${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
   function addToCart(name, price){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); saveToStorage(); }
-  function renderCart(){ const list = document.getElementById("cartList"); list.innerHTML = cart.map((i, idx) => `<div class="cart-item"><div><b>${i.name}</b></div><div><button class="qty-btn" onclick="changeQty(${idx},-1)">-</button> ${i.qty} <button class="qty-btn" onclick="changeQty(${idx},1)">+</button><button class="delete-btn" style="margin-left:10px" onclick="removeFromCart(${idx})">x</button></div></div>`).join(""); }
+  
+  function renderCart(){ 
+    const list = document.getElementById("cartList"); 
+    list.innerHTML = cart.map((i, idx) => `
+      <div class="cart-item">
+        <div style="flex: 2;"><b>${i.name}</b><br><small>Rp ${i.price.toLocaleString('id-ID')}</small></div>
+        <div style="flex: 1; display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
+          <button class="qty-btn" onclick="changeQty(${idx},-1)">-</button> 
+          <span style="min-width: 20px; text-align: center;">${i.qty}</span> 
+          <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
+          <button class="delete-btn" onclick="removeFromCart(${idx})">X</button>
+        </div>
+      </div>`).join(""); 
+  }
+  
   function changeQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty <= 0) cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
-  function removeFromCart(idx){ cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
-  function calculateTotal(){ let total = 0; cart.forEach(i => total += (i.price*i.qty)); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); calculateChange(); }
+  function removeFromCart(idx){ if(confirm("Hapus " + cart[idx].name + "?")){ cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); } }
+  function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); calculateChange(); }
 
   function setPayment(m){ 
-    paymentMethod = m; document.querySelectorAll('#pageTransaksi .tab-item').forEach(el => el.classList.remove('active'));
+    paymentMethod = m; const inputBayar = document.getElementById("uangBayar"); const qButtons = document.querySelectorAll(".q-btn");
+    document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
     document.getElementById("btn" + m.charAt(0).toUpperCase() + m.slice(1))?.classList.add('active');
-    const input = document.getElementById("uangBayar");
-    if(m==='qris' || m==='free') { input.value = m==='qris' ? getNum("totalHarga") : 0; input.readOnly = true; } 
-    else { input.readOnly = false; input.value = ""; }
+    if(m==='qris' || m==='free') { inputBayar.value = (m==='qris') ? getNum("totalHarga") : 0; inputBayar.readOnly = true; qButtons.forEach(b => b.disabled = true); } 
+    else { inputBayar.readOnly = false; inputBayar.value = ""; qButtons.forEach(b => b.disabled = false); }
     calculateChange();
   }
-  function calculateChange(){ const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const cg = bayar - total; document.getElementById("kembalian").innerText = cg >= 0 ? cg.toLocaleString('id-ID') : "0"; }
-  function setQuick(amt){ if(paymentMethod==='cash'){ document.getElementById("uangBayar").value = getNum("uangBayar") + amt; calculateChange(); } }
-  function setExact(){ if(paymentMethod==='cash'){ document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); } }
-  function clearUangBayar(){ if(paymentMethod==='cash'){ document.getElementById("uangBayar").value = ""; calculateChange(); } }
+  function calculateChange(){ const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const change = (paymentMethod === 'free' || paymentMethod === 'qris') ? 0 : bayar - total; document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0"; }
+  function setQuick(amt){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("uangBayar") + amt; calculateChange(); }
+  function setExact(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
+  function clearUangBayar(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = ""; calculateChange(); }
 
   function completeTransaction(){
-    if(cart.length === 0 || !paymentMethod) return alert("Lengkapi pesanan/metode!");
-    if(paymentMethod === "cash" && getNum("uangBayar") < getNum("totalHarga")) return alert("Uang kurang!");
-    const d = document.getElementById("popupDetails");
-    d.innerHTML = `Total: Rp ${document.getElementById("totalHarga").innerText}<br>Metode: ${paymentMethod.toUpperCase()}`;
-    document.getElementById("confirmPopup").classList.remove("hide");
+    const total = getNum("totalHarga"); const bayar = getNum("uangBayar");
+    if(cart.length === 0){ alert("Keranjang masih kosong!"); return; }
+    if(!paymentMethod){ alert("Pilih metode pembayaran!"); return; }
+    const details = document.getElementById("popupDetails");
+    if(paymentMethod === "qris") {
+      document.getElementById("popupTitle").innerText = "Konfirmasi QRIS";
+      details.innerHTML = `<p>Konfirmasi pembayaran QRIS senilai <b>Rp ${total.toLocaleString('id-ID')}</b>?</p>`;
+      openPopup();
+    } else if(paymentMethod === "cash") {
+      if(bayar < total) { alert("Uang bayar kurang!"); return; }
+      details.innerHTML = `<div class="confirm-row"><span>Total:</span><span>Rp ${total.toLocaleString('id-ID')}</span></div><div class="confirm-row"><span>Bayar:</span><span>Rp ${bayar.toLocaleString('id-ID')}</span></div><div class="confirm-row"><span>Kembali:</span><span>Rp ${getNum("kembalian").toLocaleString('id-ID')}</span></div>`;
+      openPopup();
+    } else { finalize(); }
   }
 
   function finalize(){
-    const rt = getNum("totalHarga"); const bayar = getNum("uangBayar");
+    const rt = getNum("totalHarga"); const bayar = getNum("uangBayar"); const m = paymentMethod;
+    const cg = (m === 'free' || m === 'qris') ? 0 : bayar - rt;
     history.push({ 
-        id: "NK51-" + Math.floor(100000 + Math.random() * 900000), time: new Date().toLocaleString('id-ID'), 
-        items: JSON.parse(JSON.stringify(cart)), total: (paymentMethod === 'free' ? 0 : rt), realValue: rt, 
-        bayar: (paymentMethod === 'cash' ? bayar : rt), change: (paymentMethod === 'cash' ? bayar-rt : 0), paymentMethod 
+        id: "NK51-" + Math.floor(100000 + Math.random() * 900000), 
+        time: new Date().toLocaleString('id-ID'), 
+        items: JSON.parse(JSON.stringify(cart)), 
+        total: (m === 'free' ? 0 : rt), 
+        realValue: rt, 
+        bayar: (m === 'qris' ? rt : (m === 'free' ? 0 : bayar)), 
+        change: cg, 
+        paymentMethod: m 
     });
-    cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Berhasil!");
+    cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Transaksi Berhasil!");
   }
 
-  function renderHistory(filter = "", type = "all") {
+  function renderHistory(filter = "", type = "all"){
     const list = document.getElementById("historyList");
-    const searchVal = filter.trim().toLowerCase();
-    let summaryHTML = "";
+    
+    // 1. HITUNG RINGKASAN DASHBOARD
+    let sOmzet = 0, sCash = 0, sQris = 0, sCountCash = 0, sCountQris = 0, sCountFree = 0;
+    history.forEach(h => {
+        if(h.paymentMethod === 'cash') { sOmzet += h.total; sCash += h.total; sCountCash++; }
+        else if(h.paymentMethod === 'qris') { sOmzet += h.total; sQris += h.total; sCountQris++; }
+        else if(h.paymentMethod === 'free') { sCountFree++; }
+    });
 
-    if (searchVal === "") {
-        let sOmzet = 0, sCash = 0, sQris = 0, sCountCash = 0, sCountQris = 0, sCountFree = 0;
-        history.forEach(h => {
-            if(h.paymentMethod === 'cash') { sOmzet += h.total; sCash += h.total; sCountCash++; }
-            else if(h.paymentMethod === 'qris') { sOmzet += h.total; sQris += h.total; sCountQris++; }
-            else { sCountFree++; }
-        });
-        summaryHTML = `
-          <div style="background: var(--brand-maroon); color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--brand-gold);">
-            <div style="text-align: center; font-size: 24px; font-weight: 800; color: var(--brand-gold);">Rp ${sOmzet.toLocaleString('id-ID')}</div>
-            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;">
-              <div><b>TUNAI (${sCountCash}x Transaksi):</b><br>Rp ${sCash.toLocaleString('id-ID')}</div>
-              <div style="text-align: right;"><b>QRIS (${sCountQris}x Transaksi):</b><br>Rp ${sQris.toLocaleString('id-ID')}</div>
-            </div>
-            <div style="text-align:center; font-size:10px; margin-top:8px; opacity:0.7;">Sedekah (FREE): ${sCountFree}x Transaksi</div>
-          </div>`;
-    } else {
-        summaryHTML = `<div style="margin-bottom:15px; font-size:12px; background:#eee; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;"><span>🔍 Hasil pencarian: "<b>${filter}</b>"</span><button onclick="clearSearch()" style="background:var(--brand-maroon); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:10px; font-weight:800;">BATAL</button></div>`;
-    }
+    let summaryHTML = `
+      <div style="background: var(--brand-maroon); color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--brand-gold); box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <div style="font-size: 10px; opacity: 0.8; margin-bottom: 5px; text-align: center; letter-spacing: 1.5px; font-weight:800;">DASHBOARD PENDAPATAN</div>
+        <div style="font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 15px; color: var(--brand-gold);">Rp ${sOmzet.toLocaleString('id-ID')}</div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; border-top: 1px solid var(--border); padding-top: 12px;">
+          <div style="flex:1;"><b>TUNAI (${sCountCash} Trx):</b><br>Rp ${sCash.toLocaleString('id-ID')}</div>
+          <div style="flex:1; text-align: right; border-left:1px solid var(--border);"><b>QRIS (${sCountQris} Trx):</b><br>Rp ${sQris.toLocaleString('id-ID')}</div>
+        </div>
+        <div style="text-align:center; font-size:10px; margin-top:8px; opacity:0.7;">Sedekah (FREE): ${sCountFree} Transaksi</div>
+      </div>
+    `;
 
     const filtered = history.filter(h => {
-        const mID = h.id.toLowerCase().includes(searchVal);
-        const mL = h.items.map(i => i.name.toLowerCase()).join(" ").includes(searchVal);
-        const mM = h.paymentMethod.toLowerCase().includes(searchVal);
+        const mID = h.id.toLowerCase().includes(filter);
+        const mL = h.items.map(i => i.name.toLowerCase()).join(" ").includes(filter);
+        const mM = h.paymentMethod.toLowerCase().includes(filter);
         return type === "id" ? mID : type === "lauk" ? mL : type === "metode" ? mM : (mID || mL || mM);
     });
 
-    list.innerHTML = summaryHTML + (filtered.length > 0 ? filtered.slice().reverse().map(h => {
-        const mColor = h.paymentMethod === 'free' ? '#28a745' : (h.paymentMethod === 'qris' ? '#007bff' : '#c6943d');
-        return `
-        <div class="hist-card" style="border-left: 6px solid ${mColor};">
-          <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span style="background:${mColor}; color:white; padding:2px 5px; border-radius:4px;">${h.paymentMethod.toUpperCase()}</span></div>
-          <div style="font-size:10px; color:#666; margin-bottom:5px;">${h.time}</div>
-          <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; border-bottom:1px dashed #ddd; padding:6px 0;">
-            ${h.items.map(i => `<div><span style="font-weight:800; text-transform:uppercase;">${i.name}</span> ${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}</div>`).join("")}
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;"><span>Total:</span><b style="color:var(--brand-maroon); font-size:15px;">Rp ${h.total.toLocaleString('id-ID')}</b></div>
-          <button class="share-btn" onclick="shareReceiptByID('${h.id}')">📲 WHATSAPP</button>
-        </div>`;
-    }).join("") : `<div style="text-align:center; padding:30px; color:#999;">🚫 Data tidak ditemukan...</div>`);
+    // 2. RENDER LIST NOTA
+    list.innerHTML = summaryHTML + filtered.slice().reverse().map((h) => {
+      const mColor = h.paymentMethod === 'free' ? '#28a745' : (h.paymentMethod === 'qris' ? '#007bff' : '#c6943d');
+      return `
+      <div class="hist-card" style="border-left: 6px solid ${mColor};">
+        <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span style="background:${mColor}; color:white; padding:2px 5px; border-radius:4px; font-weight:800;">${h.paymentMethod.toUpperCase()}</span></div>
+        <div style="font-size:10px; color:#666; margin-bottom:5px;">${h.time}</div>
+        
+        <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; border-bottom:1px dashed #ddd; padding:6px 0;">
+          ${h.items.map(i => `
+            <div style="margin-bottom:4px; line-height:1.4;">
+              <span style="font-weight:800; text-transform:uppercase;">${i.name}</span> 
+              <span style="color:#666;">${i.qty} x ${i.price.toLocaleString('id-ID')}</span> 
+              <span style="font-weight:700; color:#222;">= Rp ${(i.price * i.qty).toLocaleString('id-ID')}</span>
+            </div>
+          `).join("")}
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+           <span style="font-size:12px; color:#666;">Total:</span>
+           <b style="font-size:16px; color:var(--brand-maroon);">Rp ${h.total.toLocaleString('id-ID')}</b>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:10px;">
+          <button class="share-btn" style="margin:0; padding:10px; font-size:11px;" onclick="shareReceiptByID('${h.id}')">📲 WHATSAPP</button>
+          <button class="print-btn" style="margin:0; padding:10px; font-size:11px;" onclick="printBluetooth('${h.id}')">🖨️ CETAK</button>
+        </div>
+      </div>
+    `}).join("");
   }
 
-  function clearSearch() { document.getElementById("searchInput").value = ""; renderHistory(""); }
-  function filterHistory() { renderHistory(document.getElementById("searchInput").value, document.getElementById("filterType").value); }
-  
+  function shareReceiptByID(id) {
+    const d = history.find(h => h.id === id); if(!d) return;
+    let s = `*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${d.id}\nTgl   : ${d.time}\nKasir : HALILINTAR BUCEK\n--------------------------------------------\n`;
+    d.items.forEach(i => { s += `*${i.name.toUpperCase()}*\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
+    s += `--------------------------------------------\n*TOTAL      : Rp ${d.total.toLocaleString('id-ID')}*\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: ${warungInfo.wa}\n--------------------------------------------\n*LOKASI OUTLET:*\n${warungInfo.lokasi.join('\n')}\n--------------------------------------------\n_Terima kasih & Selamat Menikmati!_`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
+  }
+
+  async function printBluetooth(id) {
+    const d = history.find(h => h.id === id); if (!d) return;
+    let text = `\x1B\x61\x01NASI KUNING 51\nBukti Pembayaran Digital\n--------------------------------\n\x1B\x61\x00ID    : ${d.id}\nTgl   : ${d.time}\nKasir : HALILINTAR BUCEK\n--------------------------------\n`;
+    d.items.forEach(i => { text += `${i.name.toUpperCase()}\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
+    text += `--------------------------------\nTOTAL      : Rp ${d.total.toLocaleString('id-ID')}\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------\nTerima Kasih!\n\n\n\n`;
+    try {
+      const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb'] }], optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+      const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+      const enc = new TextEncoder(); const data = enc.encode(text);
+      for (let i = 0; i < data.length; i += 20) { await char.writeValue(data.slice(i, i + 20)); }
+    } catch (e) { alert("Bluetooth Error: " + e.message); }
+  }
+
   function generateReportText(isClosing) {
-    let tOmzet = 0, tCash = 0, tQris = 0, tFreeVal = 0, cC = 0, cQ = 0, cF = 0;
+    let tOmzet = 0, tFreeVal = 0, tCash = 0, tQris = 0, lBayar = {}, lFree = {};
+    let countCash = 0, countQris = 0, countFree = 0;
+
     history.forEach(h => { 
-        if(h.paymentMethod === 'cash') { tOmzet += h.total; tCash += h.total; cC++; }
-        else if(h.paymentMethod === 'qris') { tOmzet += h.total; tQris += h.total; cQ++; }
-        else { tFreeVal += h.realValue; cF++; }
+        if(h.paymentMethod === 'cash') { 
+            tOmzet += h.total; tCash += h.total; countCash++;
+        } else if(h.paymentMethod === 'qris') {
+            tOmzet += h.total; tQris += h.total; countQris++;
+        } else if(h.paymentMethod === 'free') {
+            tFreeVal += h.realValue; countFree++;
+        }
+        h.items.forEach(i => { 
+            if(h.paymentMethod === 'free') lFree[i.name] = (lFree[i.name] || 0) + i.qty; 
+            else lBayar[i.name] = (lBayar[i.name] || 0) + i.qty; 
+        });
     });
+
     const sep = "==========================================\n";
     let txt = `${sep}   LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'}\n   NASI KUNING 51\n${sep}`;
     txt += `Waktu Cetak : ${new Date().toLocaleString('id-ID')}\n`;
     txt += `Total Omzet : Rp ${tOmzet.toLocaleString('id-ID')}\n`;
-    txt += `  - TUNAI (${cC}x Transaksi) : Rp ${tCash.toLocaleString('id-ID')}\n`;
-    txt += `  - QRIS  (${cQ}x Transaksi) : Rp ${tQris.toLocaleString('id-ID')}\n`;
-    txt += `Total FREE (${cF}x Transaksi) : Rp ${tFreeVal.toLocaleString('id-ID')}\n${sep}DETAIL TRANSAKSI:\n`;
-    history.forEach((h, i) => txt += `${i+1}. ${h.id} | ${h.paymentMethod.toUpperCase()} | Rp ${h.total.toLocaleString('id-ID')}\n`);
-    txt += `${sep}-- AKHIR LAPORAN --`;
+    txt += `  - TUNAI (${countCash} Trx) : Rp ${tCash.toLocaleString('id-ID')}\n`;
+    txt += `  - QRIS  (${countQris} Trx) : Rp ${tQris.toLocaleString('id-ID')}\n`;
+    txt += `Total FREE (${countFree} Trx) : Rp ${tFreeVal.toLocaleString('id-ID')}\n`;
+    txt += `${sep}REKAP PRODUK TERJUAL:\n`;
+    for(let k in lBayar) txt += `- ${k}: ${lBayar[k]} Porsi\n`;
+    if(Object.keys(lFree).length > 0) {
+        txt += `\nREKAP PRODUK FREE (SEDEKAH):\n`;
+        for(let k in lFree) txt += `- ${k}: ${lFree[k]} Porsi\n`;
+    }
+    txt += `\n${sep}          DETAIL TRANSAKSI\n${sep}`;
+    history.forEach((h, i) => {
+        txt += `${i+1}. Nota : ${h.id}\n   Waktu : ${h.time}\n   Metode : ${h.paymentMethod.toUpperCase()}\n   Total : Rp ${h.total.toLocaleString('id-ID')}\n------------------------------------------\n`;
+    });
+    txt += `\nINFO WARUNG:\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\n${sep}-- AKHIR LAPORAN --`;
     return txt;
   }
 
   function showTab(t){ document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); document.getElementById("navHome").classList.toggle("active", t === "transaksi"); document.getElementById("navHist").classList.toggle("active", t === "history"); if(t === "history") renderHistory(); }
+  function filterHistory() { renderHistory(document.getElementById("searchInput").value.toLowerCase(), document.getElementById("filterType").value); }
   function saveHistory(){ downloadFile(`Log_Naskun51_${Date.now()}.txt`, generateReportText(false)); }
-  function closeCashier(){ if(confirm("Tutup Kasir? Data akan di-reset.")){ downloadFile(`Laporan_Final_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
-  function resetHistory(){ if(confirm("Hapus data?")){ history=[]; saveToStorage(); renderHistory(); } }
+  function closeCashier(){ if(confirm("Tutup Kasir? Data riwayat akan di-reset setelah download laporan.")){ downloadFile(`Laporan_Final_Naskun51_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
+  function resetHistory(){ if(confirm("Hapus semua data riwayat secara permanen?")){ history=[]; saveToStorage(); renderHistory(); } }
   function resetCart(){ if(confirm("Reset keranjang?")){ cart=[]; resetUI(); saveToStorage(); } }
   function resetUI(){ document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); setPayment(""); }
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
+  function openPopup(){ document.getElementById("confirmPopup").classList.remove("hide"); }
   function closePopup(){ document.getElementById("confirmPopup").classList.add("hide"); }
-  function shareReceiptByID(id){
-    const d = history.find(h => h.id === id); if(!d) return;
-    let s = `*NASI KUNING 51*\nID: ${d.id}\n------------------\n`;
-    d.items.forEach(i => s += `${i.name} x${i.qty} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`);
-    s += `------------------\n*TOTAL: Rp ${d.total.toLocaleString('id-ID')}*\n------------------\nTerima Kasih!`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
-  }
 
   loadFromStorage(); renderMenu();
 </script>
