@@ -194,20 +194,12 @@
   }
 
   function finalize(){
-    const rt = getNum("totalHarga"); 
-    const bayar = getNum("uangBayar");
-    const m = paymentMethod;
+    const rt = getNum("totalHarga"); const bayar = getNum("uangBayar"); const m = paymentMethod;
     const cg = (m === 'free' || m === 'qris') ? 0 : bayar - rt;
-
     history.push({ 
-        id: "NK51-" + Date.now().toString().slice(-6), 
-        time: new Date().toLocaleString('id-ID'), 
-        items: JSON.parse(JSON.stringify(cart)), 
-        total: (m === 'free' ? 0 : rt), 
-        realValue: rt, 
-        bayar: bayar, 
-        change: cg,
-        paymentMethod: m 
+        id: "NK51-" + Date.now().toString().slice(-6), time: new Date().toLocaleString('id-ID'), 
+        items: JSON.parse(JSON.stringify(cart)), total: (m === 'free' ? 0 : rt), 
+        realValue: rt, bayar: bayar, change: cg, paymentMethod: m 
     });
     cart = []; paymentMethod = ""; resetUI();
   }
@@ -222,31 +214,27 @@
         <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span>${h.paymentMethod.toUpperCase()}</span></div>
         <div style="font-size:10px; color:#666;">${h.time}</div>
         <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; padding-top:5px;">${h.items.map(i => i.name + ' x' + i.qty).join(', ')}</div>
-        <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.8;">
+        <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.8;">
            <span>Bayar: Rp ${h.bayar.toLocaleString('id-ID')}</span>
            <span>Kembali: Rp ${h.change.toLocaleString('id-ID')}</span>
         </div>
         <div style="text-align:right; font-size:15px; margin-top:5px;"><b>Total: Rp ${h.total.toLocaleString('id-ID')}</b></div>
-        <button class="share-btn" onclick="shareReceipt(${history.length - 1 - idx})">📤 SHARE STRUK WA</button>
+        <button class="share-btn" onclick="shareReceipt(${history.length - 1 - idx})">📤 SHARE WA</button>
       </div>
     `).join("");
   }
 
   function shareReceipt(idx) {
     const d = history[idx];
-    let s = `*NASI KUNING 51*\nID: ${d.id}\nKasir: HALILINTAR BUCEK\nTgl: ${d.time}\n------------------------------\n`;
+    let s = `*NASI KUNING 51*\nID: ${d.id}\nKasir: HALILINTAR BUCEK\n------------------------------\n`;
     d.items.forEach(i => { s += `${i.name} x${i.qty} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    s += `------------------------------\n`;
-    s += `*TOTAL    : Rp ${d.total.toLocaleString('id-ID')}*\n`;
-    if(d.paymentMethod !== 'free') {
-      s += `BAYAR    : Rp ${d.bayar.toLocaleString('id-ID')}\n`;
-      s += `KEMBALI  : Rp ${d.change.toLocaleString('id-ID')}\n`;
-    }
-    s += `METODE   : ${d.paymentMethod.toUpperCase()}\n------------------------------\nTerima Kasih!`;
+    s += `------------------------------\n*TOTAL: Rp ${d.total.toLocaleString('id-ID')}*\n`;
+    if(d.paymentMethod !== 'free') { s += `BAYAR: Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI: Rp ${d.change.toLocaleString('id-ID')}\n`; }
+    s += `Metode: ${d.paymentMethod.toUpperCase()}\n------------------------------\nTerima Kasih!`;
     window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
   }
 
-  function generateReportText() {
+  function generateReportText(isClosing) {
     let tOmzet = 0, tFreeVal = 0, lBayar = {}, lFree = {};
     history.forEach(h => {
         tOmzet += h.total;
@@ -256,16 +244,29 @@
             else lBayar[i.name] = (lBayar[i.name] || 0) + i.qty;
         });
     });
-    let txt = `=== LAPORAN NASI KUNING 51 ===\nTOTAL OMZET: Rp ${tOmzet.toLocaleString('id-ID')}\nTOTAL SEDEKAH: Rp ${tFreeVal.toLocaleString('id-ID')}\n\n`;
-    txt += `LAUK BERBAYAR:\n`; for(let k in lBayar) txt += `- ${k}: ${lBayar[k]}\n`;
-    txt += `\nLAUK SEDEKAH (FREE):\n`; for(let k in lFree) txt += `- ${k}: ${lFree[k]}\n`;
-    txt += `\nDETAIL TRANSAKSI:\n`; 
-    history.forEach(h => txt += `${h.id} | Rp ${h.total} | Bayar: ${h.bayar} | Kembali: ${h.change}\n`);
+    const now = new Date().toLocaleString('id-ID');
+    const sep = "------------------------------------------\n";
+    let txt = `=== LAPORAN ${isClosing ? 'TUTUP KASIR' : 'HISTORY'} NASI KUNING 51 ===\n`;
+    txt += `Waktu: ${now}\n${sep}`;
+    txt += `TOTAL OMZET   : Rp ${tOmzet.toLocaleString('id-ID')}\n`;
+    txt += `TOTAL SEDEKAH : Rp ${tFreeVal.toLocaleString('id-ID')}\n${sep}\n`;
+    
+    txt += `REKAP LAUK TERJUAL (BERBAYAR):\n`;
+    for(let k in lBayar) txt += `- ${k}: ${lBayar[k]} Porsi\n`;
+    txt += `\nREKAP LAUK SEDEKAH (FREE):\n`;
+    for(let k in lFree) txt += `- ${k}: ${lFree[k]} Porsi\n\n${sep}`;
+    
+    txt += `DETAIL TRANSAKSI:\n${sep}`;
+    history.forEach(h => {
+        txt += `[${h.paymentMethod.toUpperCase()}] ${h.id} | Rp ${h.total.toLocaleString('id-ID')}\n`;
+        txt += `Items: ${h.items.map(i => i.name + ' x' + i.qty).join(', ')}\n`;
+        txt += `Bayar: ${h.bayar.toLocaleString('id-ID')} | Kembali: ${h.change.toLocaleString('id-ID')}\n${sep}`;
+    });
     return txt;
   }
 
-  function saveHistory(){ downloadFile(`History_${Date.now()}.txt`, generateReportText()); }
-  function closeCashier(){ if(confirm("Tutup Kasir?")){ downloadFile(`Rekap_Tutup_${Date.now()}.txt`, generateReportText()); history = []; saveToStorage(); showTab('transaksi'); } }
+  function saveHistory(){ downloadFile(`History_${Date.now()}.txt`, generateReportText(false)); }
+  function closeCashier(){ if(confirm("Tutup Kasir? Data riwayat akan dikosongkan setelah unduh.")){ downloadFile(`Rekap_Tutup_${Date.now()}.txt`, generateReportText(true)); history = []; saveToStorage(); showTab('transaksi'); } }
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
   function resetHistory(){ if(confirm("Hapus semua history?")) { history = []; saveToStorage(); renderHistory(); } }
   function resetCart(){ if(confirm("Hapus pesanan?")) { cart = []; resetUI(); } }
