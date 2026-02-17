@@ -165,7 +165,12 @@
   const warungInfo = {
     ig: "@naskun_kolaka51",
     wa: "+62 878-4186-2086",
-    lokasi: "Jl. Kolaka No. 51"
+    lokasi: [
+        "📍 1. PRAMUKA Depan (IMAJINASI)",
+        "📍 2. DERMAGA (PANTAI)",
+        "📍 3. PEMUDA Lalomba (Dpn LPNG Konggoasa)",
+        "📍 4. ABADI (Lrg KDRT)"
+    ]
   };
 
   const menus = [
@@ -241,7 +246,7 @@
     const rt = getNum("totalHarga"); const bayar = getNum("uangBayar"); const m = paymentMethod;
     const cg = (m === 'free' || m === 'qris') ? 0 : bayar - rt;
     history.push({ 
-        id: "NK51-" + Math.random().toString(36).substr(2, 6).toUpperCase(), 
+        id: "NK51-" + Math.floor(100000 + Math.random() * 900000), 
         time: new Date().toLocaleString('id-ID'), 
         items: JSON.parse(JSON.stringify(cart)), 
         total: (m === 'free' ? 0 : rt), 
@@ -253,7 +258,7 @@
     cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Transaksi Berhasil!");
   }
 
-  // HISTORY & LAPORAN
+  // HISTORY & STRUK
   function renderHistory(filter = "", type = "all"){
     const list = document.getElementById("historyList");
     const filtered = history.filter(h => {
@@ -278,11 +283,19 @@
     `).join("");
   }
 
+  function shareReceiptByID(id) {
+    const d = history.find(h => h.id === id); if(!d) return;
+    let s = `*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${d.id}\nTgl   : ${d.time}\nKasir : HALILINTAR BUCEK\n--------------------------------------------\n`;
+    d.items.forEach(i => { s += `*${i.name.toUpperCase()}*\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
+    s += `--------------------------------------------\n*TOTAL      : Rp ${d.total.toLocaleString('id-ID')}*\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: ${warungInfo.wa}\n--------------------------------------------\n*LOKASI OUTLET:*\n${warungInfo.lokasi.join('\n')}\n--------------------------------------------\n_Terima kasih & Selamat Menikmati!_`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
+  }
+
   async function printBluetooth(id) {
     const d = history.find(h => h.id === id); if (!d) return;
-    let text = `\x1B\x61\x01NASI KUNING 51\nBukti Bayar\n--------------------------------\n\x1B\x61\x00ID: ${d.id}\nTgl: ${d.time}\nKasir: HALILINTAR BUCEK\n--------------------------------\n`;
-    d.items.forEach(i => { text += `${i.name.toUpperCase()}\n${i.qty}x${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    text += `--------------------------------\nTOTAL: Rp ${d.total.toLocaleString('id-ID')}\nBAYAR: Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI: Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------\nTerima Kasih!\n\n\n\n`;
+    let text = `\x1B\x61\x01NASI KUNING 51\nBukti Pembayaran Digital\n--------------------------------\n\x1B\x61\x00ID    : ${d.id}\nTgl   : ${d.time}\nKasir : HALILINTAR BUCEK\n--------------------------------\n`;
+    d.items.forEach(i => { text += `${i.name.toUpperCase()}\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
+    text += `--------------------------------\nTOTAL      : Rp ${d.total.toLocaleString('id-ID')}\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------\nTerima Kasih!\n\n\n\n`;
     try {
       const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb'] }], optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
       const server = await device.gatt.connect();
@@ -290,41 +303,52 @@
       const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
       const enc = new TextEncoder(); const data = enc.encode(text);
       for (let i = 0; i < data.length; i += 20) { await char.writeValue(data.slice(i, i + 20)); }
-      alert("Sedang mencetak...");
     } catch (e) { alert("Bluetooth Error: " + e.message); }
   }
 
-  function shareReceiptByID(id) {
-    const d = history.find(h => h.id === id); if(!d) return;
-    let s = `*NASI KUNING 51*\nID: ${d.id}\n--------------------------------\n`;
-    d.items.forEach(i => { s += `${i.name} x${i.qty} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    s += `--------------------------------\n*TOTAL: Rp ${d.total.toLocaleString('id-ID')}*\nBayar: Rp ${d.bayar.toLocaleString('id-ID')}\nKembali: Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------\nTerima kasih!`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
-  }
-
+  // TUTUP KASIR & LAPORAN
   function generateReportText(isClosing) {
     let tOmzet = 0, tFreeVal = 0, tCash = 0, tQris = 0, lBayar = {}, lFree = {};
     history.forEach(h => { 
-        if(h.paymentMethod !== 'free') { tOmzet += h.total; if(h.paymentMethod === 'cash') tCash += h.total; else tQris += h.total; }
-        else tFreeVal += h.realValue;
-        h.items.forEach(i => { if(h.paymentMethod === 'free') lFree[i.name] = (lFree[i.name] || 0) + i.qty; else lBayar[i.name] = (lBayar[i.name] || 0) + i.qty; });
+        if(h.paymentMethod !== 'free') { 
+            tOmzet += h.total; 
+            if(h.paymentMethod === 'cash') tCash += h.total; else tQris += h.total; 
+        } else {
+            tFreeVal += h.realValue;
+        }
+        h.items.forEach(i => { 
+            if(h.paymentMethod === 'free') lFree[i.name] = (lFree[i.name] || 0) + i.qty; 
+            else lBayar[i.name] = (lBayar[i.name] || 0) + i.qty; 
+        });
     });
+
     const sep = "==========================================\n";
-    let txt = `${sep}   LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'}\n   NASI KUNING 51\n${sep}Waktu : ${new Date().toLocaleString('id-ID')}\nTotal Omzet : Rp ${tOmzet.toLocaleString('id-ID')}\n  - Tunai : Rp ${tCash.toLocaleString('id-ID')}\n  - QRIS  : Rp ${tQris.toLocaleString('id-ID')}\nTotal Free  : Rp ${tFreeVal.toLocaleString('id-ID')}\n${sep}REKAP PRODUK:\n`;
+    let txt = `${sep}   LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'}\n   NASI KUNING 51\n${sep}`;
+    txt += `Waktu Cetak : ${new Date().toLocaleString('id-ID')}\n`;
+    txt += `Total Omzet : Rp ${tOmzet.toLocaleString('id-ID')}\n`;
+    txt += `  - Tunai   : Rp ${tCash.toLocaleString('id-ID')}\n`;
+    txt += `  - QRIS    : Rp ${tQris.toLocaleString('id-ID')}\n`;
+    txt += `Total Free  : Rp ${tFreeVal.toLocaleString('id-ID')}\n`;
+    txt += `${sep}REKAP PRODUK TERJUAL:\n`;
     for(let k in lBayar) txt += `- ${k}: ${lBayar[k]} Porsi\n`;
+    if(Object.keys(lFree).length > 0) {
+        txt += `\nREKAP PRODUK FREE (SEDEKAH):\n`;
+        for(let k in lFree) txt += `- ${k}: ${lFree[k]} Porsi\n`;
+    }
     txt += `\n${sep}          DETAIL TRANSAKSI\n${sep}`;
     history.forEach((h, i) => {
-        txt += `${i+1}. Nota : ${h.id}\n   Metode : ${h.paymentMethod.toUpperCase()}\n   Item : ${h.items.map(item => item.name + ' x' + item.qty).join(', ')}\n   Total : Rp ${h.total.toLocaleString('id-ID')}\n   Bayar : Rp ${h.bayar.toLocaleString('id-ID')}\n   Kembali : Rp ${h.change.toLocaleString('id-ID')}\n------------------------------------------\n`;
+        txt += `${i+1}. No Nota : ${h.id}\n   Waktu   : ${h.time}\n   Metode  : ${h.paymentMethod.toUpperCase()}\n   Pesanan : ${h.items.map(item => item.name + ' x' + item.qty).join(', ')}\n   Total   : Rp ${h.total.toLocaleString('id-ID')}\n   Bayar   : Rp ${h.bayar.toLocaleString('id-ID')}\n   Kembali : Rp ${h.change.toLocaleString('id-ID')}\n------------------------------------------\n`;
     });
+    txt += `\nINFO WARUNG:\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\n${sep}-- AKHIR LAPORAN --`;
     return txt;
   }
 
   // NAVIGASI & UTILS
   function showTab(t){ document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); document.getElementById("navHome").classList.toggle("active", t === "transaksi"); document.getElementById("navHist").classList.toggle("active", t === "history"); if(t === "history") renderHistory(); }
   function filterHistory() { renderHistory(document.getElementById("searchInput").value.toLowerCase(), document.getElementById("filterType").value); }
-  function saveHistory(){ downloadFile(`Log_${Date.now()}.txt`, generateReportText(false)); }
-  function closeCashier(){ if(confirm("Tutup Kasir? Data akan di-reset setelah download.")){ downloadFile(`Laporan_Final_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
-  function resetHistory(){ if(confirm("Hapus semua data riwayat?")){ history=[]; saveToStorage(); renderHistory(); } }
+  function saveHistory(){ downloadFile(`Log_Naskun51_${Date.now()}.txt`, generateReportText(false)); }
+  function closeCashier(){ if(confirm("Tutup Kasir? Data riwayat akan di-reset setelah download laporan.")){ downloadFile(`Laporan_Final_Naskun51_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
+  function resetHistory(){ if(confirm("Hapus semua data riwayat secara permanen?")){ history=[]; saveToStorage(); renderHistory(); } }
   function resetCart(){ if(confirm("Reset keranjang?")){ cart=[]; resetUI(); saveToStorage(); } }
   function resetUI(){ document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); setPayment(""); }
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
