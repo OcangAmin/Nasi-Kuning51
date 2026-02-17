@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-<title>POS Nasi Kuning 51 - Ultimate Edition</title>
+<title>POS Nasi Kuning 51 - Interactive Edition</title>
 <style>
   :root {
     --brand-maroon: #632626; --brand-gold: #c6943d; --brand-light: #f5f5f5;
@@ -54,20 +54,22 @@
   .nav-item { text-align: center; color: var(--brand-maroon); font-size: 11px; cursor: pointer; flex: 1; opacity: 0.4; padding-top: 15px; transition: 0.3s; }
   .nav-item.active { opacity: 1; font-weight: 800; }
   
-  /* HISTORY CARD */
-  .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:6px solid var(--brand-maroon); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-  .share-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 10px; cursor: pointer; }
-  .print-btn { background: #333; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 5px; cursor: pointer; }
-  
+  /* HISTORY & INTERACTIVE SEARCH */
+  .search-container { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; display: flex; gap: 8px; position: sticky; top: 93px; z-index: 99; }
+  .filter-select { flex: 1; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 13px; font-weight: 700; background: white; }
+  .search-input { flex: 2; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 14px; outline: none; }
+  .search-stats { background: var(--brand-gold); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; margin: 10px 15px; display: inline-block; animation: fadeIn 0.3s; }
+  .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:6px solid var(--brand-maroon); box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s; }
+  .empty-state { text-align: center; padding: 40px 20px; color: #999; font-weight: 600; }
+  @keyframes fadeIn { from {opacity: 0; transform: translateY(-5px);} to {opacity: 1; transform: translateY(0);} }
+
+  /* UTILS */
   .hide { display: none; }
   .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000; }
   .popup { width: 85%; background: white; border-radius: 20px; padding: 25px; text-align: center; }
   .confirm-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-
-  /* SEARCH & FILTER AREA */
-  .search-container { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; display: flex; gap: 8px; position: sticky; top: 93px; z-index: 99; }
-  .filter-select { flex: 1; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 13px; font-weight: 700; background: white; }
-  .search-input { flex: 2; padding: 10px; border: 2px solid var(--brand-gold); border-radius: 10px; font-size: 14px; outline: none; }
+  .share-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 10px; cursor: pointer; }
+  .print-btn { background: #333; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 5px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -87,16 +89,13 @@
       <div class="tab-item active" id="tabUtama" onclick="setMenuTab('utama')">UTAMA</div>
       <div class="tab-item" id="tabAdd" onclick="setMenuTab('additional')">TAMBAHAN</div>
     </div>
-
     <div class="menu-grid" id="menuGrid"></div>
-
     <div class="card-box">
       <div id="cartList"></div>
       <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: 800; border-top: 1px solid var(--border); padding-top: 10px; font-size: 18px;">
         <span>Total</span><span id="totalHarga">0</span>
       </div>
     </div>
-
     <div class="pay-card">
       <div style="display: flex; gap: 5px; margin-bottom: 10px;">
         <button class="tab-item" id="btnCash" onclick="setPayment('cash')">CASH</button>
@@ -104,7 +103,7 @@
         <button class="tab-item" id="btnFree" style="border-color:var(--green-success); color:var(--green-success);" onclick="setPayment('free')">FREE</button>
       </div>
       <input type="number" id="uangBayar" placeholder="0" oninput="calculateChange()" inputmode="numeric">
-      <div class="quick-pay-grid" id="quickPayArea">
+      <div class="quick-pay-grid">
         <button class="small-btn q-btn" onclick="setQuick(5000)">5K</button>
         <button class="small-btn q-btn" onclick="setQuick(10000)">10K</button>
         <button class="small-btn q-btn" onclick="setQuick(20000)">20K</button>
@@ -112,13 +111,11 @@
         <button class="small-btn q-btn" onclick="setQuick(100000)">100K</button>
         <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="setExact()">PAS</button>
       </div>
-      <button class="small-btn q-btn" style="background:#888; width: 100%; margin-bottom:10px;" onclick="clearUangBayar()">HAPUS NOMINAL</button>
-      
+      <button class="small-btn" style="background:#888; width: 100%; margin: 10px 0;" onclick="clearUangBayar()">HAPUS NOMINAL</button>
       <div style="display: flex; justify-content: space-between; font-weight: 800; color: var(--brand-maroon); font-size: 16px;">
         <span>Kembalian</span><span id="kembalian">0</span>
       </div>
     </div>
-
     <div class="action-bar">
       <button class="btn-reset-action" onclick="resetCart()">RESET</button>
       <button class="btn-main-action" onclick="completeTransaction()">BAYAR SEKARANG</button>
@@ -128,15 +125,18 @@
   <div id="pageHistory" class="hide">
     <div class="search-container">
       <select id="filterType" class="filter-select" onchange="filterHistory()">
-        <option value="all">SEMUA</option>
-        <option value="id">ID NOTA</option>
-        <option value="lauk">LAUK</option>
-        <option value="metode">METODE</option>
+        <option value="all">🔍 SEMUA</option>
+        <option value="id">🆔 ID NOTA</option>
+        <option value="lauk">🍱 LAUK</option>
+        <option value="metode">💳 METODE</option>
       </select>
       <input type="text" id="searchInput" class="search-input" placeholder="Cari transaksi..." onkeyup="filterHistory()">
     </div>
     
-    <div style="padding: 15px; font-weight: 800; color: var(--brand-maroon);">RIWAYAT HARI INI</div>
+    <div id="searchStatsContainer" class="hide">
+        <div id="searchCountBadge" class="search-stats">Ditemukan: 0</div>
+    </div>
+
     <div id="historyList" style="padding: 0 15px;"></div>
 
     <div style="padding: 20px 15px; display: flex; flex-direction: column; gap: 10px;">
@@ -163,14 +163,8 @@
 
 <script>
   const warungInfo = {
-    ig: "@naskun_kolaka51",
-    wa: "+62 878-4186-2086",
-    lokasi: [
-        "📍 1. PRAMUKA Depan (IMAJINASI)",
-        "📍 2. DERMAGA (PANTAI)",
-        "📍 3. PEMUDA Lalomba (Dpn LPNG Konggoasa)",
-        "📍 4. ABADI (Lrg KDRT)"
-    ]
+    ig: "@naskun_kolaka51", wa: "+62 878-4186-2086",
+    lokasi: ["📍 1. PRAMUKA Depan (IMAJINASI)", "📍 2. DERMAGA (PANTAI)", "📍 3. PEMUDA Lalomba", "📍 4. ABADI (Lrg KDRT)"]
   };
 
   const menus = [
@@ -184,171 +178,149 @@
 
   let cart = []; let history = []; let paymentMethod = ""; let currentMenuTab = "utama";
 
-  function saveToStorage(){ localStorage.setItem("naskun51_cart", JSON.stringify(cart)); localStorage.setItem("naskun51_history", JSON.stringify(history)); }
-  function loadFromStorage(){ cart = JSON.parse(localStorage.getItem("naskun51_cart")) || []; history = JSON.parse(localStorage.getItem("naskun51_history")) || []; renderCart(); calculateTotal(); }
+  function saveToStorage(){ localStorage.setItem("naskun51_db_v2", JSON.stringify({cart, history})); }
+  function loadFromStorage(){ const db = JSON.parse(localStorage.getItem("naskun51_db_v2")) || {cart:[], history:[]}; cart = db.cart; history = db.history; renderCart(); calculateTotal(); }
   function getNum(id) { const el = document.getElementById(id); let val = (el.tagName === "INPUT") ? el.value : el.innerText; return parseInt(val.toString().replace(/\D/g, '')) || 0; }
 
-  // KERANJANG & MENU
+  // LOGIKA MENU & KERANJANG
   function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
   function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div class="menu-name">${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
   function addToCart(name, price){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); saveToStorage(); }
-  
   function renderCart(){ 
     const list = document.getElementById("cartList"); 
-    list.innerHTML = cart.map((i, idx) => `
-      <div class="cart-item">
+    list.innerHTML = cart.map((i, idx) => `<div class="cart-item">
         <div style="flex: 2;"><b>${i.name}</b><br><small>Rp ${i.price.toLocaleString('id-ID')}</small></div>
         <div style="flex: 1; display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
           <button class="qty-btn" onclick="changeQty(${idx},-1)">-</button> 
-          <span style="min-width: 20px; text-align: center;">${i.qty}</span> 
+          <span>${i.qty}</span> 
           <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
           <button class="delete-btn" onclick="removeFromCart(${idx})">X</button>
         </div>
       </div>`).join(""); 
   }
-  
-  function changeQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty <= 0) cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
-  function removeFromCart(idx){ if(confirm("Hapus " + cart[idx].name + "?")){ cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); } }
-  function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); calculateChange(); }
+  function changeQty(idx, d){ cart[idx].qty += d; if(cart[idx].qty <= 0) cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
+  function removeFromCart(idx){ if(confirm("Hapus item ini?")){ cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); } }
+  function calculateTotal(){ let t = 0; cart.forEach(i => t += (i.price*i.qty)); document.getElementById("totalHarga").innerText = t.toLocaleString('id-ID'); calculateChange(); }
 
   // PEMBAYARAN
   function setPayment(m){ 
-    paymentMethod = m; const inputBayar = document.getElementById("uangBayar"); const qButtons = document.querySelectorAll(".q-btn");
+    paymentMethod = m; const input = document.getElementById("uangBayar");
     document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
     document.getElementById("btn" + m.charAt(0).toUpperCase() + m.slice(1))?.classList.add('active');
-    if(m==='qris' || m==='free') { inputBayar.value = (m==='qris') ? getNum("totalHarga") : 0; inputBayar.readOnly = true; qButtons.forEach(b => b.disabled = true); } 
-    else { inputBayar.readOnly = false; inputBayar.value = ""; qButtons.forEach(b => b.disabled = false); }
+    if(m==='qris' || m==='free') { input.value = (m==='qris') ? getNum("totalHarga") : 0; input.readOnly = true; } 
+    else { input.readOnly = false; input.value = ""; }
     calculateChange();
   }
-  function calculateChange(){ const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const change = (paymentMethod === 'free' || paymentMethod === 'qris') ? 0 : bayar - total; document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0"; }
-  function setQuick(amt){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("uangBayar") + amt; calculateChange(); }
-  function setExact(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
-  function clearUangBayar(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = ""; calculateChange(); }
+  function calculateChange(){ const t = getNum("totalHarga"); const b = getNum("uangBayar"); const c = (paymentMethod === 'free' || paymentMethod === 'qris') ? 0 : b - t; document.getElementById("kembalian").innerText = c >= 0 ? c.toLocaleString('id-ID') : "0"; }
+  function setQuick(a){ if(paymentMethod==='cash'){ document.getElementById("uangBayar").value = getNum("uangBayar")+a; calculateChange(); } }
+  function setExact(){ if(paymentMethod==='cash'){ document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); } }
+  function clearUangBayar(){ document.getElementById("uangBayar").value = ""; calculateChange(); }
 
   // TRANSAKSI
   function completeTransaction(){
-    const total = getNum("totalHarga"); const bayar = getNum("uangBayar");
-    if(cart.length === 0){ alert("Keranjang masih kosong!"); return; }
-    if(!paymentMethod){ alert("Pilih metode pembayaran!"); return; }
+    if(cart.length === 0 || !paymentMethod) return alert("Lengkapi pesanan & metode bayar!");
+    const t = getNum("totalHarga"); const b = getNum("uangBayar");
+    if(paymentMethod === 'cash' && b < t) return alert("Uang kurang!");
     const details = document.getElementById("popupDetails");
-    if(paymentMethod === "qris") {
-      document.getElementById("popupTitle").innerText = "Konfirmasi QRIS";
-      details.innerHTML = `<p>Konfirmasi pembayaran QRIS senilai <b>Rp ${total.toLocaleString('id-ID')}</b>?</p>`;
-      openPopup();
-    } else if(paymentMethod === "cash") {
-      if(bayar < total) { alert("Uang bayar kurang!"); return; }
-      details.innerHTML = `<div class="confirm-row"><span>Total:</span><span>Rp ${total.toLocaleString('id-ID')}</span></div><div class="confirm-row"><span>Bayar:</span><span>Rp ${bayar.toLocaleString('id-ID')}</span></div><div class="confirm-row"><span>Kembali:</span><span>Rp ${getNum("kembalian").toLocaleString('id-ID')}</span></div>`;
-      openPopup();
-    } else { finalize(); }
+    details.innerHTML = `<div class="confirm-row"><span>Total:</span><span>Rp ${t.toLocaleString('id-ID')}</span></div><div class="confirm-row"><span>Metode:</span><span>${paymentMethod.toUpperCase()}</span></div>`;
+    openPopup();
   }
-
   function finalize(){
-    const rt = getNum("totalHarga"); const bayar = getNum("uangBayar"); const m = paymentMethod;
-    const cg = (m === 'free' || m === 'qris') ? 0 : bayar - rt;
+    const rt = getNum("totalHarga"); const b = getNum("uangBayar"); const m = paymentMethod;
     history.push({ 
         id: "NK51-" + Math.floor(100000 + Math.random() * 900000), 
         time: new Date().toLocaleString('id-ID'), 
         items: JSON.parse(JSON.stringify(cart)), 
         total: (m === 'free' ? 0 : rt), 
         realValue: rt, 
-        bayar: (m === 'qris' ? rt : (m === 'free' ? 0 : bayar)), 
-        change: cg, 
+        bayar: (m === 'qris' ? rt : (m === 'free' ? 0 : b)), 
+        change: (m === 'cash' ? b - rt : 0), 
         paymentMethod: m 
     });
-    cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Transaksi Berhasil!");
+    cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage();
   }
 
-  // HISTORY & STRUK
-  function renderHistory(filter = "", type = "all"){
+  // INTERACTIVE HISTORY
+  function filterHistory() {
+    const kw = document.getElementById("searchInput").value.toLowerCase();
+    const type = document.getElementById("filterType").value;
     const list = document.getElementById("historyList");
+    const statsContainer = document.getElementById("searchStatsContainer");
+    const badge = document.getElementById("searchCountBadge");
+
+    if (kw === "") statsContainer.classList.add("hide"); else statsContainer.classList.remove("hide");
+
     const filtered = history.filter(h => {
-        const mID = h.id.toLowerCase().includes(filter);
-        const mL = h.items.map(i => i.name.toLowerCase()).join(" ").includes(filter);
-        const mM = h.paymentMethod.toLowerCase().includes(filter);
+        const mID = h.id.toLowerCase().includes(kw);
+        const mL = h.items.map(i => i.name.toLowerCase()).join(" ").includes(kw);
+        const mM = h.paymentMethod.toLowerCase().includes(kw);
         return type === "id" ? mID : type === "lauk" ? mL : type === "metode" ? mM : (mID || mL || mM);
     });
-    list.innerHTML = filtered.slice().reverse().map((h) => `
+
+    badge.innerText = `Ditemukan: ${filtered.length} | Total: Rp ${filtered.reduce((a, b) => a + b.total, 0).toLocaleString('id-ID')}`;
+
+    if (filtered.length === 0) {
+        list.innerHTML = `<div class="empty-state">🚫 Tidak ditemukan data "${kw}"</div>`;
+    } else {
+        renderFilteredList(filtered);
+    }
+  }
+
+  function renderFilteredList(data) {
+    const list = document.getElementById("historyList");
+    list.innerHTML = data.slice().reverse().map((h) => `
       <div class="hist-card" style="${h.paymentMethod === 'free' ? 'border-left-color: #28a745':''}">
         <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span>${h.paymentMethod.toUpperCase()}</span></div>
         <div style="font-size:10px; color:#666;">${h.time}</div>
         <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; padding-top:5px;">${h.items.map(i => i.name + ' x' + i.qty).join(', ')}</div>
         <div style="text-align:right; font-size:14px;"><b>Total: Rp ${h.total.toLocaleString('id-ID')}</b></div>
-        <div style="font-size:10px; color:#555; padding-top:5px; border-top:1px solid #eee; margin-top:5px;">
-          <div style="display:flex; justify-content:space-between;"><span>Bayar:</span><span>Rp ${h.bayar.toLocaleString('id-ID')}</span></div>
-          <div style="display:flex; justify-content:space-between;"><span>Kembali:</span><span>Rp ${h.change.toLocaleString('id-ID')}</span></div>
-        </div>
         <button class="share-btn" onclick="shareReceiptByID('${h.id}')">📤 SHARE WA</button>
         <button class="print-btn" onclick="printBluetooth('${h.id}')">🖨️ PRINT STRUK</button>
-      </div>
-    `).join("");
+      </div>`).join("");
   }
 
   function shareReceiptByID(id) {
     const d = history.find(h => h.id === id); if(!d) return;
-    let s = `*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${d.id}\nTgl   : ${d.time}\nKasir : HALILINTAR BUCEK\n--------------------------------------------\n`;
-    d.items.forEach(i => { s += `*${i.name.toUpperCase()}*\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    s += `--------------------------------------------\n*TOTAL      : Rp ${d.total.toLocaleString('id-ID')}*\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: ${warungInfo.wa}\n--------------------------------------------\n*LOKASI OUTLET:*\n${warungInfo.lokasi.join('\n')}\n--------------------------------------------\n_Terima kasih & Selamat Menikmati!_`;
+    let s = `*NASI KUNING 51*\nID: ${d.id}\nKasir: BUCEK\n--------------------\n`;
+    d.items.forEach(i => s += `${i.name} x${i.qty} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`);
+    s += `--------------------\n*TOTAL: Rp ${d.total.toLocaleString('id-ID')}*\nBayar: Rp ${d.bayar.toLocaleString('id-ID')}\nKembali: Rp ${d.change.toLocaleString('id-ID')}\n--------------------\n*LOKASI:* \n${warungInfo.lokasi.join('\n')}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
   }
 
   async function printBluetooth(id) {
     const d = history.find(h => h.id === id); if (!d) return;
-    let text = `\x1B\x61\x01NASI KUNING 51\nBukti Pembayaran Digital\n--------------------------------\n\x1B\x61\x00ID    : ${d.id}\nTgl   : ${d.time}\nKasir : HALILINTAR BUCEK\n--------------------------------\n`;
-    d.items.forEach(i => { text += `${i.name.toUpperCase()}\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
-    text += `--------------------------------\nTOTAL      : Rp ${d.total.toLocaleString('id-ID')}\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------\nTerima Kasih!\n\n\n\n`;
+    let t = `\x1B\x61\x01NASI KUNING 51\nID: ${d.id}\n--------------------------------\n\x1B\x61\x00`;
+    d.items.forEach(i => t += `${i.name.toUpperCase()} x${i.qty}\nRp ${(i.price*i.qty).toLocaleString('id-ID')}\n`);
+    t += `--------------------------------\nTOTAL: Rp ${d.total.toLocaleString('id-ID')}\n\nTerima Kasih!\n\n\n\n`;
     try {
-      const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb'] }], optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
-      const server = await device.gatt.connect();
-      const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-      const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
-      const enc = new TextEncoder(); const data = enc.encode(text);
-      for (let i = 0; i < data.length; i += 20) { await char.writeValue(data.slice(i, i + 20)); }
+      const dev = await navigator.bluetooth.requestDevice({ filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb'] }] });
+      const srv = await dev.gatt.connect();
+      const svc = await srv.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+      const chr = await svc.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+      const enc = new TextEncoder(); const dat = enc.encode(t);
+      for (let i = 0; i < dat.length; i += 20) { await chr.writeValue(dat.slice(i, i + 20)); }
     } catch (e) { alert("Bluetooth Error: " + e.message); }
   }
 
-  // TUTUP KASIR & LAPORAN
-  function generateReportText(isClosing) {
-    let tOmzet = 0, tFreeVal = 0, tCash = 0, tQris = 0, lBayar = {}, lFree = {};
-    history.forEach(h => { 
-        if(h.paymentMethod !== 'free') { 
-            tOmzet += h.total; 
-            if(h.paymentMethod === 'cash') tCash += h.total; else tQris += h.total; 
-        } else {
-            tFreeVal += h.realValue;
-        }
-        h.items.forEach(i => { 
-            if(h.paymentMethod === 'free') lFree[i.name] = (lFree[i.name] || 0) + i.qty; 
-            else lBayar[i.name] = (lBayar[i.name] || 0) + i.qty; 
-        });
+  // LAPORAN TUTUP KASIR
+  function generateReportText(isC) {
+    let o = 0, f = 0, c = 0, q = 0, lb = {}, lf = {};
+    history.forEach(h => {
+        if(h.paymentMethod !== 'free') { o += h.total; if(h.paymentMethod === 'cash') c += h.total; else q += h.total; }
+        else f += h.realValue;
+        h.items.forEach(i => { if(h.paymentMethod === 'free') lf[i.name] = (lf[i.name] || 0) + i.qty; else lb[i.name] = (lb[i.name] || 0) + i.qty; });
     });
-
-    const sep = "==========================================\n";
-    let txt = `${sep}   LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'}\n   NASI KUNING 51\n${sep}`;
-    txt += `Waktu Cetak : ${new Date().toLocaleString('id-ID')}\n`;
-    txt += `Total Omzet : Rp ${tOmzet.toLocaleString('id-ID')}\n`;
-    txt += `  - Tunai   : Rp ${tCash.toLocaleString('id-ID')}\n`;
-    txt += `  - QRIS    : Rp ${tQris.toLocaleString('id-ID')}\n`;
-    txt += `Total Free  : Rp ${tFreeVal.toLocaleString('id-ID')}\n`;
-    txt += `${sep}REKAP PRODUK TERJUAL:\n`;
-    for(let k in lBayar) txt += `- ${k}: ${lBayar[k]} Porsi\n`;
-    if(Object.keys(lFree).length > 0) {
-        txt += `\nREKAP PRODUK FREE (SEDEKAH):\n`;
-        for(let k in lFree) txt += `- ${k}: ${lFree[k]} Porsi\n`;
-    }
-    txt += `\n${sep}          DETAIL TRANSAKSI\n${sep}`;
-    history.forEach((h, i) => {
-        txt += `${i+1}. No Nota : ${h.id}\n   Waktu   : ${h.time}\n   Metode  : ${h.paymentMethod.toUpperCase()}\n   Pesanan : ${h.items.map(item => item.name + ' x' + item.qty).join(', ')}\n   Total   : Rp ${h.total.toLocaleString('id-ID')}\n   Bayar   : Rp ${h.bayar.toLocaleString('id-ID')}\n   Kembali : Rp ${h.change.toLocaleString('id-ID')}\n------------------------------------------\n`;
-    });
-    txt += `\nINFO WARUNG:\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\n${sep}-- AKHIR LAPORAN --`;
+    let txt = `=== LAPORAN ${isC ? 'TUTUP KASIR' : 'PENJUALAN'} ===\nWaktu: ${new Date().toLocaleString()}\nOmzet: Rp ${o.toLocaleString()}\n- Tunai: Rp ${c.toLocaleString()}\n- QRIS: Rp ${q.toLocaleString()}\nFree: Rp ${f.toLocaleString()}\n\nREKAP PRODUK:\n`;
+    for(let k in lb) txt += `- ${k}: ${lb[k]}\n`;
+    txt += `\nDETAIL:\n`;
+    history.forEach((h, i) => txt += `${i+1}. ${h.id} | ${h.paymentMethod.toUpperCase()} | Rp ${h.total.toLocaleString()}\n`);
     return txt;
   }
 
-  // NAVIGASI & UTILS
-  function showTab(t){ document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); document.getElementById("navHome").classList.toggle("active", t === "transaksi"); document.getElementById("navHist").classList.toggle("active", t === "history"); if(t === "history") renderHistory(); }
-  function filterHistory() { renderHistory(document.getElementById("searchInput").value.toLowerCase(), document.getElementById("filterType").value); }
-  function saveHistory(){ downloadFile(`Log_Naskun51_${Date.now()}.txt`, generateReportText(false)); }
-  function closeCashier(){ if(confirm("Tutup Kasir? Data riwayat akan di-reset setelah download laporan.")){ downloadFile(`Laporan_Final_Naskun51_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
-  function resetHistory(){ if(confirm("Hapus semua data riwayat secara permanen?")){ history=[]; saveToStorage(); renderHistory(); } }
+  function showTab(t){ document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); document.getElementById("navHome").classList.toggle("active", t === "transaksi"); document.getElementById("navHist").classList.toggle("active", t === "history"); if(t === "history") filterHistory(); }
+  function saveHistory(){ downloadFile(`Log_${Date.now()}.txt`, generateReportText(false)); }
+  function closeCashier(){ if(confirm("Tutup Kasir & Reset Data?")){ downloadFile(`Laporan_Final_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
+  function resetHistory(){ if(confirm("Hapus semua riwayat?")){ history=[]; saveToStorage(); filterHistory(); } }
   function resetCart(){ if(confirm("Reset keranjang?")){ cart=[]; resetUI(); saveToStorage(); } }
   function resetUI(){ document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); setPayment(""); }
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
