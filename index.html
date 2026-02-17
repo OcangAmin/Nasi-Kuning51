@@ -13,6 +13,7 @@
   body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: var(--brand-light); color: #333; }
   .container { max-width: 420px; margin: 0 auto; min-height: 100vh; padding-bottom: 220px; }
   
+  /* HEADER */
   .header-box { 
     background: var(--brand-maroon); color: var(--white); padding: 15px; 
     display: flex; align-items: center; gap: 12px; position: sticky; top: 0; 
@@ -21,6 +22,7 @@
   .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--brand-gold); background: white; object-fit: cover; }
   .user-name { font-size: 16px; font-weight: 700; text-transform: uppercase; }
 
+  /* TABS MENU */
   .tabs-container { display: flex; gap: 10px; padding: 15px; background: var(--brand-light); }
   .tab-item {
     flex: 1; padding: 12px; text-align: center; background: var(--white);
@@ -30,22 +32,43 @@
   .tab-item.free-mode { border-color: var(--green-success); color: var(--green-success); }
   .tab-item.free-mode.active { background: var(--green-success); color: white; }
 
+  /* GRID MENU */
   .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
   .menu-card { background: var(--brand-maroon); border-radius: 15px; padding: 15px; border: 2px solid var(--brand-gold); cursor: pointer; color: var(--white); }
 
+  /* KERANJANG */
   .card-box { background: var(--brand-maroon); border-radius: 15px; margin: 10px 15px; padding: 15px; color: var(--white); }
   .cart-item { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
   .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 5px; padding: 5px 10px; font-weight: bold; }
 
+  /* AREA PEMBAYARAN & NOMINAL */
   .pay-card { background: var(--white); border-radius: 15px; margin: 10px 15px; padding: 15px; border: 1px solid #ddd; }
   input[type="number"] { width: 100%; border: 2px solid #ddd; border-radius: 10px; padding: 12px; font-size: 18px; font-weight: 700; margin: 10px 0; text-align: right; outline: none; }
   input[readonly] { background-color: #f0f0f0; color: #888; }
   
-  .small-btn { flex: 1; padding: 12px; background: var(--brand-maroon); color: white; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  /* PERBAIKAN TATA LETAK TOMBOL NOMINAL */
+  .quick-pay-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 8px; 
+    margin-bottom: 10px; 
+  }
+  .small-btn { 
+    padding: 12px 5px; 
+    background: var(--brand-maroon); 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    font-size: 12px; 
+    font-weight: 700; 
+    cursor: pointer; 
+  }
+  .small-btn:active { opacity: 0.7; }
   .small-btn:disabled { opacity: 0.3; }
 
+  /* NAVIGASI & FOOTER */
   .action-bar { position: fixed; bottom: 70px; left: 0; right: 0; background: var(--brand-light); padding: 10px 15px; display: flex; gap: 10px; z-index: 900; }
-  .btn-main-action { flex: 3; padding: 18px; border-radius: 12px; border: none; font-weight: 800; background: var(--brand-maroon); color: white; }
+  .btn-main-action { flex: 3; padding: 18px; border-radius: 12px; border: none; font-weight: 800; background: var(--brand-maroon); color: white; font-size: 14px; }
   .btn-reset-action { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid var(--brand-gold); background: white; color: var(--brand-gold); font-size: 12px; font-weight: 800; }
 
   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 70px; display: flex; border-top: 1px solid #eee; z-index: 1000; }
@@ -90,25 +113,27 @@
         <button class="tab-item" id="btnQris" onclick="setPayment('qris')">QRIS</button>
         <button class="tab-item free-mode" id="btnFree" onclick="setPayment('free')">FREE</button>
       </div>
+      
       <input type="number" id="uangBayar" placeholder="0" oninput="calculateChange()" inputmode="numeric">
-      <div class="quick-pay-row" id="quickPayArea">
+      
+      <div class="quick-pay-grid" id="quickPayArea">
         <button class="small-btn q-btn" onclick="setQuick(5000)">5K</button>
         <button class="small-btn q-btn" onclick="setQuick(10000)">10K</button>
         <button class="small-btn q-btn" onclick="setQuick(20000)">20K</button>
         <button class="small-btn q-btn" onclick="setQuick(50000)">50K</button>
         <button class="small-btn q-btn" onclick="setQuick(100000)">100K</button>
+        <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="setExact()">PAS</button>
       </div>
-      <div style="display: flex; gap: 8px;">
-        <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="setExact()">UANG PAS</button>
-        <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="clearUangBayar()">CLEAR</button>
-      </div>
+      
+      <button class="small-btn q-btn" style="background:#888; width: 100%; margin-top: 5px;" onclick="clearUangBayar()">HAPUS NOMINAL</button>
+
       <div style="display: flex; justify-content: space-between; font-weight: 800; margin-top: 15px; color: var(--brand-maroon); font-size: 16px;">
         <span>Kembalian</span><span id="kembalian">0</span>
       </div>
     </div>
     <div class="action-bar">
       <button class="btn-reset-action" onclick="resetCart()">RESET</button>
-      <button class="btn-main-action" onclick="completeTransaction()">BAYAR</button>
+      <button class="btn-main-action" onclick="completeTransaction()">BAYAR SEKARANG</button>
     </div>
   </div>
 
@@ -117,7 +142,7 @@
     <div id="historyList" style="padding: 0 15px;"></div>
     <div style="padding: 20px 15px; display: flex; flex-direction: column; gap: 10px;">
       <button class="btn-main-action" onclick="saveHistory()">💾 SIMPAN HISTORY (.TXT)</button>
-      <button class="btn-reset-action" onclick="closeCashier()">🏁 TUTUP KASIR</button>
+      <button class="btn-reset-action" onclick="closeCashier()">🏁 TUTUP KASIR (REKAP)</button>
       <button class="btn-reset-action" style="background:#f8d7da; border-color:#dc3545; color:#dc3545" onclick="resetHistory()">🗑️ RESET SEMUA</button>
     </div>
   </div>
@@ -131,7 +156,8 @@
 <div id="qrisPopup" class="hide">
   <div class="popup-overlay"><div class="popup">
     <h3 style="color:var(--brand-maroon)">Konfirmasi QRIS</h3>
-    <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="qrisConfirmSuccess()">BERHASIL</button>
+    <p>Sudah cek saldo masuk?</p>
+    <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="qrisConfirmSuccess()">SUDAH BERHASIL</button>
     <button class="btn-reset-action" style="width:100%; margin:5px 0" onclick="closeQrisPopup()">BATAL</button>
   </div></div>
 </div>
@@ -201,7 +227,7 @@
         items: JSON.parse(JSON.stringify(cart)), total: (m === 'free' ? 0 : rt), 
         realValue: rt, bayar: bayar, change: cg, paymentMethod: m 
     });
-    cart = []; paymentMethod = ""; resetUI();
+    cart = []; paymentMethod = ""; resetUI(); alert("Berhasil Disimpan!");
   }
 
   function resetUI(){ document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active')); document.getElementById("tabUtama").classList.add("active"); document.getElementById("uangBayar").readOnly = false; document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); saveToStorage(); }
@@ -215,8 +241,8 @@
         <div style="font-size:10px; color:#666;">${h.time}</div>
         <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; padding-top:5px;">${h.items.map(i => i.name + ' x' + i.qty).join(', ')}</div>
         <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.8;">
-           <span>Bayar: Rp ${h.bayar.toLocaleString('id-ID')}</span>
-           <span>Kembali: Rp ${h.change.toLocaleString('id-ID')}</span>
+           <span>Bayar: ${h.bayar.toLocaleString('id-ID')}</span>
+           <span>Kembali: ${h.change.toLocaleString('id-ID')}</span>
         </div>
         <div style="text-align:right; font-size:15px; margin-top:5px;"><b>Total: Rp ${h.total.toLocaleString('id-ID')}</b></div>
         <button class="share-btn" onclick="shareReceipt(${history.length - 1 - idx})">📤 SHARE WA</button>
@@ -265,8 +291,8 @@
     return txt;
   }
 
-  function saveHistory(){ downloadFile(`History_${Date.now()}.txt`, generateReportText(false)); }
-  function closeCashier(){ if(confirm("Tutup Kasir? Data riwayat akan dikosongkan setelah unduh.")){ downloadFile(`Rekap_Tutup_${Date.now()}.txt`, generateReportText(true)); history = []; saveToStorage(); showTab('transaksi'); } }
+  function saveHistory(){ if(history.length===0){alert("Data kosong"); return;} downloadFile(`History_${Date.now()}.txt`, generateReportText(false)); }
+  function closeCashier(){ if(history.length===0){alert("Data kosong"); return;} if(confirm("Tutup Kasir? Data riwayat akan dikosongkan setelah unduh.")){ downloadFile(`Rekap_Tutup_${Date.now()}.txt`, generateReportText(true)); history = []; saveToStorage(); showTab('transaksi'); } }
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
   function resetHistory(){ if(confirm("Hapus semua history?")) { history = []; saveToStorage(); renderHistory(); } }
   function resetCart(){ if(confirm("Hapus pesanan?")) { cart = []; resetUI(); } }
