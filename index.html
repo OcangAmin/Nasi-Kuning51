@@ -3,333 +3,312 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-<title>POS Nasi Kuning 51 - HALILINTAR BUCEK</title>
+<title>POS Nasi Kuning 51 - Final</title>
 <style>
   :root {
-    --brand-maroon: #632626; 
-    --brand-gold: #c6943d;   
-    --brand-light: #f5f5f5;  
-    --white: #ffffff;
-    --border: rgba(255, 255, 255, 0.2);
-    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    --brand-maroon: #632626; --brand-gold: #c6943d; --brand-light: #f5f5f5;
+    --white: #ffffff; --border: rgba(255, 255, 255, 0.2); --green-success: #28a745;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { margin: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: var(--brand-light); color: #333; }
+  body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: var(--brand-light); color: #333; overflow-x: hidden; }
+  .container { max-width: 420px; margin: 0 auto; min-height: 100vh; padding-bottom: 220px; }
   
-  .container { max-width: 420px; margin: 0 auto; min-height: 100vh; padding-bottom: 220px; background: var(--brand-light); }
-  
-  /* Header UI */
+  /* HEADER */
   .header-box { 
-    background: var(--brand-maroon); color: var(--white); padding: 20px 15px; 
-    display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1000; 
-    border-bottom: 4px solid var(--brand-gold); box-shadow: var(--shadow);
+    background: var(--brand-maroon); color: var(--white); padding: 15px; 
+    display: flex; align-items: center; gap: 12px; position: sticky; top: 0; 
+    z-index: 100; border-bottom: 3px solid var(--brand-gold);
   }
   .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--brand-gold); background: white; object-fit: cover; }
-  .user-name { font-size: 17px; font-weight: 800; text-transform: uppercase; }
+  .user-name { font-size: 16px; font-weight: 700; text-transform: uppercase; }
 
-  /* Navigation Tabs */
-  .tabs-container { display: flex; gap: 12px; padding: 20px 15px 10px; }
+  /* SEARCH & FILTER (ANTI-ZOOM) */
+  .search-container { 
+    padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; 
+    position: sticky; top: 93px; z-index: 99; display: flex; gap: 8px;
+  }
+  .filter-select { 
+    flex: 1; padding: 10px 5px; border: 2px solid var(--brand-gold); border-radius: 10px; 
+    font-size: 14px; font-weight: 700; outline: none; background: white;
+  }
+  .search-input { 
+    flex: 2; padding: 12px; border: 2px solid var(--brand-gold); border-radius: 10px; 
+    font-size: 16px; outline: none; /* Font 16px mencegah auto-zoom */
+  }
+
+  /* TABS MENU */
+  .tabs-container { display: flex; gap: 10px; padding: 15px; background: var(--brand-light); }
   .tab-item {
-    flex: 1; padding: 14px; text-align: center; background: var(--white);
-    border: 2px solid var(--brand-gold); border-radius: 30px; cursor: pointer; font-size: 13px; font-weight: 900; color: var(--brand-gold);
+    flex: 1; padding: 12px; text-align: center; background: var(--white);
+    border: 2px solid var(--brand-gold); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 800; color: var(--brand-gold);
   }
   .tab-item.active { background: var(--brand-gold); color: var(--white); }
+  .tab-item.free-mode { border-color: var(--green-success); color: var(--green-success); }
+  .tab-item.free-mode.active { background: var(--green-success); color: white; }
 
-  /* Grid Menu */
-  .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 10px 15px; }
-  .menu-card {
-    background: var(--brand-maroon); border-radius: 18px; padding: 18px; 
-    border: 2px solid var(--brand-gold); cursor: pointer; color: var(--white);
-    transition: 0.1s;
+  /* GRID MENU */
+  .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
+  .menu-card { 
+    background: var(--brand-maroon); border-radius: 12px; padding: 12px; border: 2px solid var(--brand-gold); 
+    cursor: pointer; color: var(--white); display: flex; flex-direction: column; justify-content: space-between; min-height: 85px;
   }
-  .menu-card:active { transform: scale(0.95); }
-  .menu-card div { font-weight: 800; font-size: 13px; margin-bottom: 5px; line-height: 1.2; }
-  .menu-card span { display: block; font-size: 12px; color: var(--brand-gold); font-weight: 700; }
+  .menu-name { font-size: 11px; font-weight: 800; text-transform: uppercase; }
+  .menu-price { font-size: 13px; color: var(--brand-gold); font-weight: 700; text-align: right; border-top: 1px solid var(--border); padding-top: 5px; }
 
-  /* Cart List */
-  .section-title { padding: 20px 15px 5px; font-size: 15px; font-weight: 800; color: var(--brand-maroon); text-transform: uppercase; }
-  .card-box { background: var(--brand-maroon); border-radius: 20px; margin: 10px 15px; padding: 20px; color: var(--white); }
-  .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-  .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 8px; width: 32px; height: 32px; font-weight: 800; cursor: pointer; font-size: 18px; }
+  /* KERANJANG */
+  .card-box { background: var(--brand-maroon); border-radius: 15px; margin: 10px 15px; padding: 15px; color: var(--white); }
+  .cart-item { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .qty-btn { background: var(--brand-gold); border: none; color: white; border-radius: 5px; padding: 5px 10px; font-weight: bold; }
 
-  /* Payment Section */
-  .pay-card { background: var(--white); border-radius: 20px; margin: 15px; padding: 20px; border: 1px solid #eee; box-shadow: var(--shadow); }
-  .pay-methods { display: flex; gap: 8px; margin-bottom: 15px; }
-  .pay-btn { flex: 1; padding: 12px; border-radius: 12px; border: 2px solid #ddd; background: white; font-weight: 800; font-size: 12px; color: #888; cursor: pointer; }
-  .pay-btn.active { border-color: var(--brand-maroon); color: var(--brand-maroon); background: rgba(99, 38, 38, 0.05); }
-
-  input[type="number"] { width: 100%; border: 2px solid #eee; border-radius: 12px; padding: 15px; font-size: 20px; font-weight: 800; margin: 10px 0; color: var(--brand-maroon); }
-  input[readonly] { background-color: #f9f9f9; color: #aaa; }
+  /* PEMBAYARAN */
+  .pay-card { background: var(--white); border-radius: 15px; margin: 10px 15px; padding: 15px; border: 1px solid #ddd; }
+  input[type="number"] { width: 100%; border: 2px solid #ddd; border-radius: 10px; padding: 12px; font-size: 18px; font-weight: 700; margin: 10px 0; text-align: right; outline: none; }
   
-  .quick-pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-  .q-btn { padding: 12px; background: #f0f0f0; border: none; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .quick-pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+  .small-btn { padding: 12px 5px; background: var(--brand-maroon); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-  /* Action Buttons */
-  .action-bar { position: fixed; bottom: 85px; left: 0; right: 0; padding: 0 15px; display: flex; gap: 10px; z-index: 900; }
-  .btn-main { flex: 3; padding: 20px; border-radius: 15px; border: none; font-weight: 900; background: var(--brand-maroon); color: white; font-size: 15px; box-shadow: 0 6px 15px rgba(99, 38, 38, 0.3); }
-  .btn-reset { flex: 1; padding: 20px; border-radius: 15px; border: 2px solid var(--brand-gold); background: white; color: var(--brand-gold); font-weight: 900; }
+  /* ACTION BAR & NAV */
+  .action-bar { position: fixed; bottom: 70px; left: 0; right: 0; background: var(--brand-light); padding: 10px 15px; display: flex; gap: 10px; z-index: 900; }
+  .btn-main-action { flex: 3; padding: 18px; border-radius: 12px; border: none; font-weight: 800; background: var(--brand-maroon); color: white; }
+  .btn-reset-action { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid var(--brand-gold); background: white; color: var(--brand-gold); font-size: 12px; font-weight: 800; }
 
-  /* Bottom Nav */
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 75px; display: flex; border-top: 1px solid #eee; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
-  .nav-item { flex: 1; text-align: center; padding-top: 15px; opacity: 0.4; font-size: 11px; font-weight: 600; cursor: pointer; }
-  .nav-item.active { opacity: 1; font-weight: 900; color: var(--brand-maroon); }
-
-  /* History Cards */
-  .hist-card { background: white; padding: 20px; border-radius: 18px; margin-bottom: 15px; border-left: 8px solid var(--brand-maroon); box-shadow: var(--shadow); }
-  .btn-group-hist { display: flex; gap: 8px; margin-top: 15px; }
-  .print-btn { background: #444; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; font-weight: 800; cursor: pointer; }
-  .wa-btn { background: #25D366; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; font-weight: 800; cursor: pointer; }
-
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; height: 70px; display: flex; border-top: 1px solid #eee; z-index: 1000; }
+  .nav-item { text-align: center; color: var(--brand-maroon); font-size: 11px; cursor: pointer; flex: 1; opacity: 0.4; padding-top: 15px; }
+  .nav-item.active { opacity: 1; font-weight: 800; }
+  
+  /* HISTORY CARD */
+  .hist-card { background:white; padding:15px; border-radius:12px; margin-bottom:12px; border-left:6px solid var(--brand-maroon); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  .share-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: 800; margin-top: 10px; }
+  
+  /* POPUP */
   .hide { display: none; }
-
-  /* PRINT CSS */
-  @media print {
-    body * { visibility: hidden; }
-    #printArea, #printArea * { visibility: visible; }
-    #printArea { position: absolute; left: 0; top: 0; width: 100%; color: black !important; }
-  }
+  .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+  .popup { width: 85%; background: white; border-radius: 20px; padding: 25px; text-align: center; }
+  .confirm-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 5px; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <header class="header-box">
-    <img src="https://i.ibb.co.com/8nkwdhSQ/IMG-3379.png" class="logo-img">
+  <div class="header-box">
+    <img src="https://i.ibb.co.com/8nkwdhSQ/IMG-3379.png" alt="Logo" class="logo-img">
     <div class="header-info">
+      <div style="font-size: 9px; opacity: 0.8;">KASIR AKTIF</div>
       <div class="user-name">HALILINTAR BUCEK</div>
-      <div style="font-weight: 700; font-size: 11px; color: var(--brand-gold);">NASI KUNING 51 - KOLAKA</div>
+      <div style="font-weight: 800; font-size: 11px; color: var(--brand-gold);">NASI KUNING 51</div>
     </div>
-  </header>
+  </div>
 
-  <main id="pageTransaksi">
+  <div id="pageTransaksi">
     <div class="tabs-container">
-      <div class="tab-item active" id="tabUtama" onclick="setMenuTab('utama')">MENU UTAMA</div>
+      <div class="tab-item active" id="tabUtama" onclick="setMenuTab('utama')">UTAMA</div>
       <div class="tab-item" id="tabAdd" onclick="setMenuTab('additional')">TAMBAHAN</div>
     </div>
     <div class="menu-grid" id="menuGrid"></div>
-
-    <h2 class="section-title">Ringkasan Pesanan</h2>
     <div class="card-box">
       <div id="cartList"></div>
-      <div style="display: flex; justify-content: space-between; margin-top: 15px; font-weight: 900; border-top: 2px solid var(--border); padding-top: 15px; font-size: 19px;">
-        <span>TOTAL BAYAR</span><span id="totalHarga">0</span>
+      <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: 800; border-top: 1px solid var(--border); padding-top: 10px; font-size: 18px;">
+        <span>Total</span><span id="totalHarga">0</span>
       </div>
     </div>
 
     <div class="pay-card">
-      <div class="pay-methods">
-        <button class="pay-btn" id="btnCash" onclick="setPayment('cash')">CASH</button>
-        <button class="pay-btn" id="btnQris" onclick="setPayment('qris')">QRIS</button>
-        <button class="pay-btn" id="btnFree" style="border-color:#28a745; color:#28a745" onclick="setPayment('free')">FREE / SEDEKAH</button>
+      <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+        <button class="tab-item" id="btnCash" onclick="setPayment('cash')">CASH</button>
+        <button class="tab-item" id="btnQris" onclick="setPayment('qris')">QRIS</button>
+        <button class="tab-item free-mode" id="btnFree" onclick="setPayment('free')">FREE</button>
       </div>
       <input type="number" id="uangBayar" placeholder="0" oninput="calculateChange()" inputmode="numeric">
-      <div class="quick-pay-grid" id="qGrid">
-        <button class="q-btn" onclick="setQuick(10000)">10.000</button>
-        <button class="q-btn" onclick="setQuick(20000)">20.000</button>
-        <button class="q-btn" onclick="setQuick(50000)">50.000</button>
-        <button class="q-btn" onclick="setQuick(100000)">100.000</button>
-        <button class="q-btn" onclick="setExact()" style="background:var(--brand-gold); color:white">UANG PAS</button>
-        <button class="q-btn" onclick="clearPay()">CLEAR</button>
+      <div class="quick-pay-grid" id="quickPayArea">
+        <button class="small-btn q-btn" onclick="setQuick(5000)">5K</button>
+        <button class="small-btn q-btn" onclick="setQuick(10000)">10K</button>
+        <button class="small-btn q-btn" onclick="setQuick(20000)">20K</button>
+        <button class="small-btn q-btn" onclick="setQuick(50000)">50K</button>
+        <button class="small-btn q-btn" onclick="setQuick(100000)">100K</button>
+        <button class="small-btn q-btn" style="background:var(--brand-gold)" onclick="setExact()">PAS</button>
       </div>
-      <div style="display: flex; justify-content: space-between; font-weight: 900; margin-top: 15px; color: var(--brand-maroon); font-size: 17px;">
+      <button class="small-btn q-btn" style="background:#888; width: 100%;" onclick="clearUangBayar()">HAPUS NOMINAL</button>
+      <div style="display: flex; justify-content: space-between; font-weight: 800; margin-top: 15px; color: var(--brand-maroon); font-size: 16px;">
         <span>Kembalian</span><span id="kembalian">0</span>
       </div>
     </div>
-
     <div class="action-bar">
-      <button class="btn-reset" onclick="resetCart()">RESET</button>
-      <button class="btn-main" onclick="finalizeTransaction()">SIMPAN TRANSAKSI</button>
+      <button class="btn-reset-action" onclick="resetCart()">RESET</button>
+      <button class="btn-main-action" onclick="completeTransaction()">BAYAR SEKARANG</button>
     </div>
-  </main>
+  </div>
 
-  <main id="pageHistory" class="hide" style="padding: 15px;">
-    <div id="historyList"></div>
-    <button class="btn-main" style="width:100%; margin:10px 0; background:#333" onclick="downloadDetailedReport()">💾 DOWNLOAD LAPORAN DETAIL (.TXT)</button>
-    <button class="btn-reset" style="width:100%; border-color:#ff4757; color:#ff4757" onclick="closeCashier()">🏁 TUTUP KASIR (RESET DATA)</button>
-  </main>
+  <div id="pageHistory" class="hide">
+    <div class="search-container">
+      <select id="filterType" class="filter-select" onchange="filterHistory()">
+        <option value="all">SEMUA</option><option value="id">ID NOTA</option><option value="lauk">LAUK</option><option value="metode">METODE</option>
+      </select>
+      <input type="text" id="searchInput" class="search-input" placeholder="Ketik di sini..." onkeyup="filterHistory()">
+    </div>
+    <div style="padding: 15px; font-weight: 800; color: var(--brand-maroon);">HASIL TRANSAKSI</div>
+    <div id="historyList" style="padding: 0 15px;"></div>
+    <div style="padding: 20px 15px; display: flex; flex-direction: column; gap: 10px;">
+      <button class="btn-main-action" onclick="saveHistory()">💾 SIMPAN SEMENTARA (.TXT)</button>
+      <button class="btn-reset-action" onclick="closeCashier()">🏁 TUTUP KASIR (REKAP)</button>
+      <button class="btn-reset-action" style="background:#f8d7da; border-color:#dc3545; color:#dc3545" onclick="resetHistory()">🗑️ RESET SEMUA DATA</button>
+    </div>
+  </div>
 </div>
 
-<div id="printArea" class="hide"></div>
-
 <nav class="bottom-nav">
-  <div class="nav-item active" id="navHome" onclick="showTab('transaksi')">🏠<div>Pos</div></div>
-  <div class="nav-item" id="navHist" onclick="showTab('history')">📋<div>Riwayat</div></div>
+  <div class="nav-item active" id="navHome" onclick="showTab('transaksi')">🏠<div>Beranda</div></div>
+  <div class="nav-item" id="navHist" onclick="showTab('history')">📋<div>Laporan</div></div>
 </nav>
 
+<div id="confirmPopup" class="hide">
+  <div class="popup-overlay"><div class="popup">
+    <h3 id="popupTitle" style="color:var(--brand-maroon)">Konfirmasi</h3>
+    <div id="popupDetails" style="text-align: left; margin-bottom: 20px;"></div>
+    <button class="btn-main-action" style="width:100%; margin:5px 0" onclick="finalize()">KONFIRMASI</button>
+    <button class="btn-reset-action" style="width:100%; margin:5px 0" onclick="closePopup()">BATAL</button>
+  </div></div>
+</div>
+
 <script>
+  // DATA MASTER
   const menus = [
-    {name:"NASI KUNING AYAM", price:15000, type:"utama"},
-    {name:"NASI KUNING IKAN", price:13000, type:"utama"},
-    {name:"NASI KUNING TELUR", price:10000, type:"utama"},
-    {name:"NASI KUNING AYAM TELUR", price:23000, type:"utama"},
-    {name:"NASI KUNING IKAN TELUR", price:20000, type:"utama"},
-    {name:"IKAN", price:5000, type:"additional"},
-    {name:"BAKWAN", price:2000, type:"additional"},
-    {name:"NASI", price:5000, type:"additional"},
-    {name:"TELUR", price:5000, type:"additional"},
-    {name:"AYAM", price:5000, type:"additional"},
-    {name:"AIR MINERAL", price:5000, type:"additional"}
+    {name:"NASI KUNING AYAM", price:15000, type:"utama"}, {name:"NASI KUNING IKAN", price:13000, type:"utama"},
+    {name:"NASI KUNING TELUR", price:10000, type:"utama"}, {name:"NASI KUNING AYAM TELUR", price:23000, type:"utama"},
+    {name:"NASI KUNING IKAN TELUR", price:20000, type:"utama"}, {name:"IKAN", price:5000, type:"additional"},
+    {name:"BAKWAN", price:2000, type:"additional"}, {name:"NASI", price:5000, type:"additional"},
+    {name:"TELUR", price:5000, type:"additional"}, {name:"AYAM", price:5000, type:"additional"},
+    {name:"AIR MINERAL", price:5000, type:"additional"},
   ];
 
-  let cart = []; let history = []; let paymentMethod = ""; let currentTab = "utama";
+  let cart = []; let history = []; let paymentMethod = ""; let currentMenuTab = "utama";
 
-  function setMenuTab(t){ currentTab = t; renderMenu(); }
-  function renderMenu(){
-    const grid = document.getElementById("menuGrid");
-    grid.innerHTML = menus.filter(m => m.type === currentTab).map(m => `
-      <div class="menu-card" onclick="addToCart('${m.name}', ${m.price})">
-        <div>${m.name}</div><span>Rp ${m.price.toLocaleString('id-ID')}</span>
-      </div>`).join("");
-    document.getElementById("tabUtama").classList.toggle("active", currentTab==='utama');
-    document.getElementById("tabAdd").classList.toggle("active", currentTab==='additional');
-  }
-
-  function addToCart(n, p){
-    const exist = cart.find(i => i.name === n);
-    if(exist) exist.qty++; else cart.push({name:n, price:p, qty:1});
-    renderCart(); calculateTotal();
-  }
-
-  function renderCart(){
-    document.getElementById("cartList").innerHTML = cart.map((i, idx) => `
-      <div class="cart-item">
-        <div style="flex:1"><b>${i.name}</b><br><small>Rp ${i.price.toLocaleString()}</small></div>
-        <div style="display:flex; align-items:center; gap:12px">
-          <button class="qty-btn" onclick="updateQty(${idx},-1)">-</button>
-          <b>${i.qty}</b>
-          <button class="qty-btn" onclick="updateQty(${idx},1)">+</button>
-        </div>
-      </div>`).join("");
-  }
-
-  function updateQty(idx, d){ cart[idx].qty += d; if(cart[idx].qty < 1) cart.splice(idx,1); renderCart(); calculateTotal(); }
+  // LOGIKA STORAGE & UTILITY
+  function saveToStorage(){ localStorage.setItem("bucek_cart", JSON.stringify(cart)); localStorage.setItem("bucek_history", JSON.stringify(history)); }
+  function loadFromStorage(){ cart = JSON.parse(localStorage.getItem("bucek_cart")) || []; history = JSON.parse(localStorage.getItem("bucek_history")) || []; renderCart(); calculateTotal(); }
+  function getNum(id) { const el = document.getElementById(id); let val = (el.tagName === "INPUT") ? el.value : el.innerText; return parseInt(val.toString().replace(/\D/g, '')) || 0; }
   
-  function calculateTotal(){
-    let t = 0; cart.forEach(i => t += (i.price*i.qty));
-    document.getElementById("totalHarga").innerText = t.toLocaleString('id-ID');
-    if(paymentMethod==='qris') document.getElementById("uangBayar").value = t;
+  // PEMBAYARAN & KERANJANG
+  function setPayment(m){ 
+    paymentMethod = m; const inputBayar = document.getElementById("uangBayar"); const qButtons = document.querySelectorAll(".q-btn");
+    document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+    const targetBtn = document.getElementById("btn" + m.charAt(0).toUpperCase() + m.slice(1));
+    if(targetBtn) targetBtn.classList.add('active');
+    
+    if(m==='qris' || m==='free') { inputBayar.value = (m==='qris') ? getNum("totalHarga") : 0; inputBayar.readOnly = true; qButtons.forEach(b => b.disabled = true); } 
+    else { inputBayar.readOnly = false; inputBayar.value = ""; qButtons.forEach(b => b.disabled = false); }
     calculateChange();
   }
 
-  function setPayment(m){
-    paymentMethod = m;
-    const inp = document.getElementById("uangBayar");
-    document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(m==='cash'?'btnCash':m==='qris'?'btnQris':'btnFree').classList.add('active');
-    
-    if(m==='qris' || m==='free'){ inp.value = (m==='free'? 0 : getVal("totalHarga")); inp.readOnly = true; }
-    else { inp.value = ""; inp.readOnly = false; }
-    calculateChange();
+  function calculateChange(){ const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const change = (paymentMethod === 'free' || paymentMethod === 'qris') ? 0 : bayar - total; document.getElementById("kembalian").innerText = change >= 0 ? change.toLocaleString('id-ID') : "0"; }
+  function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
+  function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div class="menu-name">${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
+  function addToCart(name, price){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); if(paymentMethod === 'qris') document.getElementById("uangBayar").value = getNum("totalHarga"); saveToStorage(); }
+  function renderCart(){ const list = document.getElementById("cartList"); list.innerHTML = cart.map((i, idx) => `<div class="cart-item"><div><b>${i.name}</b><br><small>Rp ${i.price.toLocaleString('id-ID')}</small></div><div><button class="qty-btn" onclick="changeQty(${idx},-1)">-</button> ${i.qty} <button class="qty-btn" onclick="changeQty(${idx},1)">+</button></div></div>`).join(""); }
+  function changeQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty <= 0) cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
+  function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); calculateChange(); }
+  
+  // QUICK CASH
+  function setQuick(amt){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("uangBayar") + amt; calculateChange(); }
+  function setExact(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = getNum("totalHarga"); calculateChange(); }
+  function clearUangBayar(){ if(paymentMethod !== 'cash') return; document.getElementById("uangBayar").value = ""; calculateChange(); }
+
+  // PROSES TRANSAKSI & KONFIRMASI
+  function completeTransaction(){
+    const total = getNum("totalHarga"); const bayar = getNum("uangBayar"); const kembali = getNum("kembalian");
+    if(cart.length === 0){ alert("Pesanan kosong!"); return; }
+    if(!paymentMethod){ alert("Pilih pembayaran!"); return; }
+    if(paymentMethod === 'cash' && bayar < total) { alert("Uang bayar kurang!"); return; }
+
+    const details = document.getElementById("popupDetails");
+    if(paymentMethod === "qris") {
+      document.getElementById("popupTitle").innerText = "Konfirmasi QRIS";
+      details.innerHTML = `<p>Cek mutasi dana masuk <b>Rp ${total.toLocaleString('id-ID')}</b> sebelum konfirmasi.</p>`;
+      openPopup();
+    } else if(paymentMethod === "cash") {
+      document.getElementById("popupTitle").innerText = "Konfirmasi Tunai";
+      details.innerHTML = `
+        <div class="confirm-row"><span>Total:</span><span>Rp ${total.toLocaleString('id-ID')}</span></div>
+        <div class="confirm-row"><span>Bayar:</span><span>Rp ${bayar.toLocaleString('id-ID')}</span></div>
+        <div class="confirm-row" style="color:var(--brand-maroon)"><span>Kembali:</span><span>Rp ${kembali.toLocaleString('id-ID')}</span></div>
+      `;
+      openPopup();
+    } else { finalize(); }
   }
 
-  function setQuick(a){ if(paymentMethod==='cash') { document.getElementById("uangBayar").value = a; calculateChange(); } }
-  function setExact(){ if(paymentMethod==='cash') { document.getElementById("uangBayar").value = getVal("totalHarga"); calculateChange(); } }
-  function clearPay(){ document.getElementById("uangBayar").value = ""; calculateChange(); }
-
-  function calculateChange(){
-    const t = getVal("totalHarga"); const b = getVal("uangBayar");
-    const c = b - t;
-    document.getElementById("kembalian").innerText = (c >= 0 && paymentMethod !== 'free') ? c.toLocaleString() : "0";
+  function finalize(){
+    const rt = getNum("totalHarga"); const bayar = getNum("uangBayar"); const m = paymentMethod;
+    const cg = (m === 'free' || m === 'qris') ? 0 : bayar - rt;
+    history.push({ id: "NK51-" + Date.now().toString().slice(-4), time: new Date().toLocaleString('id-ID'), items: JSON.parse(JSON.stringify(cart)), total: (m === 'free' ? 0 : rt), realValue: rt, bayar: bayar, change: cg, paymentMethod: m });
+    cart = []; paymentMethod = ""; closePopup(); resetUI(); saveToStorage(); alert("Berhasil Terarsip!");
   }
 
-  function getVal(id){ return parseInt(document.getElementById(id).value || document.getElementById(id).innerText.replace(/\D/g,'')) || 0; }
-
-  function finalizeTransaction(){
-    if(cart.length===0 || !paymentMethod) return alert("Pilih menu & metode bayar!");
-    if(paymentMethod==='cash' && getVal("uangBayar") < getVal("totalHarga")) return alert("Uang kurang!");
-    
-    const trx = {
-      id: "NK51-"+Math.floor(100000 + Math.random() * 900000),
-      time: new Date().toLocaleString('id-ID'),
-      items: JSON.parse(JSON.stringify(cart)),
-      total: (paymentMethod==='free' ? 0 : getVal("totalHarga")),
-      originalTotal: getVal("totalHarga"),
-      bayar: getVal("uangBayar"),
-      method: paymentMethod
-    };
-    history.push(trx);
-    localStorage.setItem("nk51_final", JSON.stringify(history));
-    alert("Berhasil!"); resetCart();
+  // NAVIGATION & HISTORY
+  function showTab(t){ 
+    document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); 
+    document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); 
+    document.getElementById("navHome").classList.toggle("active", t === "transaksi"); 
+    document.getElementById("navHist").classList.toggle("active", t === "history"); 
+    if(t === "history") { document.getElementById("searchInput").value = ""; document.getElementById("filterType").value = "all"; renderHistory(); } 
   }
 
-  function showTab(t){
-    document.getElementById("pageTransaksi").classList.toggle("hide", t!=='transaksi');
-    document.getElementById("pageHistory").classList.toggle("hide", t!=='history');
-    if(t==='history') renderHistory();
-  }
+  function filterHistory() { const k = document.getElementById("searchInput").value.toLowerCase(); const type = document.getElementById("filterType").value; renderHistory(k, type); }
 
-  function renderHistory(){
-    document.getElementById("historyList").innerHTML = history.slice().reverse().map(h => `
-      <div class="hist-card">
-        <div style="display:flex; justify-content:space-between"><b>${h.id}</b><span>${h.method.toUpperCase()}</span></div>
-        <div style="font-size:11px; color:#888">${h.time}</div>
-        <div style="margin:10px 0; font-size:13px">${h.items.map(i => i.name+' x'+i.qty).join(', ')}</div>
-        <div class="btn-group-hist">
-          <button class="print-btn" onclick="printReceipt('${h.id}')">🖨️ PRINT</button>
-          <button class="wa-btn" onclick="shareWA('${h.id}')">WA STRUK</button>
-        </div>
-      </div>`).join("");
-  }
-
-  // FUNGSI PRINT THERMAL
-  function printReceipt(id){
-    const d = history.find(h => h.id === id);
-    const area = document.getElementById("printArea");
-    area.innerHTML = `
-      <div style="text-align:center; font-family:monospace; width:58mm; padding:10px; color:black">
-        <h3 style="margin:0">NASI KUNING 51</h3>
-        <p style="font-size:10px; margin:5px 0">Kolaka, Sulawesi Tenggara</p>
-        <div style="border-bottom:1px dashed #000; margin:10px 0"></div>
-        <div style="text-align:left; font-size:10px">
-          ID: ${d.id}<br>Tgl: ${d.time}<br>Kasir: HALILINTAR BUCEK
-        </div>
-        <div style="border-bottom:1px dashed #000; margin:10px 0"></div>
-        <table style="width:100%; font-size:10px; border-collapse:collapse">
-          ${d.items.map(i => `<tr><td>${i.name} x${i.qty}</td><td style="text-align:right">${(i.price*i.qty).toLocaleString()}</td></tr>`).join('')}
-        </table>
-        <div style="border-bottom:1px dashed #000; margin:10px 0"></div>
-        <div style="display:flex; justify-content:space-between; font-size:11px"><b>TOTAL</b><b>Rp ${d.total.toLocaleString()}</b></div>
-        <div style="display:flex; justify-content:space-between; font-size:10px">Bayar (${d.method.toUpperCase()})<span>${d.bayar.toLocaleString()}</span></div>
-        <div style="display:flex; justify-content:space-between; font-size:10px">Kembali<span>${(d.bayar-d.total).toLocaleString()}</span></div>
-        <div style="border-bottom:1px dashed #000; margin:10px 0"></div>
-        <p style="font-size:9px">Terima Kasih & Selamat Menikmati</p>
+  function renderHistory(filter = "", type = "all"){
+    const list = document.getElementById("historyList");
+    const filtered = history.filter(h => {
+        const matchID = h.id.toLowerCase().includes(filter);
+        const matchLauk = h.items.map(i => i.name.toLowerCase()).join(" ").includes(filter);
+        const matchMetode = h.paymentMethod.toLowerCase().includes(filter);
+        if(type === "id") return matchID;
+        if(type === "lauk") return matchLauk;
+        if(type === "metode") return matchMetode;
+        return matchID || matchLauk || matchMetode;
+    });
+    list.innerHTML = filtered.slice().reverse().map((h) => `
+      <div class="hist-card" style="${h.paymentMethod === 'free' ? 'border-left-color: #28a745':''}">
+        <div style="display:flex; justify-content:space-between; font-size:11px;"><b>${h.id}</b> <span style="color:var(--brand-gold)">${h.paymentMethod.toUpperCase()}</span></div>
+        <div style="font-size:10px; color:#666;">${h.time}</div>
+        <div style="font-size:12px; margin:8px 0; border-top:1px dashed #ddd; padding-top:5px;">${h.items.map(i => i.name + ' x' + i.qty).join(', ')}</div>
+        <div style="text-align:right; font-size:15px;"><b>Total: Rp ${h.total.toLocaleString('id-ID')}</b></div>
+        <button class="share-btn" onclick="shareReceiptByID('${h.id}')">📤 SHARE WA</button>
       </div>
-    `;
-    window.print();
+    `).join("");
+    if(filtered.length === 0) list.innerHTML = "<div style='text-align:center; padding:20px; color:#999;'>Data tidak ditemukan</div>";
   }
 
-  function shareWA(id){
-    const d = history.find(h => h.id === id);
-    let s = `*NASI KUNING 51*\n_ID: ${d.id}_\n------------------\n`;
-    d.items.forEach(i => s += `*${i.name}* x${i.qty} = ${i.price*i.qty}\n`);
-    s += `------------------\n*TOTAL: Rp ${d.total.toLocaleString()}*\n\n*LOKASI KAMI:*\n📍 1. PRAMUKA (IMAJINASI)\n📍 2. DERMAGA (PANTAI)\n📍 3. PEMUDA (LPNG Konggoasa)\n📍 4. ABADI (Lrg KDRT)\n\n📸 IG: @naskun_kolaka51`;
+  function shareReceiptByID(id) {
+    const d = history.find(h => h.id === id); if(!d) return;
+    let s = `*NASI KUNING 51*\nID: ${d.id}\n------------------------------\n`;
+    d.items.forEach(i => { s += `${i.name} x${i.qty} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
+    s += `------------------------------\n*TOTAL: Rp ${d.total.toLocaleString('id-ID')}*\nMetode: ${d.paymentMethod.toUpperCase()}\n------------------------------\nTerima Kasih!`;
     window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
   }
 
-  function downloadDetailedReport(){
-    let cash = 0, qris = 0, terjual = {}, sedekah = {};
-    history.forEach(h => {
-      if(h.method === 'cash') cash += h.total;
-      if(h.method === 'qris') qris += h.total;
-      h.items.forEach(i => {
-        if(h.method === 'free') sedekah[i.name] = (sedekah[i.name]||0) + i.qty;
-        else terjual[i.name] = (terjual[i.name]||0) + i.qty;
-      });
-    });
-    let t = `LAPORAN PENJUALAN NASI KUNING 51\nKasir: HALILINTAR BUCEK\n\n[RINGKASAN UANG]\nCASH: Rp ${cash}\nQRIS: Rp ${qris}\nTOTAL: Rp ${cash+qris}\n\n[AUDIT LAUK TERJUAL]\n`;
-    for(let k in terjual) t += `- ${k}: ${terjual[k]} Porsi\n`;
-    t += `\n[AUDIT LAUK SEDEKAH]\n`;
-    for(let k in sedekah) t += `- ${k}: ${sedekah[k]} Porsi\n`;
-    
-    const b = new Blob([t], {type:"text/plain"});
-    const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "Laporan_NK51.txt"; a.click();
+  // EXPORT & LAPORAN
+  function generateReportText(isClosing) {
+    let tOmzet = 0, tFreeVal = 0, lBayar = {}, lFree = {};
+    history.forEach(h => { tOmzet += h.total; if(h.paymentMethod === 'free') tFreeVal += h.realValue; h.items.forEach(i => { if(h.paymentMethod === 'free') lFree[i.name] = (lFree[i.name] || 0) + i.qty; else lBayar[i.name] = (lBayar[i.name] || 0) + i.qty; }); });
+    const now = new Date().toLocaleString('id-ID'); const sep = "------------------------------------------\n";
+    let txt = `=== LAPORAN ${isClosing ? 'TUTUP KASIR' : 'SIMPAN SEMENTARA'} NASI KUNING 51 ===\nWaktu: ${now}\n${sep}TOTAL OMZET   : Rp ${tOmzet.toLocaleString('id-ID')}\nTOTAL SEDEKAH : Rp ${tFreeVal.toLocaleString('id-ID')}\n${sep}\nREKAP TERJUAL:\n`;
+    for(let k in lBayar) txt += `- ${k}: ${lBayar[k]} Porsi\n`;
+    txt += `\nREKAP FREE:\n`;
+    for(let k in lFree) txt += `- ${k}: ${lFree[k]} Porsi\n\n${sep}DETAIL TRANSAKSI:\n${sep}`;
+    history.forEach(h => { txt += `[${h.paymentMethod.toUpperCase()}] ${h.id} | Rp ${h.total.toLocaleString('id-ID')}\nItems: ${h.items.map(i => i.name + ' x' + i.qty).join(', ')}\n${sep}`; });
+    return txt;
   }
 
-  function closeCashier(){ if(confirm("Tutup kasir & hapus history?")) { history=[]; localStorage.clear(); showTab('transaksi'); } }
-  function resetCart(){ cart=[]; renderCart(); calculateTotal(); paymentMethod=""; document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('active')); document.getElementById("uangBayar").value=""; }
+  function saveHistory(){ if(history.length===0){alert("Data kosong"); return;} downloadFile(`Simpan_Sementara_${Date.now()}.txt`, generateReportText(false)); }
+  function closeCashier(){ if(history.length===0){alert("Data kosong"); return;} if(confirm("Tutup Kasir? Data akan dikosongkan.")){ downloadFile(`Rekap_Tutup_${Date.now()}.txt`, generateReportText(true)); history = []; saveToStorage(); showTab('transaksi'); } }
+  function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
+  
+  // RESET UI
+  function resetUI(){ document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active')); document.getElementById("tabUtama").classList.add("active"); document.getElementById("uangBayar").readOnly = false; document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); }
+  function resetHistory(){ if(confirm("HAPUS SEMUA DATA?")) { history = []; saveToStorage(); renderHistory(); } }
+  function resetCart(){ if(confirm("Hapus pesanan saat ini?")) { cart = []; resetUI(); saveToStorage(); } }
+  function openPopup(){ document.getElementById("confirmPopup").classList.remove("hide"); }
+  function closePopup(){ document.getElementById("confirmPopup").classList.add("hide"); }
 
-  history = JSON.parse(localStorage.getItem("nk51_final")) || [];
-  renderMenu();
+  loadFromStorage(); renderMenu();
 </script>
 </body>
 </html>
