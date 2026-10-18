@@ -561,8 +561,9 @@
     ]
   };
 
+  // Menu bawaan, dipakai bila menu online belum pernah termuat di HP ini.
   // short: nama singkat di kartu menu; name tetap dipakai di keranjang, riwayat, nota, dan laporan
-  const menus = [
+  const DEFAULT_MENUS = [
     {name:"NASI KUNING AYAM", short:"Ayam", price:15000, type:"utama"}, {name:"NASI KUNING IKAN", short:"Ikan", price:13000, type:"utama"},
     {name:"NASI KUNING TELUR", short:"Telur", price:10000, type:"utama"}, {name:"NASI KUNING AYAM TELUR", short:"Ayam + Telur", price:23000, type:"utama"},
     {name:"NASI KUNING IKAN TELUR", short:"Ikan + Telur", price:20000, type:"utama"}, {name:"IKAN", short:"Ikan", price:5000, type:"additional"},
@@ -570,6 +571,10 @@
     {name:"TELUR", short:"Telur", price:5000, type:"additional"}, {name:"AYAM", short:"Ayam", price:5000, type:"additional"},
     {name:"AIR MINERAL", short:"Air Mineral", price:5000, type:"additional"},
   ];
+  let menus = DEFAULT_MENUS.slice();
+
+  // Menu online yang diubah owner lewat admin.html (repo terpisah agar token admin tidak bisa menyentuh kode aplikasi)
+  const MENU_URL = "https://raw.githubusercontent.com/OcangAmin/nasi-kuning51-menu/main/menu.json";
 
   // Kode cabang dipakai di ID nota (NK51-DRM-...) agar nota antar cabang tidak bentrok
   const cabangList = [
@@ -1259,12 +1264,43 @@
     alert(`Kasir cabang ${titleCase(cabangName(activeCabang))} sudah ditutup.`);
   }
 
+  // ===== MENU ONLINE =====
+  // Nama menu tampil lewat innerHTML, jadi hanya huruf, angka, dan tanda baca sederhana yang diterima
+  const cleanText = s => String(s).replace(/[^A-Za-z0-9À-ÿ .,+()\-\/]/g, "").replace(/\s+/g, " ").trim();
+  function validMenus(data){
+    const list = data && Array.isArray(data.menus) ? data.menus : null;
+    if(!list) return null;
+    const out = list
+      .filter(m => m && m.dijual !== false && Number.isInteger(m.price) && m.price >= 0 && (m.type === "utama" || m.type === "additional"))
+      .map(m => { const name = cleanText(m.name || "").toUpperCase(); return { name, short: cleanText(m.short || "") || titleCase(name), price: m.price, type: m.type }; })
+      .filter(m => m.name);
+    return out.length ? out : null;
+  }
+  function loadMenuCache(){ try { return validMenus(JSON.parse(localStorage.getItem("naskun51_menu"))); } catch(e) { return null; } }
+  let lastMenuFetch = 0;
+  // Ambil menu terbaru; bila offline atau gagal, menu terakhir yang tersimpan tetap dipakai
+  async function refreshMenu(){
+    if(Date.now() - lastMenuFetch < 60000) return;
+    lastMenuFetch = Date.now();
+    try {
+      const res = await fetch(MENU_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if(!res.ok) return;
+      const list = validMenus(await res.json());
+      if(!list) return;
+      localStorage.setItem("naskun51_menu", JSON.stringify({ menus: list }));
+      if(JSON.stringify(list) !== JSON.stringify(menus)) { menus = list; renderMenu(); showToast("Menu & harga diperbarui"); }
+    } catch(e) {}
+  }
+  document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible") refreshMenu(); });
+
   // Agar efek :active (kartu mengecil saat ditekan) jalan di Safari iPhone
   document.addEventListener("touchstart", () => {}, { passive: true });
 
   document.getElementById("kasirName").innerText = titleCase(warungInfo.kasir);
+  menus = loadMenuCache() || menus;
   loadHabis(); loadFromStorage(); renderMenu(); renderCabang(); showPage("home");
   if(!activeCabang) openCabangPicker(true);
+  refreshMenu();
 </script>
 </body>
 </html>
