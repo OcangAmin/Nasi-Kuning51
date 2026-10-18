@@ -447,9 +447,17 @@
     `}).join("");
   }
 
+  // Kirim nota sebagai PDF lewat menu Bagikan; bila jsPDF belum termuat, kirim sebagai teks WhatsApp seperti biasa
   function shareReceiptByID(id) {
     const d = history.find(h => h.id === id); if(!d) return;
-    let s = `*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${d.id}\nTgl   : ${d.time}\nCabang: ${cabangName(d.cabang)}\nKasir : ${warungInfo.kasir}\n--------------------------------------------\n`;
+    let file;
+    try { file = new File([buildNotaPDF(d)], `Nota_${d.id}.pdf`, { type: "application/pdf" }); }
+    catch(e) { shareReceiptText(d); return; }
+    shareFile(file, "pelanggan");
+  }
+
+  function shareReceiptText(d) {
+    let s =`*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${d.id}\nTgl   : ${d.time}\nCabang: ${cabangName(d.cabang)}\nKasir : ${warungInfo.kasir}\n--------------------------------------------\n`;
     d.items.forEach(i => { s += `*${i.name.toUpperCase()}*\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
     s += `--------------------------------------------\n*TOTAL      : Rp ${d.total.toLocaleString('id-ID')}*\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: ${warungInfo.wa}\n--------------------------------------------\n*LOKASI OUTLET:*\n${warungInfo.lokasi.join('\n')}\n--------------------------------------------\n_Terima kasih & Selamat Menikmati!_`;
     window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
@@ -547,18 +555,18 @@
     document.getElementById("rekapPopup").classList.remove("hide");
   }
 
-  async function shareRekap(){
-    if(!rekap) return;
-    const file = rekap.file;
+  // Bagikan file lewat menu Bagikan HP (WhatsApp, dll); bila tidak didukung, file di-download
+  async function shareFile(file, tujuan){
     if(navigator.canShare && navigator.canShare({ files: [file] })) {
       try { await navigator.share({ files: [file], title: file.name }); }
-      catch(e) { if(e.name !== "AbortError") { downloadRekap(); alert("Gagal membagikan file: " + e.message + "\nFile sudah di-download, lampirkan manual di WhatsApp."); } }
+      catch(e) { if(e.name !== "AbortError") { downloadFile(file.name, file); alert(`Gagal membagikan file: ${e.message}\nFile sudah di-download, lampirkan manual di WhatsApp ke ${tujuan}.`); } }
     } else {
       // Download dulu sebelum alert: alert bisa menghabiskan izin klik sehingga download diblokir browser
-      downloadRekap();
-      alert("HP/browser ini tidak bisa mengirim file langsung.\nFile sudah di-download, lampirkan manual di WhatsApp ke owner.");
+      downloadFile(file.name, file);
+      alert(`HP/browser ini tidak bisa mengirim file langsung.\nFile sudah di-download, lampirkan manual di WhatsApp ke ${tujuan}.`);
     }
   }
+  function shareRekap(){ if(rekap) shareFile(rekap.file, "owner"); }
   function downloadRekap(){ if(rekap) downloadFile(rekap.file.name, rekap.file); }
   function closeRekapPopup(){ document.getElementById("rekapPopup").classList.add("hide"); rekap = null; }
 
@@ -569,6 +577,80 @@
     history = history.filter(h => !rekap.ids.has(h.id));
     saveToStorage(); closeRekapPopup(); showTab('transaksi');
     alert(`Kasir cabang ${cabangName(activeCabang)} sudah ditutup.`);
+  }
+
+  // Membuat PDF nota selebar struk (80mm). Digambar dua kali: pertama untuk mengukur tinggi, lalu di halaman seukuran isinya.
+  // Melempar error bila jsPDF belum termuat.
+  function buildNotaPDF(d){
+    const { jsPDF } = window.jspdf;
+    const W = 80, M = 5;
+    const maroon = [99, 38, 38], gold = [198, 148, 61], green = [40, 167, 69];
+    const rp = n => "Rp " + n.toLocaleString('id-ID');
+    const isFree = d.paymentMethod === "free";
+
+    const draw = doc => {
+      const dashed = y => { doc.setDrawColor(170); doc.setLineWidth(0.2); doc.setLineDashPattern([1, 1], 0); doc.line(M, y, W - M, y); doc.setLineDashPattern([], 0); };
+      const row = (k, v, y, bold = false) => {
+        doc.setFont("helvetica", bold ? "bold" : "normal"); doc.text(k, M, y); doc.text(v, W - M, y, { align: "right" });
+      };
+
+      // Kop
+      doc.setFillColor(...maroon); doc.rect(0, 0, W, 24, "F");
+      doc.setFillColor(...gold); doc.rect(0, 24, W, 1, "F");
+      doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.setTextColor(...gold); doc.text("NASI KUNING 51", W / 2, 11, { align: "center" });
+      doc.setFontSize(9); doc.setTextColor(255); doc.text("BUKTI PEMBAYARAN", W / 2, 17, { align: "center" });
+      doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.text(`Cabang ${cabangName(d.cabang)}`, W / 2, 21.5, { align: "center" });
+      let y = 31;
+
+      // Info nota
+      doc.setFontSize(8); doc.setTextColor(51);
+      [["No. Nota", d.id], ["Tanggal", d.time], ["Cabang", cabangName(d.cabang)], ["Kasir", warungInfo.kasir], ["Metode", d.paymentMethod.toUpperCase()]]
+        .forEach(([k, v]) => { row(k, v, y); y += 4.5; });
+      dashed(y - 1.5); y += 4;
+
+      // Item
+      d.items.forEach(i => {
+        doc.setFont("helvetica", "bold"); doc.setFontSize(8.5); doc.setTextColor(34);
+        const lines = doc.splitTextToSize(i.name.toUpperCase(), W - 2 * M);
+        doc.text(lines, M, y); y += lines.length * 3.8;
+        doc.setFontSize(8); doc.setTextColor(102); doc.setFont("helvetica", "normal"); doc.text(`${i.qty} x ${i.price.toLocaleString('id-ID')}`, M, y);
+        doc.setTextColor(34); doc.setFont("helvetica", "bold"); doc.text(rp(i.price * i.qty), W - M, y, { align: "right" });
+        y += 5.5;
+      });
+      dashed(y - 2); y += 4;
+
+      // Total
+      doc.setFontSize(11); doc.setTextColor(...maroon); row("TOTAL", rp(d.total), y, true); y += 6;
+      doc.setFontSize(8); doc.setTextColor(51);
+      if(isFree) { row("Nilai pesanan", rp(d.realValue), y); y += 4.5; }
+      row(`Bayar (${d.paymentMethod.toUpperCase()})`, rp(d.bayar), y); y += 4.5;
+      row("Kembali", rp(d.change), y); y += 6;
+
+      // Cap status
+      const stamp = isFree ? "GRATIS / SEDEKAH" : "LUNAS";
+      doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(...green);
+      const sw = Math.max(36, doc.getTextWidth(stamp) + 10);
+      doc.setDrawColor(...green); doc.setLineWidth(0.5); doc.roundedRect(W / 2 - sw / 2, y, sw, 8, 1.5, 1.5, "S");
+      doc.text(stamp, W / 2, y + 5.5, { align: "center" });
+      y += 14;
+      dashed(y - 2); y += 4;
+
+      // Kontak & lokasi
+      doc.setFontSize(7.5); doc.setTextColor(51);
+      doc.setFont("helvetica", "bold"); doc.text("HUBUNGI KAMI", M, y); y += 4;
+      doc.setFont("helvetica", "normal"); doc.text(`IG: ${warungInfo.ig}`, M, y); y += 3.6; doc.text(`WA: ${warungInfo.wa}`, M, y); y += 5;
+      doc.setFont("helvetica", "bold"); doc.text("LOKASI OUTLET", M, y); y += 4;
+      doc.setFont("helvetica", "normal");
+      cabangList.forEach((c, i) => { const lines = doc.splitTextToSize(`${i + 1}. ${c.name} ${c.alamat}`, W - 2 * M); doc.text(lines, M, y); y += lines.length * 3.6; });
+      y += 3; dashed(y - 1); y += 5;
+      doc.setFont("helvetica", "italic"); doc.setFontSize(8); doc.setTextColor(...maroon); doc.text("Terima kasih & Selamat Menikmati!", W / 2, y, { align: "center" });
+      return y + 6;
+    };
+
+    const height = draw(new jsPDF({ unit: "mm", format: [W, 1000] }));
+    const doc = new jsPDF({ unit: "mm", format: [W, height] });
+    draw(doc);
+    return doc.output("blob");
   }
 
   // Membuat PDF rekap (A4) dengan jsPDF; melempar error bila jsPDF belum termuat
