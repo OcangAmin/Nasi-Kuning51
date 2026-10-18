@@ -10,12 +10,18 @@ Kasir membukanya lewat GitHub Pages: https://ocangamin.github.io/Nasi-Kuning51/
 - `logo.png` — logo usaha (dipakai di header; `index.html` beralih ke salinan ImgBB bila file ini tidak ada).
 
 ## Aturan kerja
-- **Tanyakan dulu sebelum memperbarui desain.** Desain tampilan ada di kanvas Claude Design:
+- **Preview di kanvas dulu, baru kode.** Desain tampilan ada di kanvas Claude Design:
   https://claude.ai/artifact/7YvatrqWfXEvBLzNF4EawJ
-  Bila dalam satu sesi ada perubahan besar pada tampilan atau alur di `index.html` atau `admin.html`
-  (layar baru, tata letak berubah, alur kasir/owner berubah), tanyakan ke pengguna apakah kanvas perlu
-  diperbarui, sebutkan artboard mana yang terdampak. Perbarui kanvas hanya setelah pengguna setuju.
-  Perubahan kecil (teks, warna sedikit, perbaikan bug tanpa perubahan tampilan) tidak perlu ditanyakan.
+  Untuk perubahan besar pada tampilan atau alur di `index.html` atau `admin.html`
+  (layar baru, tata letak berubah, alur kasir/owner berubah), ikuti urutan ini:
+  1. Buat atau ubah artboard terkait di kanvas sebagai preview, lalu kirim link-nya dan sebutkan artboard
+     mana yang berubah. Jangan ubah kode dulu.
+  2. Tunggu pengguna menyetujui preview atau meminta revisi; revisi di kanvas sampai disetujui.
+  3. Setelah disetujui, kerjakan di kode, uji, lalu push.
+  4. Tanyakan apakah pengguna mau dibuatkan Pull Request.
+  Perubahan kecil (teks, warna sedikit, perbaikan bug tanpa perubahan tampilan) langsung dikerjakan di kode
+  tanpa preview. Ingatkan bahwa preview hanya menunjukkan tampilan dan alur; fitur yang bergantung pada HP
+  (printer Bluetooth, menu Bagikan, data asli) baru bisa dicoba setelah kode jadi.
   Logo di kanvas memakai aset `/_blob/e82e3ba0ae9d1aed178ee48f55c8a920`.
 - **Jangan ubah format data `localStorage` tanpa migrasi**: `naskun51_cart`, `naskun51_history`, `naskun51_cabang`,
   `naskun51_seq`, `naskun51_habis`, `naskun51_menu`, `naskun51_last_closed`. Data penjualan hanya ada di HP kasir.
