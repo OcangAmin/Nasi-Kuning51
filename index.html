@@ -285,6 +285,29 @@
   .pc-rows b { font-weight: 800; }
   .pc-rows .big { font-size: 18px; }
 
+  /* MULAI JUALAN */
+  .block { display: flex; flex-direction: column; gap: 8px; }
+  .block-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .block-label { font-size: 14px; font-weight: 800; }
+  .block-hint { font-size: 12px; color: var(--muted); }
+  .mulai-cabang { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .mulai-opt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 60px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 14px; background: var(--white); text-align: left; }
+  .mulai-opt b { font-size: 15px; font-weight: 800; color: var(--ink); }
+  .mulai-opt span { font-size: 12px; color: var(--muted); }
+  .mulai-opt.active { border-color: var(--maroon); background: var(--cream); }
+  .mulai-opt.active b { color: var(--maroon); }
+  .kasir-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .kasir-chip { display: flex; align-items: center; border: 2px solid var(--line); border-radius: 999px; background: var(--white); overflow: hidden; }
+  .kasir-chip.active { border-color: var(--maroon); background: var(--maroon); }
+  .kasir-name { min-height: 44px; padding: 0 4px 0 16px; border: none; background: transparent; color: var(--ink); font-size: 14px; font-weight: 800; }
+  .kasir-del { width: 40px; min-height: 44px; border: none; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; }
+  .kasir-chip.active .kasir-name, .kasir-chip.active .kasir-del { color: var(--white); }
+  .kasir-addbtn { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border: 2px dashed #D9CBB8; border-radius: 999px; background: var(--white); color: var(--maroon); font-size: 14px; font-weight: 800; }
+  .kasir-add { display: flex; gap: 8px; }
+  .kasir-add input { flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; border: 2px solid var(--gold); border-radius: 14px; font-size: 16px; color: var(--ink); }
+  .btn-small { min-height: 48px; padding: 0 16px; border: none; border-radius: 14px; background: var(--maroon); color: var(--white); font-size: 14px; font-weight: 800; }
+  .mulai-summary { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--gold-soft); color: #5A3E12; font-size: 14px; }
+
   @media (prefers-reduced-motion: reduce) {
     .menu-card.tapped, .menu-card.shake, .ripple, .plus-one, #cartTotal.bump { animation: none; }
     .ripple, .plus-one { display: none; }
@@ -547,6 +570,32 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<!-- MULAI JUALAN: muncul di awal setiap sesi (setelah Tutup Kasir atau hari baru) -->
+<div id="mulaiPopup" class="overlay hide">
+  <section class="sheet" aria-labelledby="mulaiTitle">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <h1 id="mulaiTitle">Mulai jualan</h1>
+      <p id="mulaiText">Pastikan cabang dan nama kasir sudah benar sebelum transaksi pertama.</p>
+    </div>
+    <div class="block">
+      <span class="block-label">Cabang</span>
+      <div class="mulai-cabang" id="mulaiCabang"></div>
+    </div>
+    <div class="block">
+      <div class="block-head"><span class="block-label">Nama kasir</span><span class="block-hint">Tercetak di nota dan rekap</span></div>
+      <div class="kasir-chips" id="kasirChips"></div>
+      <div class="kasir-add hide" id="kasirAdd">
+        <label for="kasirInput" class="sr-only">Nama kasir baru</label>
+        <input type="text" id="kasirInput" placeholder="Ketik nama kasir" autocomplete="off" maxlength="30" onkeydown="if(event.key === 'Enter') addKasir()">
+        <button class="btn-small" onclick="addKasir()">Tambah</button>
+      </div>
+    </div>
+    <div class="mulai-summary" id="mulaiSummary"></div>
+    <button class="btn-primary" id="mulaiStart" onclick="startSesi()"></button>
+  </section>
+</div>
+
 <!-- KONFIRMASI PEMBAYARAN -->
 <div id="payConfirm" class="overlay hide">
   <section class="sheet" aria-labelledby="pcTitle">
@@ -685,12 +734,96 @@
   function pickCabang(id){ pendingCabang = id; renderCabangSheet(); }
   function applyCabang(){ if(pendingCabang) setCabang(pendingCabang); }
   function closeCabangPicker(){ document.getElementById("cabangPopup").classList.add("hide"); }
-  function setCabang(id){
+  function switchCabang(id){
     // Transaksi lama (sebelum ada fitur cabang) dianggap milik cabang pertama yang dipilih
     if(!activeCabang) history.forEach(h => { if(!h.cabang) h.cabang = id; });
     activeCabang = id; localStorage.setItem("naskun51_cabang", id); saveToStorage();
-    renderCabang(); closeCabangPicker(); renderMenu();
+    if(sesi) { sesi.cabang = id; saveSesi(); }
+    renderCabang(); renderMenu();
     if(currentPage() === "laporan") renderHistory();
+  }
+  function setCabang(id){ switchCabang(id); closeCabangPicker(); }
+
+  // ===== SESI JUALAN & KASIR =====
+  // Sesi dimulai lewat panel "Mulai jualan" dan berlaku sampai Tutup Kasir atau ganti hari:
+  // { date: "2026-10-19", cabang: "DRM", kasir: "Halilintar Bucek", startedAt: <waktu> }
+  let sesi = null; let kasirList = [];
+  let mulaiCabang = ""; let mulaiKasir = "";
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const defaultKasir = () => titleCase(warungInfo.kasir);
+  function loadSesi(){ try { sesi = JSON.parse(localStorage.getItem("naskun51_sesi")); } catch(e) { sesi = null; } }
+  function saveSesi(){ if(sesi) localStorage.setItem("naskun51_sesi", JSON.stringify(sesi)); else localStorage.removeItem("naskun51_sesi"); }
+  function perluMulai(){ return !sesi || sesi.date !== todayKey() || !activeCabang; }
+  function currentKasir(){ return (sesi && sesi.kasir) || defaultKasir(); }
+  // Nama kasir di nota/rekap: transaksi lama belum menyimpan kasir, jadi pakai nama bawaan
+  const kasirOf = h => h.kasir || defaultKasir();
+  const kasirNames = list => [...new Set(list.map(kasirOf))].join(", ");
+
+  function loadKasirList(){
+    try { const l = JSON.parse(localStorage.getItem("naskun51_kasir")); if(Array.isArray(l)) return l.filter(n => typeof n === "string" && n.trim()); } catch(e) {}
+    return [defaultKasir()];
+  }
+  function saveKasirList(){ localStorage.setItem("naskun51_kasir", JSON.stringify(kasirList)); }
+  function renderKasirHeader(){ document.getElementById("kasirName").innerText = currentKasir(); }
+
+  function openMulai(message){
+    mulaiCabang = activeCabang || (sesi && sesi.cabang) || "";
+    const last = (sesi && sesi.kasir) || "";
+    mulaiKasir = kasirList.includes(last) ? last : (kasirList[0] || "");
+    document.getElementById("mulaiText").innerText = message || "Pastikan cabang dan nama kasir sudah benar sebelum transaksi pertama.";
+    document.getElementById("kasirAdd").classList.add("hide");
+    closeCabangPicker();
+    renderMulai();
+    document.getElementById("mulaiPopup").classList.remove("hide");
+  }
+  function renderMulai(){
+    document.getElementById("mulaiCabang").innerHTML = cabangList.map(c => `
+      <button class="mulai-opt${c.id === mulaiCabang ? ' active' : ''}" aria-pressed="${c.id === mulaiCabang}" onclick="pickMulaiCabang('${c.id}')">
+        <b>${titleCase(c.name)}</b><span>${c.alamat}</span>
+      </button>`).join("");
+    document.getElementById("kasirChips").innerHTML = kasirList.map((n, i) => `
+      <span class="kasir-chip${n === mulaiKasir ? ' active' : ''}">
+        <button class="kasir-name" aria-pressed="${n === mulaiKasir}" onclick="pickKasir(${i})">${esc(n)}</button>
+        <button class="kasir-del" aria-label="Hapus nama ${esc(n)}" onclick="deleteKasir(${i})"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </span>`).join("") +
+      (document.getElementById("kasirAdd").classList.contains("hide") ? `<button class="kasir-addbtn" onclick="showAddKasir()">${ICON.plus} Kasir lain</button>` : "");
+    const cab = mulaiCabang ? titleCase(cabangName(mulaiCabang)) : "";
+    document.getElementById("mulaiSummary").innerHTML = `${ICON.pin}<span><b>${cab ? "Cabang " + cab : "Pilih cabang"}</b> · ${mulaiKasir ? "Kasir " + esc(mulaiKasir) : "Pilih nama kasir"}</span>`;
+    const start = document.getElementById("mulaiStart");
+    start.disabled = !mulaiCabang || !mulaiKasir;
+    start.innerHTML = start.disabled ? "Pilih cabang dan nama kasir" : `${ICON.checkBig}<span>Mulai jualan di ${cab}</span>`;
+  }
+  function pickMulaiCabang(id){ mulaiCabang = id; renderMulai(); }
+  function pickKasir(i){ mulaiKasir = kasirList[i]; renderMulai(); }
+  function showAddKasir(){
+    document.getElementById("kasirAdd").classList.remove("hide");
+    renderMulai();
+    const input = document.getElementById("kasirInput"); input.value = ""; input.focus();
+  }
+  function addKasir(){
+    const input = document.getElementById("kasirInput");
+    const name = input.value.replace(/\s+/g, " ").trim().slice(0, 30);
+    if(!name) { input.focus(); return; }
+    const existing = kasirList.find(n => n.toLowerCase() === name.toLowerCase());
+    if(!existing) { kasirList.push(name); saveKasirList(); }
+    mulaiKasir = existing || name;
+    document.getElementById("kasirAdd").classList.add("hide");
+    renderMulai();
+  }
+  function deleteKasir(i){
+    const name = kasirList[i];
+    if(!confirm(`Hapus nama ${name} dari daftar kasir di HP ini?\n\nTransaksi yang sudah tercatat tidak berubah.`)) return;
+    kasirList.splice(i, 1); saveKasirList();
+    if(mulaiKasir === name) mulaiKasir = "";
+    renderMulai();
+  }
+  function startSesi(){
+    if(!mulaiCabang || !mulaiKasir) return;
+    sesi = { date: todayKey(), cabang: mulaiCabang, kasir: mulaiKasir, startedAt: Date.now() };
+    saveSesi();
+    switchCabang(mulaiCabang);
+    renderKasirHeader();
+    document.getElementById("mulaiPopup").classList.add("hide");
   }
 
   // ===== MENU HABIS =====
@@ -914,7 +1047,7 @@
   }
 
   function shareReceiptText(d) {
-    let s =`*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${d.id}\nTgl   : ${d.time}\nCabang: ${cabangName(d.cabang)}\nKasir : ${warungInfo.kasir}\n--------------------------------------------\n`;
+    let s =`*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${d.id}\nTgl   : ${d.time}\nCabang: ${cabangName(d.cabang)}\nKasir : ${kasirOf(d)}\n--------------------------------------------\n`;
     d.items.forEach(i => { s += `*${i.name.toUpperCase()}*\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
     s += `--------------------------------------------\n*TOTAL      : Rp ${d.total.toLocaleString('id-ID')}*\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: ${warungInfo.wa}\n--------------------------------------------\n*LOKASI OUTLET:*\n${warungInfo.lokasi.join('\n')}\n--------------------------------------------\n_Terima kasih & Selamat Menikmati!_`;
     window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
@@ -922,7 +1055,7 @@
 
   async function printBluetooth(id) {
     const d = history.find(h => h.id === id); if (!d) return;
-    let text = `\x1B\x61\x01NASI KUNING 51\nBukti Pembayaran Digital\n--------------------------------\n\x1B\x61\x00ID    : ${d.id}\nTgl   : ${d.time}\nCabang: ${cabangName(d.cabang)}\nKasir : ${warungInfo.kasir}\n--------------------------------\n`;
+    let text = `\x1B\x61\x01NASI KUNING 51\nBukti Pembayaran Digital\n--------------------------------\n\x1B\x61\x00ID    : ${d.id}\nTgl   : ${d.time}\nCabang: ${cabangName(d.cabang)}\nKasir : ${kasirOf(d)}\n--------------------------------\n`;
     d.items.forEach(i => { text += `${i.name.toUpperCase()}\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
     text += `--------------------------------\nTOTAL      : Rp ${d.total.toLocaleString('id-ID')}\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------\nTerima Kasih!\n\n\n\n`;
     try {
@@ -957,7 +1090,7 @@
     const sep = "==========================================\n";
     let txt = `${sep}   LAPORAN ${isClosing ? 'TUTUP KASIR' : 'PENJUALAN'}\n   NASI KUNING 51\n${sep}`;
     txt += `Cabang      : ${cabangName(activeCabang)}\n`;
-    txt += `Kasir       : ${warungInfo.kasir}\n`;
+    txt += `Kasir       : ${kasirNames(list) || defaultKasir()}\n`;
     txt += `Waktu Cetak : ${new Date().toLocaleString('id-ID')}\n`;
     txt += `Total Omzet : Rp ${s.omzet.toLocaleString('id-ID')}\n`;
     txt += `  - TUNAI (${s.nCash}x transaksi) : Rp ${s.cash.toLocaleString('id-ID')}\n`;
@@ -1024,7 +1157,7 @@
 
       // Info nota
       doc.setFontSize(8); doc.setTextColor(51);
-      [["No. Nota", d.id], ["Tanggal", d.time], ["Cabang", cabangName(d.cabang)], ["Kasir", warungInfo.kasir], ["Metode", d.paymentMethod.toUpperCase()]]
+      [["No. Nota", d.id], ["Tanggal", d.time], ["Cabang", cabangName(d.cabang)], ["Kasir", kasirOf(d)], ["Metode", d.paymentMethod.toUpperCase()]]
         .forEach(([k, v]) => { row(k, v, y); y += 4.5; });
       dashed(y - 1.5); y += 4;
 
@@ -1097,7 +1230,7 @@
     // Info
     const info = [
       ["Cabang", `${cabangName(activeCabang)} ${getCabang(activeCabang)?.alamat || ""}`],
-      ["Kasir", warungInfo.kasir],
+      ["Kasir", kasirNames(list)],
       ["Tutup kasir", now.toLocaleString('id-ID')],
       ["Transaksi pertama", list[0].time],
       ["Transaksi terakhir", list[list.length - 1].time],
@@ -1168,6 +1301,7 @@
     const tx = {
         id: generateNotaID(now),
         cabang: activeCabang,
+        kasir: currentKasir(),
         time: now.toLocaleString('id-ID'),
         ts: now.getTime(),
         items: JSON.parse(JSON.stringify(cart)),
@@ -1277,7 +1411,7 @@
 
     const s = summarize(list);
     const cab = titleCase(cabangName(activeCabang));
-    document.getElementById("tutupSub").innerText = `Cabang ${cab} · ${titleCase(warungInfo.kasir)}`;
+    document.getElementById("tutupSub").innerText = `Cabang ${cab} · ${kasirNames(list)}`;
     document.getElementById("tutupSummary").innerHTML = `
       <div style="display: flex; flex-direction: column; gap: 2px;">
         <span style="font-size: 13px; font-weight: 700; color: var(--muted);">Total omzet</span>
@@ -1320,7 +1454,10 @@
     // Hari berikutnya mulai dengan semua menu tersedia
     clearHabis();
     saveToStorage(); rekap = null; renderMenu(); showPage("home");
-    alert(`Kasir cabang ${titleCase(cabangName(activeCabang))} sudah ditutup.`);
+    // Sesi selesai: transaksi berikutnya harus diawali "Mulai jualan" (cabang & kasir dipastikan lagi)
+    const closed = titleCase(cabangName(activeCabang));
+    sesi = { ...sesi, date: "" }; saveSesi();
+    openMulai(`Kasir cabang ${closed} sudah ditutup. Pilih cabang dan nama kasir untuk sesi jualan berikutnya.`);
   }
 
   // ===== MENU ONLINE =====
@@ -1350,15 +1487,20 @@
       if(JSON.stringify(list) !== JSON.stringify(menus)) { menus = list; renderMenu(); showToast("Menu & harga diperbarui"); }
     } catch(e) {}
   }
-  document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible") refreshMenu(); });
+  document.addEventListener("visibilitychange", () => {
+    if(document.visibilityState !== "visible") return;
+    refreshMenu();
+    // Aplikasi dibiarkan terbuka sampai hari berganti: minta mulai sesi baru
+    if(perluMulai() && document.getElementById("mulaiPopup").classList.contains("hide")) openMulai();
+  });
 
   // Agar efek :active (kartu mengecil saat ditekan) jalan di Safari iPhone
   document.addEventListener("touchstart", () => {}, { passive: true });
 
-  document.getElementById("kasirName").innerText = titleCase(warungInfo.kasir);
   menus = loadMenuCache() || menus;
+  loadSesi(); kasirList = loadKasirList(); renderKasirHeader();
   loadHabis(); loadFromStorage(); renderMenu(); renderCabang(); showPage("home");
-  if(!activeCabang) openCabangPicker(true);
+  if(perluMulai()) openMulai();
   refreshMenu();
 </script>
 </body>
