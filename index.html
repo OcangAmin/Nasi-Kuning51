@@ -58,9 +58,28 @@
   .tabs { display: flex; gap: 6px; padding: 5px; background: #EAE3D8; border-radius: 999px; }
   .tab { flex: 1; min-height: 44px; border: none; border-radius: 999px; background: transparent; color: var(--muted); font-size: 14px; font-weight: 800; transition: background 0.2s, color 0.2s; }
   .tab.active { background: var(--maroon); color: var(--white); }
-  .section-head { display: flex; justify-content: space-between; align-items: baseline; }
-  .section-head h2 { margin: 0; font-size: 18px; font-weight: 800; }
-  .section-head span { font-size: 12px; color: var(--muted); }
+  .section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .section-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .section-title h2 { margin: 0; font-size: 18px; font-weight: 800; }
+  .section-title span { font-size: 12px; color: var(--muted); }
+
+  /* MENU HABIS */
+  .stock-btn { display: flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: var(--maroon); font-size: 13px; font-weight: 800; }
+  .stock-btn.active { background: var(--maroon); border-color: var(--maroon); color: var(--white); }
+  .stock-banner { padding: 12px 14px; border-radius: 14px; background: var(--gold-soft); color: #5A3E12; font-size: 13px; line-height: 1.5; }
+  .menu-grid.stock-mode .menu-card { border-style: dashed; }
+  .menu-card.sold-out { background: #F1EDE8; border-color: var(--line); }
+  .menu-card.sold-out .menu-group { color: #8F8585; }
+  .menu-card.sold-out .menu-name, .menu-card.sold-out .menu-price { color: #7D7272; }
+  .stock-pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+  .stock-pill.out { background: var(--danger-soft); color: var(--danger); }
+  .stock-pill.ok { background: var(--free-soft); color: var(--free); }
+  .menu-card.shake { animation: shake 0.3s ease; }
+  @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  .toast { position: fixed; left: 50%; bottom: 200px; transform: translateX(-50%); width: calc(100% - 48px); max-width: 372px; padding: 12px 16px; border-radius: 14px; background: var(--ink); color: var(--white); font-size: 14px; font-weight: 600; text-align: center; z-index: 1500; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .toast.show { opacity: 1; }
+  .produk-habis { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--danger); }
+  .produk-habis b { font-weight: 800; }
 
   /* GRID MENU */
   .menu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -69,8 +88,8 @@
   .menu-title { display: flex; flex-direction: column; gap: 2px; }
   .menu-group { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--gold-ink); }
   .menu-name { font-size: 16px; font-weight: 800; line-height: 1.2; }
-  .menu-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .menu-price { font-size: 15px; font-weight: 800; color: var(--maroon); }
+  .menu-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+  .menu-price { font-size: 15px; font-weight: 800; color: var(--maroon); white-space: nowrap; }
   .qty-badge { min-width: 32px; height: 28px; padding: 0 8px; border-radius: 999px; background: var(--maroon); color: var(--white); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
   .plus-chip { width: 28px; height: 28px; border-radius: 50%; background: var(--gold-soft); color: var(--gold-ink); display: flex; align-items: center; justify-content: center; }
 
@@ -252,7 +271,7 @@
   .sheet-actions .btn-primary { flex: 2; min-height: 52px; font-size: 15px; }
 
   @media (prefers-reduced-motion: reduce) {
-    .menu-card.tapped, .ripple, .plus-one, #cartTotal.bump { animation: none; }
+    .menu-card.tapped, .menu-card.shake, .ripple, .plus-one, #cartTotal.bump { animation: none; }
     .ripple, .plus-one { display: none; }
   }
 </style>
@@ -288,7 +307,14 @@
         <button class="tab active" id="tabUtama" onclick="setMenuTab('utama')">Menu Utama</button>
         <button class="tab" id="tabAdd" onclick="setMenuTab('additional')">Tambahan</button>
       </div>
-      <div class="section-head"><h2 id="menuTitle">Menu Utama</h2><span>Ketuk untuk menambah</span></div>
+      <div class="section-head">
+        <div class="section-title"><h2 id="menuTitle">Menu Utama</h2><span id="menuHint">Ketuk untuk menambah</span></div>
+        <button class="stock-btn" id="stockBtn" onclick="toggleStokMode()" aria-pressed="false">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+          <span id="stockBtnLabel">Atur stok</span>
+        </button>
+      </div>
+      <div class="stock-banner hide" id="stockBanner"><b>Mode atur stok.</b> Ketuk menu untuk menandai <b>Habis</b> atau <b>Tersedia</b>. Semua menu kembali tersedia otomatis setelah Tutup Kasir atau ganti hari.</div>
       <div class="menu-grid" id="menuGrid"></div>
     </div>
     <div class="dock">
@@ -504,6 +530,8 @@
   </section>
 </div>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <!-- PILIH CABANG -->
 <div id="cabangPopup" class="overlay hide">
   <section class="sheet" aria-labelledby="cabangTitle">
@@ -582,6 +610,7 @@
   const PAGES = { home: "pageHome", bayar: "pageBayar", sukses: "pageSukses", laporan: "pageLaporan", tutup: "pageTutup" };
   function currentPage(){ return Object.keys(PAGES).find(k => !document.getElementById(PAGES[k]).classList.contains("hide")); }
   function showPage(p){
+    if(stokMode && p !== "home") { stokMode = false; renderMenu(); }
     Object.keys(PAGES).forEach(k => document.getElementById(PAGES[k]).classList.toggle("hide", k !== p));
     document.getElementById("appHeader").classList.toggle("hide", p !== "home" && p !== "laporan");
     document.getElementById("hdrHome").classList.toggle("hide", p !== "home");
@@ -622,8 +651,38 @@
     // Transaksi lama (sebelum ada fitur cabang) dianggap milik cabang pertama yang dipilih
     if(!activeCabang) history.forEach(h => { if(!h.cabang) h.cabang = id; });
     activeCabang = id; localStorage.setItem("naskun51_cabang", id); saveToStorage();
-    renderCabang(); closeCabangPicker();
+    renderCabang(); closeCabangPicker(); renderMenu();
     if(currentPage() === "laporan") renderHistory();
+  }
+
+  // ===== MENU HABIS =====
+  // Disimpan per cabang dan hanya untuk hari ini: { date: "2026-10-18", byCabang: { DRM: { "NASI KUNING AYAM": <jam ditandai habis> } } }
+  let habisData = { date: "", byCabang: {} };
+  let stokMode = false; let toastTimer = null;
+  const jam = ts => new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  function todayKey(){ const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+  function loadHabis(){ try { habisData = JSON.parse(localStorage.getItem("naskun51_habis")) || habisData; } catch(e) {} }
+  function saveHabis(){ localStorage.setItem("naskun51_habis", JSON.stringify(habisData)); }
+  // Status habis otomatis kembali tersedia saat ganti hari
+  function habisItems(){
+    if(habisData.date !== todayKey()) { habisData = { date: todayKey(), byCabang: {} }; saveHabis(); }
+    if(!habisData.byCabang[activeCabang]) habisData.byCabang[activeCabang] = {};
+    return habisData.byCabang[activeCabang];
+  }
+  function habisEntries(){ const items = habisItems(); return menus.filter(m => items[m.name]).map(m => [m.name, items[m.name]]); }
+  function clearHabis(){ habisData.byCabang[activeCabang] = {}; saveHabis(); }
+
+  function toggleStokMode(){ stokMode = !stokMode; renderMenu(); }
+  function toggleHabis(idx){
+    const name = menus[idx].name; const items = habisItems();
+    if(items[name]) delete items[name]; else items[name] = Date.now();
+    saveHabis(); renderMenu();
+    if(navigator.vibrate) navigator.vibrate(10);
+  }
+  function showToast(msg){
+    const el = document.getElementById("toast");
+    el.textContent = msg; el.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
   }
 
   // ===== MENU & KERANJANG =====
@@ -637,17 +696,39 @@
     renderMenu();
   }
   function renderMenu(){
+    const out = habisItems();
+    const nHabis = Object.keys(out).length;
     document.getElementById("menuTitle").innerText = currentMenuTab === 'utama' ? "Menu Utama" : "Tambahan";
-    document.getElementById("menuGrid").innerHTML = menus.map((m, i) => ({ m, i })).filter(x => x.m.type === currentMenuTab).map(({ m, i }) => {
-      const q = cartQty(m.name);
-      return `<button class="menu-card${q ? ' in-cart' : ''}" data-idx="${i}" onclick="addToCart(${i}, event)">
+    document.getElementById("menuHint").innerText = stokMode ? "Ketuk menu untuk ubah status"
+      : "Ketuk untuk menambah" + (nHabis ? ` · ${nHabis} menu habis` : "");
+    const btn = document.getElementById("stockBtn");
+    btn.classList.toggle("active", stokMode); btn.setAttribute("aria-pressed", stokMode);
+    document.getElementById("stockBtnLabel").innerText = stokMode ? "Selesai" : "Atur stok";
+    document.getElementById("stockBanner").classList.toggle("hide", !stokMode);
+
+    const grid = document.getElementById("menuGrid");
+    grid.classList.toggle("stock-mode", stokMode);
+    grid.innerHTML = menus.map((m, i) => ({ m, i })).filter(x => x.m.type === currentMenuTab).map(({ m, i }) => {
+      const q = cartQty(m.name); const sold = !!out[m.name];
+      const badge = stokMode ? (sold ? `<span class="stock-pill out">Habis</span>` : `<span class="stock-pill ok">Tersedia</span>`)
+        : sold ? `<span class="stock-pill out">HABIS</span>`
+        : q ? `<span class="qty-badge">${q}×</span>` : `<span class="plus-chip">${ICON.plus}</span>`;
+      const cls = "menu-card" + (q && !sold && !stokMode ? " in-cart" : "") + (sold ? " sold-out" : "");
+      return `<button class="${cls}" data-idx="${i}" onclick="${stokMode ? `toggleHabis(${i})` : `addToCart(${i}, event)`}">
         <span class="menu-title"><span class="menu-group">${m.type === 'utama' ? 'Nasi Kuning' : 'Tambahan'}</span><span class="menu-name">${m.short}</span></span>
-        <span class="menu-foot"><span class="menu-price num">${rp(m.price)}</span>${q ? `<span class="qty-badge">${q}×</span>` : `<span class="plus-chip">${ICON.plus}</span>`}</span>
+        <span class="menu-foot"><span class="menu-price num">${rp(m.price)}</span>${badge}</span>
       </button>`;
     }).join("");
   }
   function addToCart(idx, ev){
-    const m = menus[idx]; const item = cart.find(i => i.name === m.name);
+    const m = menus[idx];
+    if(habisItems()[m.name]) {
+      const card = document.querySelector(`.menu-card[data-idx="${idx}"]`);
+      if(card) restartAnim(card, "shake");
+      showToast(`${titleCase(m.name)} sedang habis. Ubah lewat tombol Atur stok.`);
+      return;
+    }
+    const item = cart.find(i => i.name === m.name);
     if(item) item.qty++; else cart.push({ name: m.name, price: m.price, qty: 1 });
     saveToStorage(); renderCart(); renderMenu();
     // Kartu digambar ulang, jadi efek dimainkan di kartu yang baru
@@ -824,6 +905,11 @@
         txt += `\nREKAP PRODUK FREE (SEDEKAH):\n`;
         for(let k in s.lFree) txt += `- ${k}: ${s.lFree[k].qty} Porsi\n`;
     }
+    const hb = habisEntries();
+    if(hb.length > 0) {
+        txt += `\nMENU HABIS:\n`;
+        hb.forEach(([n, ts]) => { txt += `- ${n} (sejak ${jam(ts)})\n`; });
+    }
     txt += `\n${sep}          DETAIL TRANSAKSI\n${sep}`;
     list.forEach((h, i) => {
         txt += `${i+1}. Nota : ${h.id}\n   Waktu : ${h.time}\n   Metode : ${h.paymentMethod.toUpperCase()}\n   Total : Rp ${h.total.toLocaleString('id-ID')}\n------------------------------------------\n`;
@@ -994,6 +1080,8 @@
     const produkRows = obj => Object.keys(obj).sort((a, b) => obj[b].qty - obj[a].qty).map(k => [k, obj[k].qty, rp(obj[k].value)]);
     if(Object.keys(s.lBayar).length) table("REKAP PRODUK TERJUAL", produkCols, produkRows(s.lBayar));
     if(Object.keys(s.lFree).length) table("REKAP PRODUK FREE (SEDEKAH)", produkCols, produkRows(s.lFree));
+    const hb = habisEntries();
+    if(hb.length) table("MENU HABIS", [{ label: "Produk", x: M + 3 }, { label: "Habis sejak", x: W - M - 3, align: "right" }], hb.map(([n, ts]) => [n, jam(ts)]));
 
     table("DETAIL TRANSAKSI",
       [{ label: "No", x: M + 3 }, { label: "ID Nota", x: M + 13 }, { label: "Waktu", x: 92 }, { label: "Metode", x: 142 }, { label: "Total", x: W - M - 3, align: "right" }],
@@ -1140,7 +1228,8 @@
     const produk = obj => Object.keys(obj).sort((a, b) => obj[b].qty - obj[a].qty);
     document.getElementById("tutupProduk").innerHTML = `<h2 class="h2" style="margin-bottom: 4px;">Produk terjual</h2>` +
       (produk(s.lBayar).map(k => `<div class="row row-muted"><span>${titleCase(k)} · ${s.lBayar[k].qty}</span><span>${rp(s.lBayar[k].value)}</span></div>`).join("") || `<div class="row row-muted"><span>Belum ada produk berbayar</span><span></span></div>`) +
-      produk(s.lFree).map(k => `<div class="row produk-free"><span>Gratis: ${titleCase(k)} · ${s.lFree[k].qty}</span><span>${rp(s.lFree[k].value)}</span></div>`).join("");
+      produk(s.lFree).map(k => `<div class="row produk-free"><span>Gratis: ${titleCase(k)} · ${s.lFree[k].qty}</span><span>${rp(s.lFree[k].value)}</span></div>`).join("") +
+      (hb => hb.length ? `<div class="produk-habis"><b>Menu habis hari ini</b>${hb.map(([n, ts]) => `<div class="row"><span>${titleCase(n)}</span><span>sejak ${jam(ts)}</span></div>`).join("")}</div>` : "")(habisEntries());
     document.getElementById("tutupFileIcon").innerText = isPdf ? "PDF" : "TXT";
     document.getElementById("tutupFileName").innerText = file.name;
     setRekapStatus(isPdf ? "PDF siap dikirim lewat WhatsApp" : "PDF gagal dibuat (cek internet lalu muat ulang). Rekap dibuat sebagai .txt");
@@ -1164,7 +1253,9 @@
     if(!confirm(`Pastikan rekap sudah terkirim ke owner atau tersimpan di HP.\n\nTekan OK untuk menutup kasir cabang ${titleCase(cabangName(activeCabang))} (riwayat cabang ini di-reset).`)) return;
     localStorage.setItem("naskun51_last_closed", JSON.stringify({ closedAt: new Date().toISOString(), cabang: activeCabang, history: rekap.list }));
     history = history.filter(h => !rekap.ids.has(h.id));
-    saveToStorage(); rekap = null; showPage("home");
+    // Hari berikutnya mulai dengan semua menu tersedia
+    clearHabis();
+    saveToStorage(); rekap = null; renderMenu(); showPage("home");
     alert(`Kasir cabang ${titleCase(cabangName(activeCabang))} sudah ditutup.`);
   }
 
@@ -1172,7 +1263,7 @@
   document.addEventListener("touchstart", () => {}, { passive: true });
 
   document.getElementById("kasirName").innerText = titleCase(warungInfo.kasir);
-  loadFromStorage(); renderMenu(); renderCabang(); showPage("home");
+  loadHabis(); loadFromStorage(); renderMenu(); renderCabang(); showPage("home");
   if(!activeCabang) openCabangPicker(true);
 </script>
 </body>
