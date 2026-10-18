@@ -270,6 +270,21 @@
   .sheet-actions .btn-soft { flex: 1; min-height: 52px; font-size: 15px; font-weight: 800; color: var(--muted); }
   .sheet-actions .btn-primary { flex: 2; min-height: 52px; font-size: 15px; }
 
+  /* KONFIRMASI PEMBAYARAN: warna mengikuti metode agar salah pilih mudah terlihat */
+  .btn-primary.pay-cash { background: var(--gold-ink); }
+  .btn-primary.pay-qris { background: var(--qris); }
+  .btn-primary.pay-free { background: var(--free); }
+  .pc-box { display: flex; flex-direction: column; gap: 4px; padding: 16px; border: 2px solid var(--mc); border-radius: 18px; background: var(--mbg); }
+  .pc-box[data-m="cash"] { --mc: var(--gold-ink); --mbg: var(--gold-soft); }
+  .pc-box[data-m="qris"] { --mc: var(--qris); --mbg: var(--qris-soft); }
+  .pc-box[data-m="free"] { --mc: var(--free); --mbg: var(--free-soft); }
+  .pc-label { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--muted); }
+  .pc-method { font-size: 30px; font-weight: 800; line-height: 1.1; color: var(--mc); }
+  .pc-note { font-size: 13px; line-height: 1.5; color: var(--ink); }
+  .pc-rows { display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
+  .pc-rows b { font-weight: 800; }
+  .pc-rows .big { font-size: 18px; }
+
   @media (prefers-reduced-motion: reduce) {
     .menu-card.tapped, .menu-card.shake, .ripple, .plus-one, #cartTotal.bump { animation: none; }
     .ripple, .plus-one { display: none; }
@@ -531,6 +546,24 @@
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- KONFIRMASI PEMBAYARAN -->
+<div id="payConfirm" class="overlay hide">
+  <section class="sheet" aria-labelledby="pcTitle">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <h1 id="pcTitle">Konfirmasi pembayaran</h1>
+    <div class="pc-box" id="pcBox">
+      <span class="pc-label">METODE PEMBAYARAN</span>
+      <strong class="pc-method" id="pcMethod"></strong>
+      <span class="pc-note" id="pcNote"></span>
+    </div>
+    <div class="pc-rows num" id="pcRows"></div>
+    <div class="sheet-actions">
+      <button class="btn-soft" onclick="closePayConfirm()">Ubah metode</button>
+      <button class="btn-primary" id="pcYes" onclick="confirmPay()"></button>
+    </div>
+  </section>
+</div>
 
 <!-- PILIH CABANG -->
 <div id="cabangPopup" class="overlay hide">
@@ -808,8 +841,10 @@
     if(cart.length === 0) label = "Pesanan kosong";
     else if(!paymentMethod) label = "Pilih metode pembayaran";
     else if(paymentMethod === "cash" && change < 0) label = "Uang diterima kurang";
-    else { ok = true; label = paymentMethod === "free" ? "Catat sebagai Gratis" : "Konfirmasi · " + rp(total); }
+    else { ok = true; label = paymentMethod === "free" ? "Catat sebagai Gratis" : `Konfirmasi ${PAY_NAME[paymentMethod]} · ${rp(total)}`; }
     btn.disabled = !ok;
+    btn.classList.remove("pay-cash", "pay-qris", "pay-free");
+    if(ok) btn.classList.add("pay-" + paymentMethod);
     btn.innerHTML = (ok ? ICON.checkBig : "") + `<span>${label}</span>`;
   }
   function setPayment(m){ paymentMethod = m; renderBayar(); }
@@ -822,14 +857,38 @@
   function setExact(){ if(paymentMethod !== 'cash') return; paidAmount = cartTotal(); renderBayar(); }
   function clearPaid(){ if(paymentMethod !== 'cash') return; paidAmount = 0; renderBayar(); }
 
-  // Layar Pembayaran sudah menjadi konfirmasi: tombol hanya aktif bila data pembayaran lengkap
+  // Tombol hanya aktif bila data pembayaran lengkap; sebelum dicatat, kasir memastikan metode di lembar konfirmasi
   function completeTransaction(){
     if(cart.length === 0) return;
     if(!activeCabang){ openCabangPicker(true); return; }
     if(!paymentMethod) return;
     if(paymentMethod === "cash" && paidAmount < cartTotal()) return;
-    finalize();
+    openPayConfirm();
   }
+
+  const PAY_NAME = { cash: "Tunai", qris: "QRIS", free: "Gratis" };
+  const PAY_NOTE = {
+    cash: "Pastikan uang tunai sudah diterima.",
+    qris: "Pastikan notifikasi pembayaran QRIS sudah masuk.",
+    free: "Dicatat sebagai sedekah, tidak masuk omzet."
+  };
+  function openPayConfirm(){
+    const m = paymentMethod; const total = cartTotal();
+    const count = cart.reduce((t, i) => t + i.qty, 0);
+    document.getElementById("pcBox").dataset.m = m;
+    document.getElementById("pcMethod").innerText = PAY_NAME[m];
+    document.getElementById("pcNote").innerText = PAY_NOTE[m];
+    const row = (k, v, cls = "") => `<div class="row ${cls}"><span>${k}</span><b>${v}</b></div>`;
+    document.getElementById("pcRows").innerHTML = row("Pesanan", `${count} item`) +
+      (m === "free" ? row("Nilai pesanan", rp(total)) + row("Dibayar", rp(0), "big")
+        : row("Total", rp(total), "big") + (m === "cash" ? row("Uang diterima", rp(paidAmount)) + row("Kembalian", rp(paidAmount - total)) : ""));
+    const yes = document.getElementById("pcYes");
+    yes.classList.remove("pay-cash", "pay-qris", "pay-free"); yes.classList.add("pay-" + m);
+    yes.innerText = m === "free" ? "Ya, catat Gratis" : `Ya, ${PAY_NAME[m]}`;
+    document.getElementById("payConfirm").classList.remove("hide");
+  }
+  function closePayConfirm(){ document.getElementById("payConfirm").classList.add("hide"); }
+  function confirmPay(){ closePayConfirm(); finalize(); }
 
 
   // Nomor nota berurutan per hari: NK51-DRM-YYYYMMDD-001. Counter disimpan terpisah agar tidak terulang walau riwayat di-reset.
