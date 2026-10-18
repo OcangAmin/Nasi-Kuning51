@@ -99,9 +99,9 @@
 
     <div class="pay-card">
       <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-        <button class="tab-item" id="btnCash" onclick="setPayment('cash')">CASH</button>
-        <button class="tab-item" id="btnQris" onclick="setPayment('qris')">QRIS</button>
-        <button class="tab-item" id="btnFree" style="border-color:var(--green-success); color:var(--green-success);" onclick="setPayment('free')">FREE</button>
+        <button class="tab-item pay-btn" id="btnCash" onclick="setPayment('cash')">CASH</button>
+        <button class="tab-item pay-btn" id="btnQris" onclick="setPayment('qris')">QRIS</button>
+        <button class="tab-item pay-btn" id="btnFree" style="border-color:var(--green-success); color:var(--green-success);" onclick="setPayment('free')">FREE</button>
       </div>
       <input type="number" id="uangBayar" placeholder="0" oninput="calculateChange()" inputmode="numeric">
       <div class="quick-pay-grid" id="quickPayArea">
@@ -136,7 +136,7 @@
       <input type="text" id="searchInput" class="search-input" placeholder="Cari transaksi..." onkeyup="filterHistory()">
     </div>
     
-    <div style="padding: 15px; font-weight: 800; color: var(--brand-maroon);">RIWAYAT HARI INI</div>
+    <div style="padding: 15px; font-weight: 800; color: var(--brand-maroon);">RIWAYAT SEJAK TUTUP KASIR TERAKHIR</div>
     <div id="historyList" style="padding: 0 15px;"></div>
 
     <div style="padding: 20px 15px; display: flex; flex-direction: column; gap: 10px;">
@@ -208,11 +208,11 @@
   
   function changeQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty <= 0) cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); }
   function removeFromCart(idx){ if(confirm("Hapus " + cart[idx].name + "?")){ cart.splice(idx,1); renderCart(); calculateTotal(); saveToStorage(); } }
-  function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); calculateChange(); }
+  function calculateTotal(){ let total = 0; cart.forEach(i => { total += (i.price*i.qty); }); document.getElementById("totalHarga").innerText = total.toLocaleString('id-ID'); if(paymentMethod === 'qris') document.getElementById("uangBayar").value = total; calculateChange(); }
 
   function setPayment(m){ 
     paymentMethod = m; const inputBayar = document.getElementById("uangBayar"); const qButtons = document.querySelectorAll(".q-btn");
-    document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.pay-btn').forEach(el => el.classList.remove('active'));
     document.getElementById("btn" + m.charAt(0).toUpperCase() + m.slice(1))?.classList.add('active');
     if(m==='qris' || m==='free') { inputBayar.value = (m==='qris') ? getNum("totalHarga") : 0; inputBayar.readOnly = true; qButtons.forEach(b => b.disabled = true); } 
     else { inputBayar.readOnly = false; inputBayar.value = ""; qButtons.forEach(b => b.disabled = false); }
@@ -234,17 +234,37 @@
       openPopup();
     } else if(paymentMethod === "cash") {
       if(bayar < total) { alert("Uang bayar kurang!"); return; }
+      document.getElementById("popupTitle").innerText = "Konfirmasi Cash";
       details.innerHTML = `<div class="confirm-row"><span>Total:</span><span>Rp ${total.toLocaleString('id-ID')}</span></div><div class="confirm-row"><span>Bayar:</span><span>Rp ${bayar.toLocaleString('id-ID')}</span></div><div class="confirm-row"><span>Kembali:</span><span>Rp ${getNum("kembalian").toLocaleString('id-ID')}</span></div>`;
       openPopup();
-    } else { finalize(); }
+    } else if(paymentMethod === "free") {
+      document.getElementById("popupTitle").innerText = "Konfirmasi FREE";
+      details.innerHTML = `<p>Catat sebagai <b>FREE (Sedekah)</b> senilai <b>Rp ${total.toLocaleString('id-ID')}</b>?</p>`;
+      openPopup();
+    }
+  }
+
+  // Nomor nota berurutan per hari: NK51-YYYYMMDD-001. Counter disimpan terpisah agar tidak terulang walau riwayat di-reset.
+  function generateNotaID(now){
+    const pad = (n, w) => String(n).padStart(w, '0');
+    const date = `${now.getFullYear()}${pad(now.getMonth()+1, 2)}${pad(now.getDate(), 2)}`;
+    let seq = { date: "", n: 0 };
+    try { seq = JSON.parse(localStorage.getItem("naskun51_seq")) || seq; } catch(e) {}
+    if(seq.date !== date) seq = { date, n: 0 };
+    let id;
+    do { seq.n++; id = `NK51-${date}-${pad(seq.n, 3)}`; } while(history.some(h => h.id === id));
+    localStorage.setItem("naskun51_seq", JSON.stringify(seq));
+    return id;
   }
 
   function finalize(){
     const rt = getNum("totalHarga"); const bayar = getNum("uangBayar"); const m = paymentMethod;
     const cg = (m === 'free' || m === 'qris') ? 0 : bayar - rt;
-    history.push({ 
-        id: "NK51-" + Math.floor(100000 + Math.random() * 900000), 
-        time: new Date().toLocaleString('id-ID'), 
+    const now = new Date();
+    history.push({
+        id: generateNotaID(now),
+        time: now.toLocaleString('id-ID'),
+        ts: now.getTime(),
         items: JSON.parse(JSON.stringify(cart)), 
         total: (m === 'free' ? 0 : rt), 
         realValue: rt, 
@@ -390,7 +410,16 @@
   function showTab(t){ document.getElementById("pageTransaksi").classList.toggle("hide", t !== "transaksi"); document.getElementById("pageHistory").classList.toggle("hide", t !== "history"); document.getElementById("navHome").classList.toggle("active", t === "transaksi"); document.getElementById("navHist").classList.toggle("active", t === "history"); if(t === "history") renderHistory(); }
   function filterHistory() { renderHistory(document.getElementById("searchInput").value.toLowerCase(), document.getElementById("filterType").value); }
   function saveHistory(){ downloadFile(`Log_Naskun51_${Date.now()}.txt`, generateReportText(false)); }
-  function closeCashier(){ if(confirm("Tutup Kasir? Data riwayat akan di-reset setelah download laporan.")){ downloadFile(`Laporan_Final_Naskun51_${Date.now()}.txt`, generateReportText(true)); history=[]; saveToStorage(); showTab('transaksi'); } }
+  function closeCashier(){
+    if(!confirm("Tutup Kasir? Laporan akan di-download, lalu data riwayat di-reset.")) return;
+    downloadFile(`Laporan_Final_Naskun51_${Date.now()}.txt`, generateReportText(true));
+    // Tunda sebentar agar download sempat berjalan sebelum dialog konfirmasi muncul
+    setTimeout(() => {
+      if(!confirm("Apakah file laporan sudah tersimpan di HP?\n\nTekan OK untuk reset riwayat.\nTekan Batal jika download gagal (data TIDAK dihapus, silakan coba lagi).")) return;
+      localStorage.setItem("naskun51_last_closed", JSON.stringify({ closedAt: new Date().toISOString(), history }));
+      history=[]; saveToStorage(); showTab('transaksi');
+    }, 800);
+  }
   function resetHistory(){ if(confirm("Hapus semua data riwayat secara permanen?")){ history=[]; saveToStorage(); renderHistory(); } }
   function resetCart(){ if(confirm("Reset keranjang?")){ cart=[]; resetUI(); saveToStorage(); } }
   function resetUI(){ document.getElementById("uangBayar").value = ""; renderCart(); calculateTotal(); setPayment(""); }
