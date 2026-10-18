@@ -24,7 +24,8 @@ Kasir membukanya lewat GitHub Pages: https://ocangamin.github.io/Nasi-Kuning51/
   (printer Bluetooth, menu Bagikan, data asli) baru bisa dicoba setelah kode jadi.
   Logo di kanvas memakai aset `/_blob/e82e3ba0ae9d1aed178ee48f55c8a920`.
 - **Jangan ubah format data `localStorage` tanpa migrasi**: `naskun51_cart`, `naskun51_history`, `naskun51_cabang`,
-  `naskun51_seq`, `naskun51_habis`, `naskun51_menu`, `naskun51_last_closed`. Data penjualan hanya ada di HP kasir.
+  `naskun51_seq`, `naskun51_habis`, `naskun51_menu`, `naskun51_last_closed`, `naskun51_sesi` (sesi jualan: tanggal,
+  cabang, kasir), `naskun51_kasir` (daftar nama kasir di HP itu). Data penjualan hanya ada di HP kasir.
 - Uji di Chromium dengan ukuran layar HP (390×844) sebelum push. CDN jsPDF dan Google Fonts bisa diblokir
   di lingkungan uji; sediakan salinan jsPDF 2.5.1 dari npm bila perlu.
 - Teks yang tampil ke pengguna memakai bahasa Indonesia. Tombol nota di riwayat tetap bernama "WhatsApp".
