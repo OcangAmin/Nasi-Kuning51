@@ -34,6 +34,27 @@
   .menu-name { font-size: 11px; font-weight: 800; text-transform: uppercase; }
   .menu-price { font-size: 13px; color: var(--brand-gold); font-weight: 700; text-align: right; border-top: 1px solid var(--border); padding-top: 5px; }
 
+  /* EFEK TEKAN MENU */
+  .menu-card { position: relative; overflow: hidden; user-select: none; -webkit-user-select: none; transition: transform 0.1s ease; }
+  .menu-card:active { transform: scale(0.94); }
+  .menu-card.tapped { animation: cardPop 0.35s ease; }
+  @keyframes cardPop {
+    0% { transform: scale(0.92); box-shadow: 0 0 0 0 rgba(198, 148, 61, 0.8); }
+    60% { transform: scale(1.04); }
+    100% { transform: scale(1); box-shadow: 0 0 0 12px rgba(198, 148, 61, 0); }
+  }
+  .ripple { position: absolute; border-radius: 50%; background: rgba(198, 148, 61, 0.45); transform: scale(0); animation: ripple 0.5s ease-out forwards; pointer-events: none; }
+  @keyframes ripple { to { transform: scale(2.5); opacity: 0; } }
+  .plus-one { position: absolute; top: 35%; right: 12px; font-size: 18px; font-weight: 800; color: var(--brand-gold); pointer-events: none; animation: floatUp 0.7s ease-out forwards; }
+  @keyframes floatUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-24px); } }
+  #totalHarga { display: inline-block; }
+  #totalHarga.bump { animation: bump 0.3s ease; }
+  @keyframes bump { 50% { transform: scale(1.25); color: var(--brand-gold); } }
+  @media (prefers-reduced-motion: reduce) {
+    .menu-card.tapped, .ripple, .plus-one, #totalHarga.bump { animation: none; }
+    .ripple, .plus-one { display: none; }
+  }
+
   /* KERANJANG */
   .card-box { background: var(--brand-maroon); border-radius: 15px; margin: 10px 15px; padding: 15px; color: var(--white); }
   .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
@@ -189,8 +210,25 @@
   function getNum(id) { const el = document.getElementById(id); let val = (el.tagName === "INPUT") ? el.value : el.innerText; return parseInt(val.toString().replace(/\D/g, '')) || 0; }
 
   function setMenuTab(tab){ currentMenuTab = tab; document.getElementById("tabUtama").classList.toggle("active", tab==='utama'); document.getElementById("tabAdd").classList.toggle("active", tab==='additional'); renderMenu(); }
-  function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price})"><div class="menu-name">${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
-  function addToCart(name, price){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); saveToStorage(); }
+  function renderMenu(){ const grid = document.getElementById("menuGrid"); grid.innerHTML = menus.filter(m => m.type === currentMenuTab).map(m => `<div class="menu-card" onclick="addToCart('${m.name}', ${m.price}, this, event)"><div class="menu-name">${m.name}</div><div class="menu-price">Rp ${m.price.toLocaleString('id-ID')}</div></div>`).join(""); }
+  function addToCart(name, price, el, ev){ const item = cart.find(i => i.name === name); if(item) item.qty++; else cart.push({name, price, qty:1}); renderCart(); calculateTotal(); saveToStorage(); if(el) playTapEffect(el, ev); }
+
+  // Efek saat menu ditekan: kartu memantul, gelombang dari titik sentuh, "+1" melayang, getar singkat, total berdenyut
+  function playTapEffect(el, ev){
+    if(navigator.vibrate) navigator.vibrate(15);
+    restartAnim(el, "tapped");
+    restartAnim(document.getElementById("totalHarga"), "bump");
+
+    const rect = el.getBoundingClientRect(); const size = Math.max(rect.width, rect.height);
+    const x = (ev && ev.clientX ? ev.clientX : rect.left + rect.width / 2) - rect.left;
+    const y = (ev && ev.clientY ? ev.clientY : rect.top + rect.height / 2) - rect.top;
+    const ripple = document.createElement("span"); ripple.className = "ripple";
+    ripple.style.cssText = `width:${size}px; height:${size}px; left:${x - size / 2}px; top:${y - size / 2}px;`;
+    const plus = document.createElement("span"); plus.className = "plus-one"; plus.textContent = "+1";
+    el.append(ripple, plus);
+    setTimeout(() => { ripple.remove(); plus.remove(); }, 800);
+  }
+  function restartAnim(el, cls){ el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
   
   function renderCart(){ 
     const list = document.getElementById("cartList"); 
@@ -426,6 +464,9 @@
   function downloadFile(n, c){ const b = new Blob([c], {type:"text/plain"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
   function openPopup(){ document.getElementById("confirmPopup").classList.remove("hide"); }
   function closePopup(){ document.getElementById("confirmPopup").classList.add("hide"); }
+
+  // Agar efek :active (kartu mengecil saat ditekan) jalan di Safari iPhone
+  document.addEventListener("touchstart", () => {}, { passive: true });
 
   loadFromStorage(); renderMenu();
 </script>
