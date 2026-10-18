@@ -10,10 +10,12 @@ Kasir membukanya lewat GitHub Pages: https://ocangamin.github.io/Nasi-Kuning51/
 - `logo.png` — logo usaha (dipakai di header; `index.html` beralih ke salinan ImgBB bila file ini tidak ada).
 
 ## Aturan kerja
-- **Desain selalu disamakan dengan aplikasi.** Desain tampilan ada di kanvas Claude Design:
+- **Tanyakan dulu sebelum memperbarui desain.** Desain tampilan ada di kanvas Claude Design:
   https://claude.ai/artifact/7YvatrqWfXEvBLzNF4EawJ
-  Setiap kali tampilan atau alur di `index.html` atau `admin.html` berubah, perbarui juga artboard yang
-  bersangkutan di kanvas itu (atau tambah artboard baru), lalu sebutkan di ringkasan apa yang diperbarui di kanvas.
+  Bila dalam satu sesi ada perubahan besar pada tampilan atau alur di `index.html` atau `admin.html`
+  (layar baru, tata letak berubah, alur kasir/owner berubah), tanyakan ke pengguna apakah kanvas perlu
+  diperbarui, sebutkan artboard mana yang terdampak. Perbarui kanvas hanya setelah pengguna setuju.
+  Perubahan kecil (teks, warna sedikit, perbaikan bug tanpa perubahan tampilan) tidak perlu ditanyakan.
   Logo di kanvas memakai aset `/_blob/e82e3ba0ae9d1aed178ee48f55c8a920`.
 - **Jangan ubah format data `localStorage` tanpa migrasi**: `naskun51_cart`, `naskun51_history`, `naskun51_cabang`,
   `naskun51_seq`, `naskun51_habis`, `naskun51_menu`, `naskun51_last_closed`. Data penjualan hanya ada di HP kasir.
