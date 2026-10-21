@@ -26,6 +26,8 @@ Kasir membukanya lewat GitHub Pages: https://ocangamin.github.io/Nasi-Kuning51/
 - **Jangan ubah format data `localStorage` tanpa migrasi**: `naskun51_cart`, `naskun51_history`, `naskun51_cabang`,
   `naskun51_seq`, `naskun51_habis`, `naskun51_menu`, `naskun51_last_closed`, `naskun51_sesi` (sesi jualan: tanggal,
   cabang, kasir), `naskun51_kasir` (daftar nama kasir di HP itu). Data penjualan hanya ada di HP kasir.
+  Transaksi di `naskun51_history` boleh punya field opsional `wa` (nomor WA pelanggan, angka saja, format `62…`);
+  nomor ini ikut di rekap tutup kasir sebagai data pelanggan.
 - Uji di Chromium dengan ukuran layar HP (390×844) sebelum push. CDN jsPDF dan Google Fonts bisa diblokir
   di lingkungan uji; sediakan salinan jsPDF 2.5.1 dari npm bila perlu.
 - Teks yang tampil ke pengguna memakai bahasa Indonesia. Tombol nota di riwayat tetap bernama "WhatsApp".
