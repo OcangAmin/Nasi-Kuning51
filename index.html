@@ -335,7 +335,17 @@
   .btn-outline.next { border-color: var(--wa); color: var(--wa); }
   .tx-wa { font-size: 12px; font-weight: 700; color: var(--free); }
   .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .grid-3 .btn-wa, .grid-3 .btn-outline { gap: 6px; padding: 0 6px; }
+  .grid-3 .btn-wa, .grid-3 .btn-outline, .grid-3 .btn-dashed { gap: 6px; padding: 0 6px; }
+  /* Nomor WA menyusul (setelah transaksi selesai) */
+  .btn-dashed { min-height: 48px; border: 2px dashed #B9DDC5; border-radius: 14px; background: var(--white); color: var(--wa); font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .tx-actions .btn-dashed { min-height: 44px; }
+  .btn-wa:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+  .btn-dashed svg { flex-shrink: 0; }
+  .wa-edit { margin-left: auto; flex-shrink: 0; min-height: 40px; padding: 0 12px; border: 1px solid #B9DDC5; border-radius: 12px; background: var(--white); color: var(--free); font-size: 13px; font-weight: 800; }
+  .ws-nota { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--gold-soft); }
+  .ws-nota span { font-size: 13px; font-weight: 700; color: #5A3E12; }
+  .ws-nota b { font-size: 14px; font-weight: 800; color: var(--maroon); }
+  .ws-cancel { min-height: 44px; border: none; background: transparent; color: var(--muted); font-size: 15px; font-weight: 700; }
   .btn-wa svg, .btn-outline svg { flex-shrink: 0; }
 
   @media (prefers-reduced-motion: reduce) {
@@ -657,6 +667,30 @@
       <button class="btn-soft" onclick="closePayConfirm()">Ubah metode</button>
       <button class="btn-primary" id="pcYes" onclick="confirmPay()"></button>
     </div>
+  </section>
+</div>
+
+<!-- NOMOR WA MENYUSUL: pelanggan baru minta nota setelah transaksi selesai -->
+<div id="waSheet" class="overlay hide">
+  <section class="sheet" aria-labelledby="wsTitle">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <h1 id="wsTitle">Kirim nota ke WhatsApp</h1>
+      <p>Untuk pelanggan yang nomornya belum tersimpan di kontak.</p>
+    </div>
+    <div class="ws-nota num"><span id="wsId"></span><b id="wsTotal"></b></div>
+    <div class="wa-field">
+      <label for="wsInput">Nomor WhatsApp</label>
+      <div class="wa-row">
+        <input type="tel" id="wsInput" inputmode="tel" autocomplete="off" placeholder="0812 3456 7890" maxlength="20" oninput="renderWaSheet()" onkeydown="if(event.key === 'Enter') confirmWaSheet()">
+        <button class="wa-clear" onclick="clearWaSheet()" aria-label="Hapus nomor">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <span class="wa-help" id="wsHelp"></span>
+    </div>
+    <button class="btn-wa big" id="wsYes" onclick="confirmWaSheet()" disabled></button>
+    <button class="ws-cancel" onclick="closeWaSheet()">Batal</button>
   </section>
 </div>
 
@@ -1088,7 +1122,8 @@
   }
   // Tampilan: 6281234567890 → 0812 3456 7890
   function formatWa(d){ const local = d.startsWith("62") ? "0" + d.slice(2) : d; return local.replace(/(\d{4})(?=\d)/g, "$1 "); }
-  function waState(){ const d = normalizeWa(customerWa); return { digits: d, empty: d.length === 0, valid: d.length >= 10 && d.length <= 15 }; }
+  function waCheck(s){ const d = normalizeWa(s); return { digits: d, empty: d.length === 0, valid: d.length >= 10 && d.length <= 15 }; }
+  function waState(){ return waCheck(customerWa); }
   function resetWa(){ customerWa = ""; waOpen = false; }
 
   function openWaInput(){ waOpen = true; renderWa(); document.getElementById("waInput").focus(); }
@@ -1122,6 +1157,45 @@
     catch(e) { alert("PDF belum bisa dibuat (cek internet lalu muat ulang). Nota teks tetap bisa dikirim lewat tombol WhatsApp."); return; }
     const result = await shareFile(file, "pelanggan");
     if(result === "shared" && id === lastTxId) { suksesSent.pdf = true; renderSukses(d); }
+  }
+
+  // Nomor WA menyusul: dari layar Berhasil atau Laporan, untuk pelanggan yang baru minta nota setelah bayar.
+  // Nomor disimpan di transaksi lalu nota teks langsung dikirim; "Ubah" memakai lembar yang sama.
+  let waSheetId = null;
+  function openWaSheet(id){
+    const d = history.find(h => h.id === id); if(!d) return;
+    waSheetId = id;
+    document.getElementById("wsTitle").innerText = d.wa ? "Ubah nomor WA pelanggan" : "Kirim nota ke WhatsApp";
+    document.getElementById("wsId").innerText = d.id;
+    document.getElementById("wsTotal").innerText = d.paymentMethod === "free" ? `${rp(d.realValue)} · Gratis` : `${rp(d.total)} · ${PAY_NAME[d.paymentMethod] || d.paymentMethod.toUpperCase()}`;
+    const input = document.getElementById("wsInput");
+    input.value = d.wa ? formatWa(d.wa) : "";
+    renderWaSheet();
+    document.getElementById("waSheet").classList.remove("hide");
+    input.focus();
+  }
+  function closeWaSheet(){ waSheetId = null; document.getElementById("waSheet").classList.add("hide"); }
+  function clearWaSheet(){ const input = document.getElementById("wsInput"); input.value = ""; renderWaSheet(); input.focus(); }
+  function renderWaSheet(){
+    const st = waCheck(document.getElementById("wsInput").value);
+    const help = document.getElementById("wsHelp");
+    help.classList.toggle("err", !st.empty && !st.valid);
+    help.innerText = st.empty ? "Ketik nomor WA pelanggan, contoh 0812 3456 7890."
+      : st.valid ? "Nomor disimpan di transaksi ini, lalu chat WhatsApp terbuka berisi nota."
+      : "Nomor belum lengkap. Contoh: 0812 3456 7890";
+    const yes = document.getElementById("wsYes");
+    yes.disabled = !st.valid;
+    yes.innerHTML = st.valid ? `${ICON.send}<span>Kirim nota ke nomor ini</span>` : "Isi nomor WA dulu";
+  }
+  function confirmWaSheet(){
+    const st = waCheck(document.getElementById("wsInput").value);
+    const d = history.find(h => h.id === waSheetId);
+    if(!st.valid || !d) return;
+    d.wa = st.digits; saveToStorage();
+    closeWaSheet();
+    if(d.id === lastTxId) suksesSent = { text: false, pdf: false };
+    sendWaText(d.id);
+    renderHistory();
   }
 
   // Data pelanggan untuk rekap owner: nomor WA, jumlah transaksi, total belanja
@@ -1463,7 +1537,7 @@
     if(tx.wa) {
       const step = (done, n, text) => `<span class="wa-step${done ? ' done' : ''}"><b>${n}</b>${text}</span>`;
       waCard.innerHTML = `
-        <div class="wa-card-head">${ICON.phone}<div style="display: flex; flex-direction: column; gap: 2px;"><span class="wa-card-label">NOTA UNTUK PELANGGAN</span><span class="wa-card-num num">${formatWa(tx.wa)}</span></div></div>
+        <div class="wa-card-head">${ICON.phone}<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span class="wa-card-label">NOTA UNTUK PELANGGAN</span><span class="wa-card-num num">${formatWa(tx.wa)}</span></div><button class="wa-edit" onclick="openWaSheet(lastTxId)" aria-label="Ubah nomor WA pelanggan">Ubah</button></div>
         <div class="wa-steps">
           ${step(suksesSent.text, 1, suksesSent.text ? "Nota teks sudah dikirim ke chat pelanggan." : "Nota teks langsung terkirim ke nomor ini, walau belum tersimpan di kontak.")}
           ${step(suksesSent.pdf, 2, suksesSent.pdf ? "PDF sudah dikirim." : "Opsional: kirim PDF menyusul. Chat pelanggan sudah ada di daftar chat terbaru WhatsApp.")}
@@ -1480,7 +1554,7 @@
           <button class="btn-wa" onclick="shareReceiptByID(lastTxId)">${ICON.send} WhatsApp</button>
           <button class="btn-outline" onclick="printBluetooth(lastTxId)">${ICON.print} Cetak struk</button>
         </div>
-        <p class="hint">Nota dikirim sebagai PDF lewat menu Bagikan HP</p>`;
+        <button class="btn-dashed" onclick="openWaSheet(lastTxId)">${ICON.plus} Kirim ke nomor WA pelanggan</button>`;
     }
   }
 
@@ -1537,9 +1611,10 @@
           <button class="btn-outline" onclick="sendWaPdf('${h.id}')">${ICON.file} PDF</button>
           <button class="btn-outline" onclick="printBluetooth('${h.id}')">${ICON.print} Cetak</button>
         </div>` : `
-        <div class="grid-2 tx-actions">
+        <div class="grid-3 tx-actions">
           <button class="btn-wa" onclick="shareReceiptByID('${h.id}')">${ICON.send} WhatsApp</button>
           <button class="btn-outline" onclick="printBluetooth('${h.id}')">${ICON.print} Cetak</button>
+          <button class="btn-dashed" onclick="openWaSheet('${h.id}')">${ICON.plus} No. WA</button>
         </div>`}
       </article>`;
     }).join("");
