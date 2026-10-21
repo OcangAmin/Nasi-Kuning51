@@ -46,7 +46,7 @@
   .page-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
   #pageHome .page-body { padding-bottom: 190px; }
   #pageBayar .page-body { padding-bottom: 110px; }
-  #pageSukses .page-body { padding: 40px 20px 220px; align-items: center; }
+  #pageSukses .page-body { padding: 40px 20px 300px; align-items: center; }
   #pageLaporan .page-body { padding-bottom: 100px; }
   #pageTutup .page-body { padding-bottom: 290px; }
   .dock { position: fixed; left: 0; right: 0; bottom: 0; max-width: 420px; margin: 0 auto; z-index: 900; }
@@ -243,6 +243,7 @@
   .dot { width: 10px; height: 10px; border-radius: 50%; }
   .produk-card { padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
   .produk-free { padding-top: 8px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--free); }
+  .pel-note { margin: 0; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 12px; line-height: 1.5; color: var(--muted); }
   .file-card { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; background: var(--cream); border: 1px solid #EAD7B2; }
   .file-icon { width: 44px; height: 52px; flex-shrink: 0; border-radius: 8px; background: var(--maroon); color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
   .file-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -307,6 +308,35 @@
   .kasir-add input { flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; border: 2px solid var(--gold); border-radius: 14px; font-size: 16px; color: var(--ink); }
   .btn-small { min-height: 48px; padding: 0 16px; border: none; border-radius: 14px; background: var(--maroon); color: var(--white); font-size: 14px; font-weight: 800; }
   .mulai-summary { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--gold-soft); color: #5A3E12; font-size: 14px; }
+
+  /* NOTA KE WA PELANGGAN */
+  .wa-panel { padding: 16px; display: flex; flex-direction: column; gap: 10px; border-width: 2px; }
+  .wa-panel.ok { border-color: var(--wa); }
+  .wa-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .wa-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; }
+  .wa-title svg { color: var(--wa); }
+  .wa-add { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border: 2px dashed #D9CBB8; border-radius: 14px; background: var(--white); color: var(--wa); font-size: 14px; font-weight: 800; }
+  .wa-field { display: flex; flex-direction: column; gap: 6px; }
+  .wa-field label { font-size: 14px; font-weight: 700; }
+  .wa-row { display: flex; gap: 8px; }
+  .wa-row input { flex: 1; min-width: 0; min-height: 52px; padding: 0 14px; border: 2px solid var(--gold); border-radius: 14px; font-size: 18px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .wa-clear { width: 52px; min-height: 52px; flex-shrink: 0; border: 2px solid var(--line); border-radius: 14px; background: var(--white); color: var(--muted); display: flex; align-items: center; justify-content: center; }
+  .wa-help { font-size: 12px; line-height: 1.5; color: var(--muted); }
+  .wa-help.err { color: var(--danger); }
+  .wa-card { width: 100%; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: 18px; background: var(--free-soft); border: 1px solid #B9DDC5; }
+  .wa-card-head { display: flex; align-items: center; gap: 10px; color: var(--free); }
+  .wa-card-label { font-size: 12px; font-weight: 700; color: var(--free); }
+  .wa-card-num { font-size: 17px; font-weight: 800; color: var(--ink); }
+  .wa-steps { display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.4; color: #24402D; }
+  .wa-step { display: flex; gap: 8px; }
+  .wa-step b { width: 18px; height: 18px; flex-shrink: 0; border-radius: 50%; background: var(--muted); color: var(--white); font-size: 11px; display: flex; align-items: center; justify-content: center; }
+  .wa-step.done b { background: var(--wa); }
+  .btn-wa.big { min-height: 56px; font-size: 16px; }
+  .btn-outline.next { border-color: var(--wa); color: var(--wa); }
+  .tx-wa { font-size: 12px; font-weight: 700; color: var(--free); }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .grid-3 .btn-wa, .grid-3 .btn-outline { gap: 6px; padding: 0 6px; }
+  .btn-wa svg, .btn-outline svg { flex-shrink: 0; }
 
   @media (prefers-reduced-motion: reduce) {
     .menu-card.tapped, .menu-card.shake, .ripple, .plus-one, #cartTotal.bump { animation: none; }
@@ -441,6 +471,30 @@
         <span class="info-title">Dicatat sebagai sedekah (Gratis)</span>
         <span class="info-body" style="color: #24402D;">Nilai pesanan <b id="freeNominal">Rp 0</b> tidak masuk omzet, tetapi tetap tercatat di laporan.</span>
       </section>
+
+      <section class="card wa-panel" id="waPanel">
+        <div class="wa-head">
+          <span class="wa-title">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
+            Nota ke WhatsApp pelanggan
+          </span>
+          <span class="block-hint">Opsional</span>
+        </div>
+        <button class="wa-add" id="waAddBtn" onclick="openWaInput()">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Tambah nomor WA pelanggan
+        </button>
+        <div class="wa-field hide" id="waField">
+          <label for="waInput">Nomor WhatsApp</label>
+          <div class="wa-row">
+            <input type="tel" id="waInput" inputmode="tel" autocomplete="off" placeholder="0812 3456 7890" maxlength="20" oninput="onWaInput(this)">
+            <button class="wa-clear" onclick="clearWa()" aria-label="Hapus nomor">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+          <span class="wa-help" id="waHelp"></span>
+        </div>
+      </section>
     </div>
     <div class="dock">
       <div class="dock-panel">
@@ -464,20 +518,11 @@
         <strong class="num" id="heroValue">Rp 0</strong>
       </div>
       <section class="card receipt-card num" id="suksesReceipt"></section>
+      <section class="wa-card hide" id="suksesWa"></section>
     </div>
     <div class="dock">
       <div class="dock-panel">
-        <div class="grid-2">
-          <button class="btn-wa" onclick="shareReceiptByID(lastTxId)">
-            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
-            WhatsApp
-          </button>
-          <button class="btn-outline" onclick="printBluetooth(lastTxId)">
-            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>
-            Cetak struk
-          </button>
-        </div>
-        <p class="hint">Nota dikirim sebagai PDF lewat menu Bagikan HP</p>
+        <div id="suksesActions" style="display: flex; flex-direction: column; gap: 10px;"></div>
         <button class="btn-primary" onclick="showPage('home')">
           <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
           Transaksi baru
@@ -494,7 +539,7 @@
         <label for="searchInput" class="sr-only">Cari transaksi</label>
         <div class="search-box">
           <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B5E5E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-          <input type="text" id="searchInput" placeholder="Cari ID nota atau menu" autocomplete="off" oninput="renderHistory()">
+          <input type="text" id="searchInput" placeholder="Cari ID nota, menu, atau nomor WA" autocomplete="off" oninput="renderHistory()">
         </div>
         <div class="chips" id="filterChips">
           <button class="chip active" data-f="all" onclick="setFilter('all')">Semua</button>
@@ -543,6 +588,7 @@
     <div class="page-body">
       <section class="card tutup-sum num" id="tutupSummary"></section>
       <section class="card produk-card num" id="tutupProduk"></section>
+      <section class="card produk-card num hide" id="tutupPelanggan"></section>
       <section class="file-card">
         <span class="file-icon" id="tutupFileIcon" aria-hidden="true">PDF</span>
         <div class="file-text">
@@ -674,7 +720,9 @@
     check: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
     checkBig: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
     send: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>',
-    print: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>'
+    print: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>',
+    file: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4"/></svg>',
+    phone: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>'
   };
 
   let cart = []; let history = []; let paymentMethod = ""; let currentMenuTab = "utama";
@@ -933,7 +981,7 @@
     renderBayar();
   }
   function changeQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty <= 0) cart.splice(idx, 1); saveToStorage(); renderCart(); renderMenu(); }
-  function clearCart(){ if(confirm("Kosongkan keranjang?")){ cart = []; paymentMethod = ""; paidAmount = 0; saveToStorage(); renderCart(); renderMenu(); } }
+  function clearCart(){ if(confirm("Kosongkan keranjang?")){ cart = []; paymentMethod = ""; paidAmount = 0; resetWa(); saveToStorage(); renderCart(); renderMenu(); } }
 
   // ===== PEMBAYARAN =====
   function openBayar(){
@@ -974,11 +1022,13 @@
     if(cart.length === 0) label = "Pesanan kosong";
     else if(!paymentMethod) label = "Pilih metode pembayaran";
     else if(paymentMethod === "cash" && change < 0) label = "Uang diterima kurang";
+    else if(!waState().empty && !waState().valid) label = "Nomor WA belum lengkap";
     else { ok = true; label = paymentMethod === "free" ? "Catat sebagai Gratis" : `Konfirmasi ${PAY_NAME[paymentMethod]} · ${rp(total)}`; }
     btn.disabled = !ok;
     btn.classList.remove("pay-cash", "pay-qris", "pay-free");
     if(ok) btn.classList.add("pay-" + paymentMethod);
     btn.innerHTML = (ok ? ICON.checkBig : "") + `<span>${label}</span>`;
+    renderWa();
   }
   function setPayment(m){ paymentMethod = m; renderBayar(); }
   function onPaidInput(el){
@@ -1012,9 +1062,11 @@
     document.getElementById("pcMethod").innerText = PAY_NAME[m];
     document.getElementById("pcNote").innerText = PAY_NOTE[m];
     const row = (k, v, cls = "") => `<div class="row ${cls}"><span>${k}</span><b>${v}</b></div>`;
+    const wa = waState();
     document.getElementById("pcRows").innerHTML = row("Pesanan", `${count} item`) +
       (m === "free" ? row("Nilai pesanan", rp(total)) + row("Dibayar", rp(0), "big")
-        : row("Total", rp(total), "big") + (m === "cash" ? row("Uang diterima", rp(paidAmount)) + row("Kembalian", rp(paidAmount - total)) : ""));
+        : row("Total", rp(total), "big") + (m === "cash" ? row("Uang diterima", rp(paidAmount)) + row("Kembalian", rp(paidAmount - total)) : "")) +
+      (wa.valid ? row("Nota ke WA", formatWa(wa.digits)) : "");
     const yes = document.getElementById("pcYes");
     yes.classList.remove("pay-cash", "pay-qris", "pay-free"); yes.classList.add("pay-" + m);
     yes.innerText = m === "free" ? "Ya, catat Gratis" : `Ya, ${PAY_NAME[m]}`;
@@ -1022,6 +1074,66 @@
   }
   function closePayConfirm(){ document.getElementById("payConfirm").classList.add("hide"); }
   function confirmPay(){ closePayConfirm(); finalize(); }
+
+  // ===== NOTA KE WA PELANGGAN =====
+  // Nomor pelanggan baru (belum tersimpan di kontak) diisi di Pembayaran; nota teks dikirim lewat wa.me/<nomor>,
+  // PDF menyusul lewat menu Bagikan karena wa.me tidak bisa membawa lampiran.
+  let customerWa = ""; let waOpen = false; let suksesSent = { text: false, pdf: false };
+  // Nomor Indonesia: 08… / 8… / +62… → 62…; dianggap lengkap bila 10–15 angka
+  function normalizeWa(s){
+    let d = String(s || "").replace(/\D/g, "");
+    if(d.startsWith("0")) d = "62" + d.slice(1);
+    else if(d.startsWith("8")) d = "62" + d;
+    return d;
+  }
+  // Tampilan: 6281234567890 → 0812 3456 7890
+  function formatWa(d){ const local = d.startsWith("62") ? "0" + d.slice(2) : d; return local.replace(/(\d{4})(?=\d)/g, "$1 "); }
+  function waState(){ const d = normalizeWa(customerWa); return { digits: d, empty: d.length === 0, valid: d.length >= 10 && d.length <= 15 }; }
+  function resetWa(){ customerWa = ""; waOpen = false; }
+
+  function openWaInput(){ waOpen = true; renderWa(); document.getElementById("waInput").focus(); }
+  function clearWa(){ resetWa(); renderBayar(); }
+  function onWaInput(el){ customerWa = el.value; renderBayar(); }
+  function renderWa(){
+    const st = waState();
+    document.getElementById("waAddBtn").classList.toggle("hide", waOpen);
+    document.getElementById("waField").classList.toggle("hide", !waOpen);
+    document.getElementById("waPanel").classList.toggle("ok", waOpen && st.valid);
+    const input = document.getElementById("waInput");
+    if(document.activeElement !== input) input.value = customerWa;
+    const help = document.getElementById("waHelp");
+    help.classList.toggle("err", !st.empty && !st.valid);
+    help.innerText = st.empty ? "Untuk pelanggan yang nomornya belum tersimpan. Kosongkan bila tidak perlu."
+      : st.valid ? `Setelah bayar, nota dikirim ke ${formatWa(st.digits)}.`
+      : "Nomor belum lengkap. Contoh: 0812 3456 7890";
+  }
+
+  // Nota teks langsung ke chat nomor pelanggan (bisa walau nomor belum tersimpan di kontak)
+  function sendWaText(id){
+    const d = history.find(h => h.id === id); if(!d || !d.wa) return;
+    shareReceiptText(d, d.wa);
+    if(id === lastTxId) { suksesSent.text = true; renderSukses(d); }
+  }
+  // PDF menyusul lewat menu Bagikan; chat pelanggan sudah muncul di daftar chat terbaru WhatsApp
+  async function sendWaPdf(id){
+    const d = history.find(h => h.id === id); if(!d) return;
+    let file;
+    try { file = new File([buildNotaPDF(d)], `Nota_${d.id}.pdf`, { type: "application/pdf" }); }
+    catch(e) { alert("PDF belum bisa dibuat (cek internet lalu muat ulang). Nota teks tetap bisa dikirim lewat tombol WhatsApp."); return; }
+    const result = await shareFile(file, "pelanggan");
+    if(result === "shared" && id === lastTxId) { suksesSent.pdf = true; renderSukses(d); }
+  }
+
+  // Data pelanggan untuk rekap owner: nomor WA, jumlah transaksi, total belanja
+  function customerSummary(list){
+    const map = {};
+    list.forEach(h => {
+      if(!h.wa) return;
+      const c = map[h.wa] = map[h.wa] || { wa: h.wa, count: 0, total: 0 };
+      c.count++; c.total += h.total;
+    });
+    return Object.values(map).sort((a, b) => b.count - a.count || b.total - a.total);
+  }
 
 
   // Nomor nota berurutan per hari: NK51-DRM-YYYYMMDD-001. Counter disimpan terpisah agar tidak terulang walau riwayat di-reset.
@@ -1046,11 +1158,12 @@
     shareFile(file, "pelanggan");
   }
 
-  function shareReceiptText(d) {
+  // phone: nomor tujuan (62…); kosong = pilih chat sendiri di WhatsApp
+  function shareReceiptText(d, phone = "") {
     let s =`*NASI KUNING 51*\n_Bukti Pembayaran Digital_\n--------------------------------------------\nID    : ${d.id}\nTgl   : ${d.time}\nCabang: ${cabangName(d.cabang)}\nKasir : ${kasirOf(d)}\n--------------------------------------------\n`;
     d.items.forEach(i => { s += `*${i.name.toUpperCase()}*\n${i.qty} x ${i.price.toLocaleString('id-ID')} = Rp ${(i.price*i.qty).toLocaleString('id-ID')}\n`; });
     s += `--------------------------------------------\n*TOTAL      : Rp ${d.total.toLocaleString('id-ID')}*\nBAYAR (${d.paymentMethod.toUpperCase()}) : Rp ${d.bayar.toLocaleString('id-ID')}\nKEMBALI     : Rp ${d.change.toLocaleString('id-ID')}\n--------------------------------------------\n*HUBUNGI KAMI:*\n📸 IG: @naskun_kolaka51\n📞 WA: ${warungInfo.wa}\n--------------------------------------------\n*LOKASI OUTLET:*\n${warungInfo.lokasi.join('\n')}\n--------------------------------------------\n_Terima kasih & Selamat Menikmati!_`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(s)}`);
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(s)}`);
   }
 
   async function printBluetooth(id) {
@@ -1107,9 +1220,14 @@
         txt += `\nMENU HABIS:\n`;
         hb.forEach(([n, ts]) => { txt += `- ${n} (sejak ${jam(ts)})\n`; });
     }
+    const pel = customerSummary(list);
+    if(pel.length > 0) {
+        txt += `\nDATA PELANGGAN WHATSAPP (${pel.length} nomor):\n`;
+        pel.forEach(c => { txt += `- ${formatWa(c.wa)} : ${c.count}x transaksi, Rp ${c.total.toLocaleString('id-ID')}\n`; });
+    }
     txt += `\n${sep}          DETAIL TRANSAKSI\n${sep}`;
     list.forEach((h, i) => {
-        txt += `${i+1}. Nota : ${h.id}\n   Waktu : ${h.time}\n   Metode : ${h.paymentMethod.toUpperCase()}\n   Total : Rp ${h.total.toLocaleString('id-ID')}\n------------------------------------------\n`;
+        txt += `${i+1}. Nota : ${h.id}\n   Waktu : ${h.time}\n   Metode : ${h.paymentMethod.toUpperCase()}\n   Total : Rp ${h.total.toLocaleString('id-ID')}\n${h.wa ? `   WA : ${formatWa(h.wa)}\n` : ""}------------------------------------------\n`;
     });
     txt += `\nINFO WARUNG:\nIG: ${warungInfo.ig}\nWA: ${warungInfo.wa}\n${sep}-- AKHIR LAPORAN --`;
     return txt;
@@ -1279,6 +1397,10 @@
     if(Object.keys(s.lFree).length) table("REKAP PRODUK FREE (SEDEKAH)", produkCols, produkRows(s.lFree));
     const hb = habisEntries();
     if(hb.length) table("MENU HABIS", [{ label: "Produk", x: M + 3 }, { label: "Habis sejak", x: W - M - 3, align: "right" }], hb.map(([n, ts]) => [n, jam(ts)]));
+    const pel = customerSummary(list);
+    if(pel.length) table("DATA PELANGGAN WHATSAPP",
+      [{ label: "No", x: M + 3 }, { label: "Nomor WA", x: M + 13 }, { label: "Transaksi", x: 140, align: "right" }, { label: "Total belanja", x: W - M - 3, align: "right" }],
+      pel.map((c, i) => [i + 1, formatWa(c.wa), `${c.count}x`, rp(c.total)]));
 
     table("DETAIL TRANSAKSI",
       [{ label: "No", x: M + 3 }, { label: "ID Nota", x: M + 13 }, { label: "Waktu", x: 92 }, { label: "Metode", x: 142 }, { label: "Total", x: W - M - 3, align: "right" }],
@@ -1311,8 +1433,10 @@
         change: (m === 'cash' ? paidAmount - total : 0),
         paymentMethod: m
     };
+    const wa = waState();
+    if(wa.valid) tx.wa = wa.digits;
     history.push(tx); lastTxId = tx.id;
-    cart = []; paymentMethod = ""; paidAmount = 0;
+    cart = []; paymentMethod = ""; paidAmount = 0; resetWa(); suksesSent = { text: false, pdf: false };
     saveToStorage(); renderCart(); renderMenu();
     renderSukses(tx); showPage("sukses");
   }
@@ -1331,6 +1455,33 @@
       (free
         ? `<div class="r-paid"><span>Nilai pesanan <span class="badge free">GRATIS</span></span><b>${rp(tx.realValue)}</b></div>`
         : `<div class="r-paid"><span>Diterima <span class="badge ${tx.paymentMethod}">${METHOD_UI[tx.paymentMethod].label}</span></span><b>${rp(tx.bayar)}</b></div>`);
+
+    // Dengan nomor WA: nota teks langsung ke nomor itu, PDF menyusul. Tanpa nomor: PDF lewat menu Bagikan seperti biasa.
+    const waCard = document.getElementById("suksesWa");
+    waCard.classList.toggle("hide", !tx.wa);
+    const actions = document.getElementById("suksesActions");
+    if(tx.wa) {
+      const step = (done, n, text) => `<span class="wa-step${done ? ' done' : ''}"><b>${n}</b>${text}</span>`;
+      waCard.innerHTML = `
+        <div class="wa-card-head">${ICON.phone}<div style="display: flex; flex-direction: column; gap: 2px;"><span class="wa-card-label">NOTA UNTUK PELANGGAN</span><span class="wa-card-num num">${formatWa(tx.wa)}</span></div></div>
+        <div class="wa-steps">
+          ${step(suksesSent.text, 1, suksesSent.text ? "Nota teks sudah dikirim ke chat pelanggan." : "Nota teks langsung terkirim ke nomor ini, walau belum tersimpan di kontak.")}
+          ${step(suksesSent.pdf, 2, suksesSent.pdf ? "PDF sudah dikirim." : "Opsional: kirim PDF menyusul. Chat pelanggan sudah ada di daftar chat terbaru WhatsApp.")}
+        </div>`;
+      actions.innerHTML = `
+        <button class="btn-wa big" onclick="sendWaText(lastTxId)">${ICON.send}<span>${suksesSent.text ? "Terkirim · kirim lagi" : "WhatsApp ke " + formatWa(tx.wa)}</span></button>
+        <div class="grid-2">
+          <button class="btn-outline${suksesSent.text && !suksesSent.pdf ? ' next' : ''}" onclick="sendWaPdf(lastTxId)">${ICON.file} ${suksesSent.pdf ? "PDF terkirim" : "Kirim PDF"}</button>
+          <button class="btn-outline" onclick="printBluetooth(lastTxId)">${ICON.print} Cetak struk</button>
+        </div>`;
+    } else {
+      actions.innerHTML = `
+        <div class="grid-2">
+          <button class="btn-wa" onclick="shareReceiptByID(lastTxId)">${ICON.send} WhatsApp</button>
+          <button class="btn-outline" onclick="printBluetooth(lastTxId)">${ICON.print} Cetak struk</button>
+        </div>
+        <p class="hint">Nota dikirim sebagai PDF lewat menu Bagikan HP</p>`;
+    }
   }
 
   // ===== LAPORAN =====
@@ -1356,9 +1507,12 @@
       </div>`;
 
     const q = document.getElementById("searchInput").value.trim().toLowerCase();
+    const qDigits = q.replace(/\D/g, "");
+    // Nomor WA bisa dicari dalam bentuk 0812… maupun 62812…
+    const matchWa = h => h.wa && qDigits.length >= 3 && (h.wa.includes(qDigits) || ("0" + h.wa.slice(2)).includes(qDigits));
     const filtered = data
       .filter(h => historyFilter === "all" || h.paymentMethod === historyFilter)
-      .filter(h => !q || h.id.toLowerCase().includes(q) || h.items.some(i => i.name.toLowerCase().includes(q)));
+      .filter(h => !q || h.id.toLowerCase().includes(q) || h.items.some(i => i.name.toLowerCase().includes(q)) || matchWa(h));
 
     const list = document.getElementById("historyList");
     if(filtered.length === 0) {
@@ -1370,17 +1524,23 @@
       return `
       <article class="card tx-card">
         <div class="tx-head">
-          <div class="tx-meta"><span class="tx-id num">${h.id}</span><span class="tx-time">${h.time}</span></div>
+          <div class="tx-meta"><span class="tx-id num">${h.id}</span><span class="tx-time">${h.time}</span>${h.wa ? `<span class="tx-wa num">WA ${formatWa(h.wa)}</span>` : ""}</div>
           <span class="badge ${h.paymentMethod}">${(METHOD_UI[h.paymentMethod] || { label: h.paymentMethod.toUpperCase() }).label}</span>
         </div>
         <div class="tx-lines num">
           ${h.items.map(i => `<div class="tx-line"><span>${i.qty}× ${titleCase(i.name)}</span><span>${rp(i.price * i.qty)}</span></div>`).join("")}
         </div>
         <div class="tx-foot"><span class="tx-note">${free ? "Nilai pesanan " + rp(h.realValue) : "Total"}</span><span class="tx-total num">${rp(h.total)}</span></div>
+        ${h.wa ? `
+        <div class="grid-3 tx-actions">
+          <button class="btn-wa" onclick="sendWaText('${h.id}')">${ICON.send} WhatsApp</button>
+          <button class="btn-outline" onclick="sendWaPdf('${h.id}')">${ICON.file} PDF</button>
+          <button class="btn-outline" onclick="printBluetooth('${h.id}')">${ICON.print} Cetak</button>
+        </div>` : `
         <div class="grid-2 tx-actions">
           <button class="btn-wa" onclick="shareReceiptByID('${h.id}')">${ICON.send} WhatsApp</button>
           <button class="btn-outline" onclick="printBluetooth('${h.id}')">${ICON.print} Cetak</button>
-        </div>
+        </div>`}
       </article>`;
     }).join("");
   }
@@ -1428,6 +1588,12 @@
       (produk(s.lBayar).map(k => `<div class="row row-muted"><span>${titleCase(k)} · ${s.lBayar[k].qty}</span><span>${rp(s.lBayar[k].value)}</span></div>`).join("") || `<div class="row row-muted"><span>Belum ada produk berbayar</span><span></span></div>`) +
       produk(s.lFree).map(k => `<div class="row produk-free"><span>Gratis: ${titleCase(k)} · ${s.lFree[k].qty}</span><span>${rp(s.lFree[k].value)}</span></div>`).join("") +
       (hb => hb.length ? `<div class="produk-habis"><b>Menu habis hari ini</b>${hb.map(([n, ts]) => `<div class="row"><span>${titleCase(n)}</span><span>sejak ${jam(ts)}</span></div>`).join("")}</div>` : "")(habisEntries());
+    const pel = customerSummary(list);
+    const pelEl = document.getElementById("tutupPelanggan");
+    pelEl.classList.toggle("hide", pel.length === 0);
+    pelEl.innerHTML = pel.length ? `<h2 class="h2" style="margin-bottom: 4px;">Data pelanggan WhatsApp · ${pel.length}</h2>` +
+      pel.map(c => `<div class="row row-muted"><span>${formatWa(c.wa)} · ${c.count}×</span><span>${rp(c.total)}</span></div>`).join("") +
+      `<p class="pel-note">Nomor ikut tercatat di rekap untuk owner sebagai data pelanggan.</p>` : "";
     document.getElementById("tutupFileIcon").innerText = isPdf ? "PDF" : "TXT";
     document.getElementById("tutupFileName").innerText = file.name;
     setRekapStatus(isPdf ? "PDF siap dikirim lewat WhatsApp" : "PDF gagal dibuat (cek internet lalu muat ulang). Rekap dibuat sebagai .txt");
